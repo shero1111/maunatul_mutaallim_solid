@@ -12,13 +12,13 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.2.2",
-    "vite": "^4.4.5",
-    "vite-plugin-solid": "^2.7.0"
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.6"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
-    "solid-js": "^1.7.8"
+    "@supabase/supabase-js": "^2.52.1",
+    "solid-js": "^1.9.5"
   },
   "keywords": [
     "solidjs",
@@ -32,9 +32,9 @@
   "author": "Maunatul Mutaallim Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/maunatul-mutaallim-solid.git"
+    "url": "https://github.com/shero1111/maunatul_mutaallim_solid.git"
   },
-  "homepage": "https://maunatul-mutaallim.netlify.app",
+  "homepage": "https://maunatul-mutaallim-solid.netlify.app",
   "browserslist": {
     "production": [
       ">0.2%",
