@@ -227,6 +227,114 @@ export function Login() {
             <span>👨‍🎓 student1/test (طالب)</span>
             <span>👨‍🎓 student2/test (طالب)</span>
           </div>
+          
+          {/* QUICK LOGIN BUTTONS */}
+          <div style={{
+            'margin-top': '15px',
+            'border-top': '1px solid var(--color-border)',
+            'padding-top': '15px'
+          }}>
+            <div style={{
+              'font-weight': 'bold',
+              'margin-bottom': '10px',
+              'font-size': '12px'
+            }}>
+              🚀 Quick Login:
+            </div>
+            <div style={{
+              display: 'grid',
+              'grid-template-columns': '1fr 1fr',
+              gap: '8px'
+            }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setUsername('admin');
+                  setPassword('test');
+                }}
+                style={{
+                  padding: '8px 12px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  'font-size': '11px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+              >
+                👑 Admin
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setUsername('lehrer');
+                  setPassword('test');
+                }}
+                style={{
+                  padding: '8px 12px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  'font-size': '11px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+              >
+                👨‍🏫 Lehrer
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setUsername('leiter');
+                  setPassword('test');
+                }}
+                style={{
+                  padding: '8px 12px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  'font-size': '11px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+              >
+                🏛️ Leiter
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setUsername('student1');
+                  setPassword('test');
+                }}
+                style={{
+                  padding: '8px 12px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  'font-size': '11px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+              >
+                👨‍🎓 Student
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

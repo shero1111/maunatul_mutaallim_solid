@@ -92,6 +92,10 @@ export function AppProvider(props: { children: JSX.Element }) {
     // Load from localStorage if available
     const savedTheme = localStorage.getItem('theme') as Theme;
     const savedLanguage = localStorage.getItem('language') as Language;
+    const savedCurrentUser = localStorage.getItem('currentUser');
+    const savedMutunData = localStorage.getItem('mutunData');
+    const savedUsersData = localStorage.getItem('usersData');
+    const savedNewsData = localStorage.getItem('newsData');
     
     if (savedTheme) {
       setTheme(savedTheme);
@@ -99,6 +103,45 @@ export function AppProvider(props: { children: JSX.Element }) {
     }
     if (savedLanguage) {
       setLanguage(savedLanguage);
+    }
+    
+    // AUTO LOGIN - User bleibt angemeldet
+    if (savedCurrentUser) {
+      try {
+        const user = JSON.parse(savedCurrentUser);
+        setCurrentUser(user);
+      } catch (e) {
+        console.error('Error parsing saved user:', e);
+        localStorage.removeItem('currentUser');
+      }
+    }
+    
+    // Load saved data
+    if (savedMutunData) {
+      try {
+        const mutunData = JSON.parse(savedMutunData);
+        setMutun(mutunData);
+      } catch (e) {
+        console.error('Error parsing saved mutun:', e);
+      }
+    }
+    
+    if (savedUsersData) {
+      try {
+        const usersData = JSON.parse(savedUsersData);
+        setUsers(usersData);
+      } catch (e) {
+        console.error('Error parsing saved users:', e);
+      }
+    }
+    
+    if (savedNewsData) {
+      try {
+        const newsData = JSON.parse(savedNewsData);
+        setNews(newsData);
+      } catch (e) {
+        console.error('Error parsing saved news:', e);
+      }
     }
   });
   
@@ -144,7 +187,14 @@ export function AppProvider(props: { children: JSX.Element }) {
       
       // Generate personal mutun for all users (not just students)
       const personalMutun = generatePersonalMutun(user.id);
-      setMutun(prev => [...prev.filter(m => m.user_id !== user.id), ...personalMutun]);
+      const newMutunData = [...mutun().filter(m => m.user_id !== user.id), ...personalMutun];
+      setMutun(newMutunData);
+      
+      // Save to localStorage
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('mutunData', JSON.stringify(newMutunData));
+      localStorage.setItem('usersData', JSON.stringify(users()));
+      localStorage.setItem('newsData', JSON.stringify(news()));
       
       return true;
     }
@@ -166,17 +216,29 @@ export function AppProvider(props: { children: JSX.Element }) {
       isLoading: false,
       matnId: ''
     });
+    
+    // Remove from localStorage
+    localStorage.removeItem('currentUser');
   };
   
   const updateMatn = (updatedMatn: Matn) => {
-    setMutun(prev => prev.map(m => m.id === updatedMatn.id ? updatedMatn : m));
+    const newMutunData = mutun().map(m => m.id === updatedMatn.id ? updatedMatn : m);
+    setMutun(newMutunData);
+    
+    // Save to localStorage
+    localStorage.setItem('mutunData', JSON.stringify(newMutunData));
   };
   
   const updateUser = (updatedUser: User) => {
-    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    const newUsersData = users().map(u => u.id === updatedUser.id ? updatedUser : u);
+    setUsers(newUsersData);
     if (currentUser()?.id === updatedUser.id) {
       setCurrentUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     }
+    
+    // Save to localStorage  
+    localStorage.setItem('usersData', JSON.stringify(newUsersData));
   };
   
   const playAudio = (matnId: string, title: string, audioUrl: string) => {
