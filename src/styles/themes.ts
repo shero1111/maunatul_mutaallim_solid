@@ -9,32 +9,35 @@ export interface ThemeColors {
   success: string;
   warning: string;
   error: string;
+  overlay: string;
 }
 
 export const themeColors: Record<'light' | 'dark', ThemeColors> = {
   light: {
     primary: '#2563eb',
-    secondary: '#7c3aed',
+    secondary: '#3b82f6',
     background: '#ffffff',
     surface: '#f8fafc',
-    border: '#e2e8f0',
-    text: '#1e293b',
-    textSecondary: '#64748b',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    border: '#e5e7eb',
     success: '#10b981',
     warning: '#f59e0b',
-    error: '#ef4444'
+    error: '#ef4444',
+    overlay: 'rgba(0,0,0,0.5)'
   },
   dark: {
     primary: '#3b82f6',
-    secondary: '#8b5cf6',
-    background: '#0f172a',
-    surface: '#1e293b',
-    border: '#334155',
-    text: '#f1f5f9',
-    textSecondary: '#94a3b8',
+    secondary: '#60a5fa',
+    background: '#111827',
+    surface: '#1f2937',
+    text: '#f9fafb',
+    textSecondary: '#d1d5db',
+    border: '#374151',
     success: '#10b981',
     warning: '#f59e0b',
-    error: '#ef4444'
+    error: '#ef4444',
+    overlay: 'rgba(0,0,0,0.7)'
   }
 };
 

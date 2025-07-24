@@ -13,18 +13,19 @@ body {
   overscroll-behavior: none;
 }
 
-/* CSS Custom Properties - will be set dynamically by theme system */
+/* CSS Custom Properties - EXACT MATCH TO REACT VERSION */
 :root {
   --color-primary: #2563eb;
-  --color-secondary: #7c3aed;
+  --color-secondary: #3b82f6;
   --color-background: #ffffff;
   --color-surface: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-text: #1e293b;
-  --color-text-secondary: #64748b;
+  --color-text: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-border: #e5e7eb;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  --color-overlay: rgba(0,0,0,0.5);
 }
 
 /* Smooth scrolling */
@@ -185,16 +186,17 @@ html {
   animation: spin 1s linear infinite;
 }
 
-/* Dark mode adjustments */
+/* Dark mode adjustments - EXACT MATCH TO REACT */
 @media (prefers-color-scheme: dark) {
   :root {
     --color-primary: #3b82f6;
-    --color-secondary: #8b5cf6;
-    --color-background: #0f172a;
-    --color-surface: #1e293b;
-    --color-border: #334155;
-    --color-text: #f1f5f9;
-    --color-text-secondary: #94a3b8;
+    --color-secondary: #60a5fa;
+    --color-background: #111827;
+    --color-surface: #1f2937;
+    --color-text: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-border: #374151;
+    --color-overlay: rgba(0,0,0,0.7);
   }
 }
 
