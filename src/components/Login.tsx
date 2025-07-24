@@ -148,8 +148,9 @@ export function Login() {
           <div style={{ 'font-weight': 'bold', 'margin-bottom': '8px' }}>
             Demo Credentials:
           </div>
-          <div>Admin: admin1 / test</div>
-          <div>Teacher: lehrer1 / test</div>
+          <div>Admin: admin / test</div>
+          <div>Lehrer: lehrer / test</div>
+          <div>Leiter: leiter / test</div>
           <div>Student: student1 / test</div>
         </div>
       </div>

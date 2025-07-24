@@ -4,30 +4,30 @@ import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 export const demoUsers: (Student | Teacher | User)[] = [
   { 
     id: 'admin', 
-    username: 'admin1', 
+    username: 'admin', 
     password: 'test', 
     role: 'superuser', 
-    name: 'admin1', 
+    name: 'Administrator', 
     isActive: true, 
     created_at: '2024-01-01', 
     lastPage: 'home' 
   },
   { 
     id: 'leiter', 
-    username: 'leitung1', 
+    username: 'leiter', 
     password: 'test', 
     role: 'leitung', 
-    name: 'leitung1', 
+    name: 'Leiter', 
     isActive: true, 
     created_at: '2024-01-01', 
     lastPage: 'home' 
   },
   { 
     id: 'lehrer', 
-    username: 'lehrer1', 
+    username: 'lehrer', 
     password: 'test', 
     role: 'lehrer', 
-    name: 'lehrer1', 
+    name: 'Lehrer', 
     isActive: true, 
     created_at: '2024-01-01', 
     halaqat_ids: ['halaqa1', 'halaqa2'], 

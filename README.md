@@ -118,8 +118,9 @@ npm run preview
 
 | Role | Username | Password |
 |------|----------|----------|
-| **Admin** | `admin1` | `test` |
-| **Teacher** | `lehrer1` | `test` |
+| **Admin** | `admin` | `test` |
+| **Leiter** | `leiter` | `test` |
+| **Lehrer** | `lehrer` | `test` |
 | **Student** | `student1` | `test` |
 
 ## 📱 **Mobile Optimization**
