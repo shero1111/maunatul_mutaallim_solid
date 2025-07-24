@@ -142,11 +142,9 @@ export function AppProvider(props: { children: JSX.Element }) {
     if (user) {
       setCurrentUser(user);
       
-      // Generate personal mutun for the user if student
-      if (user.role === 'student') {
-        const personalMutun = generatePersonalMutun(user.id);
-        setMutun(prev => [...prev.filter(m => m.user_id !== user.id), ...personalMutun]);
-      }
+      // Generate personal mutun for all users (not just students)
+      const personalMutun = generatePersonalMutun(user.id);
+      setMutun(prev => [...prev.filter(m => m.user_id !== user.id), ...personalMutun]);
       
       return true;
     }
