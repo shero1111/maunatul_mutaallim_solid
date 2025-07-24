@@ -10,7 +10,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior: none;
+  overscroll-behavior-x: none; /* Prevent horizontal overscroll */
+  overscroll-behavior-y: auto; /* Allow vertical overscroll for pull-to-refresh */
 }
 
 /* CSS Custom Properties - EXACT MATCH TO REACT VERSION */
