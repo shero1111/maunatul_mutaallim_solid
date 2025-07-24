@@ -1,0 +1,50 @@
+{
+  "name": "maunatul-mutaallim-solid",
+  "version": "2.0.0",
+  "description": "Maunatul Mutaallim - Islamic Learning Management System built with SolidJS",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^4.4.5",
+    "vite-plugin-solid": "^2.7.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "solid-js": "^1.7.8"
+  },
+  "keywords": [
+    "solidjs",
+    "islamic",
+    "education",
+    "quran",
+    "memorization",
+    "halaqa",
+    "realtime"
+  ],
+  "author": "Maunatul Mutaallim Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/maunatul-mutaallim-solid.git"
+  },
+  "homepage": "https://maunatul-mutaallim.netlify.app",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
