@@ -14,7 +14,10 @@ function AppContent() {
   const app = useApp();
   
   const renderCurrentPage = () => {
-    switch (app.currentPage()) {
+    const currentPage = app.currentPage();
+    console.log('🎯 App rendering page:', currentPage);
+    
+    switch (currentPage) {
       case 'home': return <HomePage />;
       case 'mutuun': return <MutunPage />;
       case 'halaqat': return <HalaqatPage />;

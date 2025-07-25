@@ -82,7 +82,9 @@ export function BottomNavigation() {
   };
   
   const handleNavigation = (page: Page) => {
+    console.log('🧭 Navigation clicked:', page, 'current:', app.currentPage());
     app.setCurrentPage(page);
+    console.log('🧭 After setCurrentPage:', app.currentPage());
   };
   
   const visibleItems = getVisibleItems();

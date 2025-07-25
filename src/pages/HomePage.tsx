@@ -6,6 +6,9 @@ import { getStatusColor } from '../styles/themes';
 export function HomePage() {
   const app = useApp();
   
+  // Debug: Log current page to check reactivity
+  console.log('🏠 HomePage rendering, current page:', app.currentPage());
+  
   // Role-based computed data
   const dashboardData = createMemo(() => {
     try {
