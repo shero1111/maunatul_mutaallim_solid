@@ -94,6 +94,7 @@ export function MutunPage() {
 
   // Note State
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
+  const [focusedNoteId, setFocusedNoteId] = createSignal<string | null>(null);
 
   // Initialize note text
   const initializeNoteText = (matn: Matn) => {
@@ -433,8 +434,13 @@ export function MutunPage() {
                              }}>
                                الملاحظات:
                              </label>
-                             <div style={{ position: 'relative' }}>
-                               <textarea
+                             <div style={{ 
+                               display: 'flex', 
+                               gap: '8px', 
+                               'align-items': 'center' 
+                             }}>
+                               <input
+                                 type="text"
                                  value={noteTexts()[matn.id] || ''}
                                  onInput={(e) => {
                                    const value = e.currentTarget.value;
@@ -444,20 +450,26 @@ export function MutunPage() {
                                    }));
                                  }}
                                  onClick={(e) => e.stopPropagation()}
-                                 onKeyPress={(e) => {
+                                 onFocus={(e) => {
                                    e.stopPropagation();
-                                   if (e.key === 'Enter' && !e.shiftKey) {
-                                     e.preventDefault();
-                                     saveNote(matn, e.currentTarget.value);
-                                   }
+                                   setFocusedNoteId(matn.id);
                                  }}
                                  onBlur={(e) => {
                                    e.stopPropagation();
+                                   setFocusedNoteId(null);
                                    saveNote(matn, e.currentTarget.value);
+                                 }}
+                                 onKeyPress={(e) => {
+                                   e.stopPropagation();
+                                   if (e.key === 'Enter') {
+                                     e.preventDefault();
+                                     saveNote(matn, e.currentTarget.value);
+                                     e.currentTarget.blur();
+                                   }
                                  }}
                                  placeholder="أضف ملاحظاتك هنا..."
                                  style={{
-                                   width: '100%',
+                                   flex: '1',
                                    padding: '10px',
                                    'font-size': '14px',
                                    border: '1px solid var(--color-border)',
@@ -466,41 +478,40 @@ export function MutunPage() {
                                    color: 'var(--color-text)',
                                    outline: 'none',
                                    'box-sizing': 'border-box',
-                                   resize: 'vertical',
-                                   'min-height': '80px',
-                                   'font-family': 'inherit',
-                                   'padding-bottom': '40px'
+                                   'font-family': 'inherit'
                                  }}
-                                 rows={3}
                                />
-                               <button
-                                 onClick={(e) => {
-                                   e.stopPropagation();
-                                   saveNote(matn, noteTexts()[matn.id] || '');
-                                 }}
-                                 style={{
-                                   position: 'absolute',
-                                   bottom: '8px',
-                                   right: '8px',
-                                   padding: '4px 8px',
-                                   background: 'var(--color-primary)',
-                                   color: 'white',
-                                   border: 'none',
-                                   'border-radius': '4px',
-                                   cursor: 'pointer',
-                                   'font-size': '11px'
-                                 }}
-                               >
-                                 💾 حفظ
-                               </button>
+                               <Show when={focusedNoteId() === matn.id}>
+                                 <button
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     saveNote(matn, noteTexts()[matn.id] || '');
+                                     setFocusedNoteId(null);
+                                   }}
+                                   style={{
+                                     padding: '10px 16px',
+                                     background: 'var(--color-primary)',
+                                     color: 'white',
+                                     border: 'none',
+                                     'border-radius': '8px',
+                                     cursor: 'pointer',
+                                     'font-size': '12px',
+                                     'white-space': 'nowrap'
+                                   }}
+                                 >
+                                   💾 حفظ
+                                 </button>
+                               </Show>
                              </div>
-                             <div style={{
-                               'margin-top': '5px',
-                               'font-size': '11px',
-                               color: 'var(--color-text-secondary)'
-                             }}>
-                               💡 Enter zum Speichern oder Button klicken
-                             </div>
+                             <Show when={focusedNoteId() === matn.id}>
+                               <div style={{
+                                 'margin-top': '5px',
+                                 'font-size': '11px',
+                                 color: 'var(--color-text-secondary)'
+                               }}>
+                                 💡 Enter zum Speichern oder Button klicken
+                               </div>
+                             </Show>
                            </div>
                         </div>
                       );
