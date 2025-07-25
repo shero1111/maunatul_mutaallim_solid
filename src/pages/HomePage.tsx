@@ -491,14 +491,13 @@ function StudentDashboard(props: any) {
         </div>
       </div>
 
-      {/* Enhanced Search and Filter */}
+      {/* Search and Filter */}
       <div style={{ 
-        background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)', 
-        'border-radius': '16px', 
-        padding: '20px', 
-        'margin-bottom': '24px',
-        border: '1px solid var(--color-border)',
-        'box-shadow': '0 4px 16px rgba(0, 0, 0, 0.08)'
+        background: 'var(--color-surface)', 
+        'border-radius': '12px', 
+        padding: '16px', 
+        'margin-bottom': '20px',
+        border: '1px solid var(--color-border)'
       }}>
         {/* Search Bar */}
         <div style={{
