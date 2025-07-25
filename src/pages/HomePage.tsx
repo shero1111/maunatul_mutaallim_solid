@@ -276,235 +276,102 @@ function StudentDashboard(props: any) {
   
   return (
     <>
-      {/* Student Info Card - Premium Design */}
+            {/* Student Info Card - Compact Design */}
       <div style={{ 
-        background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)', 
-        'border-radius': '24px', 
-        padding: '32px', 
-        'margin-bottom': '24px',
+        background: 'var(--color-surface)', 
+        'border-radius': '12px', 
+        padding: '20px', 
+        'margin-bottom': '20px',
         border: '1px solid var(--color-border)',
-        'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.12)',
-        'text-align': 'center',
-        position: 'relative' as const,
-        overflow: 'hidden'
+        display: 'flex',
+        'align-items': 'center',
+        'justify-content': 'space-between',
+        gap: '20px'
       }}>
-        {/* Subtle Background Accent */}
-        <div style={{
-          position: 'absolute',
-          top: '-20%',
-          right: '-20%',
-          width: '140%',
-          height: '140%',
-          background: `radial-gradient(circle, ${statusInfo().color}05 0%, transparent 60%)`,
-          'pointer-events': 'none',
-          'z-index': '0'
-        }} />
-        
-        {/* Content */}
-        <div style={{ position: 'relative', 'z-index': '1' }}>
-          
+        {/* Student Info */}
+        <div style={{ flex: '1' }}>
           <h3 style={{ 
             color: 'var(--color-text)', 
-            'margin-bottom': '8px',
-            'font-size': '1.5rem',
-            'font-weight': '700',
-            'letter-spacing': '0.5px'
+            'margin-bottom': '6px',
+            'font-size': '1.2rem',
+            'font-weight': '600'
           }}>
             {student()?.name}
           </h3>
           
-                     <div style={{
-             display: 'inline-block',
-             background: `${statusInfo().color}15`,
-             color: statusInfo().color,
-             padding: '6px 16px',
-             'border-radius': '20px',
-             'font-size': '0.95rem',
-             'font-weight': '600',
-             'margin-bottom': '8px',
-             border: `1px solid ${statusInfo().color}30`
-           }}>
-             {statusInfo().text}
-           </div>
-          
-          
-          
-                     {/* Elegant Divider */}
-           <div style={{
-             width: '60px',
-             height: '2px',
-             background: 'linear-gradient(90deg, transparent, var(--color-border), transparent)',
-             margin: '20px auto',
-             'border-radius': '1px'
-           }} />
-          
-          <h4 style={{ 
-            color: 'var(--color-text)', 
-            'margin-bottom': '20px',
-            'font-weight': '600',
-            'font-size': '1.1rem',
-            'letter-spacing': '0.3px'
+          <div style={{
+            display: 'inline-flex',
+            'align-items': 'center',
+            background: statusInfo().color,
+            color: 'white',
+            padding: '4px 12px',
+            'border-radius': '16px',
+            'font-size': '0.9rem',
+            'font-weight': '600'
           }}>
-            تحديث الحالة
-          </h4>
-          
-          {/* Premium Status Buttons */}
-          <div style={{ 
-            display: 'grid', 
-            'grid-template-columns': 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: '12px',
-            'max-width': '500px',
-            margin: '0 auto'
-          }}>
-                         <button
-               onClick={() => changeStatus('not_available')}
-               style={{
-                 background: student()?.status === 'not_available' 
-                   ? 'var(--color-error)10' 
-                   : 'var(--color-surface)',
-                 color: student()?.status === 'not_available' ? 'var(--color-error)' : 'var(--color-text-secondary)',
-                 border: student()?.status === 'not_available' 
-                   ? '2px solid var(--color-error)' 
-                   : '1px solid var(--color-border)',
-                 padding: '12px 18px',
-                 'border-radius': '12px',
-                 cursor: 'pointer',
-                 'font-weight': student()?.status === 'not_available' ? '600' : '500',
-                 'font-size': '0.9rem',
-                 transition: 'all 0.2s ease',
-                 'box-shadow': student()?.status === 'not_available'
-                   ? '0 2px 8px var(--color-error)15'
-                   : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                 position: 'relative',
-                 overflow: 'hidden'
-               }}
-               onMouseOver={(e) => {
-                 if (student()?.status !== 'not_available') {
-                   e.currentTarget.style.borderColor = 'var(--color-error)60';
-                   e.currentTarget.style.color = 'var(--color-error)';
-                 }
-               }}
-               onMouseOut={(e) => {
-                 if (student()?.status !== 'not_available') {
-                   e.currentTarget.style.borderColor = 'var(--color-border)';
-                   e.currentTarget.style.color = 'var(--color-text-secondary)';
-                 }
-               }}
-             >
-               <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '6px' }}>
-                 <span style={{ 'font-size': '1rem' }}>🔴</span>
-                 <span>غير متاح</span>
-               </div>
-             </button>
-            
-                         <button
-               onClick={() => changeStatus('revising')}
-               style={{
-                 background: student()?.status === 'revising' 
-                   ? 'var(--color-warning)10' 
-                   : 'var(--color-surface)',
-                 color: student()?.status === 'revising' ? 'var(--color-warning)' : 'var(--color-text-secondary)',
-                 border: student()?.status === 'revising' 
-                   ? '2px solid var(--color-warning)' 
-                   : '1px solid var(--color-border)',
-                 padding: '12px 18px',
-                 'border-radius': '12px',
-                 cursor: 'pointer',
-                 'font-weight': student()?.status === 'revising' ? '600' : '500',
-                 'font-size': '0.9rem',
-                 transition: 'all 0.2s ease',
-                 'box-shadow': student()?.status === 'revising'
-                   ? '0 2px 8px var(--color-warning)15'
-                   : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                 position: 'relative',
-                 overflow: 'hidden'
-               }}
-               onMouseOver={(e) => {
-                 if (student()?.status !== 'revising') {
-                   e.currentTarget.style.borderColor = 'var(--color-warning)60';
-                   e.currentTarget.style.color = 'var(--color-warning)';
-                 }
-               }}
-               onMouseOut={(e) => {
-                 if (student()?.status !== 'revising') {
-                   e.currentTarget.style.borderColor = 'var(--color-border)';
-                   e.currentTarget.style.color = 'var(--color-text-secondary)';
-                 }
-               }}
-             >
-               <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '6px' }}>
-                 <span style={{ 'font-size': '1rem' }}>🟡</span>
-                 <span>مراجعة</span>
-               </div>
-             </button>
-            
-                         <button
-               onClick={() => changeStatus('khatamat')}
-               style={{
-                 background: student()?.status === 'khatamat' 
-                   ? 'var(--color-success)10' 
-                   : 'var(--color-surface)',
-                 color: student()?.status === 'khatamat' ? 'var(--color-success)' : 'var(--color-text-secondary)',
-                 border: student()?.status === 'khatamat' 
-                   ? '2px solid var(--color-success)' 
-                   : '1px solid var(--color-border)',
-                 padding: '12px 18px',
-                 'border-radius': '12px',
-                 cursor: 'pointer',
-                 'font-weight': student()?.status === 'khatamat' ? '600' : '500',
-                 'font-size': '0.9rem',
-                 transition: 'all 0.2s ease',
-                 'box-shadow': student()?.status === 'khatamat'
-                   ? '0 2px 8px var(--color-success)15'
-                   : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                 position: 'relative',
-                 overflow: 'hidden'
-               }}
-               onMouseOver={(e) => {
-                 if (student()?.status !== 'khatamat') {
-                   e.currentTarget.style.borderColor = 'var(--color-success)60';
-                   e.currentTarget.style.color = 'var(--color-success)';
-                 }
-               }}
-               onMouseOut={(e) => {
-                 if (student()?.status !== 'khatamat') {
-                   e.currentTarget.style.borderColor = 'var(--color-border)';
-                   e.currentTarget.style.color = 'var(--color-text-secondary)';
-                 }
-               }}
-             >
-               <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '6px' }}>
-                 <span style={{ 'font-size': '1rem' }}>🟢</span>
-                 <span>ختمات</span>
-               </div>
-             </button>
+            {statusInfo().icon} {statusInfo().text}
           </div>
         </div>
-      </div>
-
-      {/* Search and Filter */}
-      <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '12px', 
-        padding: '16px', 
-        'margin-bottom': '20px',
-        border: '1px solid var(--color-border)'
-      }}>
-        {/* Search Bar */}
-        <div style={{
-          position: 'relative',
-          'margin-bottom': '12px'
+        
+        {/* Status Change Buttons */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '8px',
+          'flex-wrap': 'wrap'
         }}>
-          <input
-            type="text"
-            placeholder="البحث عن طالب..."
-            value={searchTerm()}
-            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+          <button
+            onClick={() => changeStatus("not_available")}
             style={{
-              width: '100%',
-              padding: '10px 40px 10px 12px',
-              'border-radius': '8px',
-              border: '1px solid var(--color-border)',
+              background: student()?.status === "not_available" ? "var(--color-error)" : "var(--color-background)",
+              color: student()?.status === "not_available" ? "white" : "var(--color-text-secondary)",
+              border: "1px solid var(--color-border)",
+              padding: "6px 12px",
+              "border-radius": "16px",
+              cursor: "pointer",
+              "font-size": "0.8rem",
+              "font-weight": "500",
+              transition: "all 0.2s ease",
+              outline: "none"
+            }}
+          >
+            غير متاح
+          </button>
+          
+          <button
+            onClick={() => changeStatus("revising")}
+            style={{
+              background: student()?.status === "revising" ? "var(--color-warning)" : "var(--color-background)",
+              color: student()?.status === "revising" ? "white" : "var(--color-text-secondary)",
+              border: "1px solid var(--color-border)",
+              padding: "6px 12px",
+              "border-radius": "16px",
+              cursor: "pointer",
+              "font-size": "0.8rem",
+              "font-weight": "500",
+              transition: "all 0.2s ease",
+              outline: "none"
+            }}
+          >
+            مراجعة
+          </button>
+          
+          <button
+            onClick={() => changeStatus("khatamat")}
+            style={{
+              background: student()?.status === "khatamat" ? "var(--color-success)" : "var(--color-background)",
+              color: student()?.status === "khatamat" ? "white" : "var(--color-text-secondary)",
+              border: "1px solid var(--color-border)",
+              padding: "6px 12px",
+              "border-radius": "16px",
+              cursor: "pointer",
+              "font-size": "0.8rem",
+              "font-weight": "500",
+              transition: "all 0.2s ease",
+              outline: "none"
+            }}
+          >
+            ختمات
+          </button>
               'font-size': '14px',
               background: 'var(--color-background)',
               color: 'var(--color-text)',
