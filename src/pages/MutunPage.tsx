@@ -258,33 +258,25 @@ export function MutunPage() {
                   toggleSection(section);
                 }} 
                                   style={{ 
-                    background: isCollapsed() 
-                      ? 'var(--color-border)' 
-                      : 'var(--color-surface)', 
+                    background: 'var(--color-surface)', 
                     'border-radius': '12px', 
                     padding: '15px 20px', 
-                    border: `2px solid ${isCollapsed() ? 'var(--color-border)' : 'var(--color-primary)'}`, 
+                    border: '2px solid var(--color-primary)', 
                     cursor: 'pointer',
                     'margin-bottom': isCollapsed() ? '0' : '15px',
                     transition: 'all 0.3s ease',
-                    'box-shadow': isCollapsed() 
-                      ? '0 2px 4px rgba(0,0,0,0.05)' 
-                      : '0 4px 12px rgba(0,0,0,0.15)',
+                    'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
                     'user-select': 'none',
                     '-webkit-user-select': 'none'
                   }}
-                                 onMouseEnter={(e) => {
-                   e.currentTarget.style.transform = 'translateY(-2px)';
-                   e.currentTarget.style.boxShadow = isCollapsed() 
-                     ? '0 4px 8px rgba(0,0,0,0.1)' 
-                     : '0 6px 20px rgba(0,0,0,0.2)';
-                 }}
-                 onMouseLeave={(e) => {
-                   e.currentTarget.style.transform = 'translateY(0px)';
-                   e.currentTarget.style.boxShadow = isCollapsed() 
-                     ? '0 2px 4px rgba(0,0,0,0.05)' 
-                     : '0 4px 12px rgba(0,0,0,0.15)';
-                 }}
+                                                   onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                  }}
               >
                 <div style={{ 
                   display: 'flex', 
@@ -292,7 +284,7 @@ export function MutunPage() {
                   'align-items': 'center' 
                 }}>
                                       <h2 style={{ 
-                      color: isCollapsed() ? 'var(--color-text-secondary)' : 'var(--color-primary)', 
+                      color: 'var(--color-primary)', 
                       'font-size': '1.3rem', 
                       margin: '0', 
                       display: 'flex', 
@@ -309,7 +301,7 @@ export function MutunPage() {
                       {section}
                       <span style={{
                         'font-size': '12px',
-                        background: isCollapsed() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
+                        background: 'var(--color-primary)',
                         color: 'white',
                         padding: '2px 8px',
                         'border-radius': '10px',
@@ -319,9 +311,9 @@ export function MutunPage() {
                       </span>
                     </h2>
                     <span style={{ 
-                      color: isCollapsed() ? 'var(--color-text-secondary)' : 'var(--color-primary)', 
+                      color: 'var(--color-primary)', 
                       'font-size': '1.8rem', 
-                      transition: 'transform 0.3s ease, color 0.3s ease', 
+                      transition: 'transform 0.3s ease', 
                       transform: isCollapsed() ? 'rotate(-90deg)' : 'rotate(0deg)'
                     }}>
                       ▼
