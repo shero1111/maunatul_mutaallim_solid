@@ -147,12 +147,12 @@ export function AudioPlayer() {
             <Show when={!player().isLoading}>
               <button
                 style={skipButtonStyle}
-                onClick={app.skipBackward}
+                onClick={app.skipForward}
                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                title="-5 Sekunden"
+                title="+5 Sekunden"
               >
-                ⏪
+                ⏩
               </button>
               
               <button
@@ -166,12 +166,12 @@ export function AudioPlayer() {
               
               <button
                 style={skipButtonStyle}
-                onClick={app.skipForward}
+                onClick={app.skipBackward}
                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                title="+5 Sekunden"
+                title="-5 Sekunden"
               >
-                ⏩
+                ⏪
               </button>
             </Show>
             
