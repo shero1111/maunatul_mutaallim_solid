@@ -299,16 +299,6 @@ export function MutunPage() {
                         {isCollapsed() ? '📁' : '📂'}
                       </span>
                       {section}
-                      <span style={{
-                        'font-size': '12px',
-                        background: 'var(--color-primary)',
-                        color: 'white',
-                        padding: '2px 8px',
-                        'border-radius': '10px',
-                        'font-weight': '600'
-                      }}>
-                        {mutun.length}
-                      </span>
                     </h2>
                     <span style={{ 
                       color: 'var(--color-primary)', 
