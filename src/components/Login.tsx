@@ -1,6 +1,5 @@
 import { createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
-import { demoUsers } from '../data/demo-data';
 
 export function Login() {
   const [username, setUsername] = createSignal('student1');
@@ -8,74 +7,60 @@ export function Login() {
   const [error, setError] = createSignal('');
   const app = useApp();
 
-  const superSimpleLogin = (user: string, pass: string) => {
-    console.log('🚀 SUPER SIMPLE LOGIN');
-    console.log('Trying:', user, '/', pass);
-    
-    // Force reset users if needed
-    if (app.users().length === 0) {
-      console.log('🔄 Initializing users...');
-      // Access the setUsers directly if possible, otherwise force via login
+  const handleLogin = (e?: SubmitEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
     
-    // Find user in demo data
-    const foundUser = demoUsers.find(u => u.username === user && u.password === pass);
+    console.log('🔄 LOGIN ATTEMPT:', { 
+      username: username(), 
+      password: password(),
+      usersCount: app.users().length
+    });
     
-    if (foundUser) {
-      console.log('✅ Found user:', foundUser.name);
-      
-      // Force set current user directly
-      if (app.setCurrentUser) {
-        app.setCurrentUser(foundUser);
-        console.log('✅ User set via setCurrentUser');
-      }
-      
-      // Force save to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      console.log('✅ User saved to localStorage');
-      
-      // Force page refresh to ensure login state
-      window.location.reload();
-      
-      return true;
-    } else {
-      console.log('❌ User not found in demo data');
-      console.log('Available users:', demoUsers.map(u => `${u.username}/${u.password}`));
-      return false;
-    }
-  };
-
-  const handleLogin = () => {
-    console.log('🔥 EMERGENCY LOGIN');
     setError('');
     
-    const result = superSimpleLogin(username(), password());
-    
-    if (!result) {
-      setError('Login fehlgeschlagen');
+    try {
+      const success = app.login(username(), password());
+      console.log('📝 Login result:', success);
+      
+      if (success) {
+        console.log('✅ Login successful - user logged in:', app.currentUser()?.name);
+      } else {
+        const errorMsg = app.translate('invalidCredentials');
+        setError(errorMsg);
+        console.log('❌ Login failed - error set:', errorMsg);
+      }
+    } catch (error) {
+      console.error('💥 Login error:', error);
+      setError('Ein Fehler ist aufgetreten');
     }
   };
 
-  const instantLogin = (user: string, pass: string) => {
-    console.log('⚡ INSTANT LOGIN:', user);
+  const quickLogin = (user: string, pass: string) => {
+    console.log('🚀 Quick login attempt:', user);
     setUsername(user);
     setPassword(pass);
+    
+    // Small delay to ensure state is updated, then login
     setTimeout(() => {
-      superSimpleLogin(user, pass);
-    }, 100);
+      handleLogin();
+    }, 50);
   };
 
   return (
     <div style={{
       'min-height': '100vh',
-      background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+      background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
       display: 'flex',
       'align-items': 'center',
       'justify-content': 'center',
-      padding: '20px'
+      padding: '20px',
+      direction: app.language() === 'ar' ? 'rtl' : 'ltr'
     }}>
       <div style={{
-        background: 'white',
+        background: 'var(--color-background)',
         'border-radius': '20px',
         padding: '40px',
         'max-width': '400px',
@@ -87,156 +72,293 @@ export function Login() {
           'margin-bottom': '30px'
         }}>
           <h1 style={{
-            color: '#1f2937',
+            color: 'var(--color-text)',
             'font-size': '1.8rem',
             'margin-bottom': '10px'
           }}>
-            معونة المتعلم
+            {app.translate('appName')}
           </h1>
           <p style={{
-            color: '#6b7280',
+            color: 'var(--color-text-secondary)',
             'font-size': '14px'
           }}>
-            LOGIN REPARATUR
+            نظام إدارة حلقات عَلٌمْنِي
           </p>
         </div>
 
-        <div style={{ 'margin-bottom': '20px' }}>
-          <input
-            type="text"
-            value={username()}
-            onInput={(e) => setUsername(e.currentTarget.value)}
-            placeholder="Username"
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
+        <form onSubmit={handleLogin}>
+          <div style={{ 'margin-bottom': '20px' }}>
+            <label style={{
+              display: 'block',
+              'margin-bottom': '8px',
+              'font-weight': 'bold',
+              color: 'var(--color-text)'
+            }}>
+              {app.translate('username')}
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                value={username()}
+                onInput={(e) => setUsername(e.currentTarget.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 40px 12px 12px',
+                  border: `1px solid var(--color-border)`,
+                  'border-radius': '8px',
+                  'font-size': '16px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  direction: 'ltr',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  'box-sizing': 'border-box'
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
+              />
+              {username() && (
+                <button
+                  type="button"
+                  onClick={() => setUsername('')}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    'font-size': '18px',
+                    padding: '2px'
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div style={{ 'margin-bottom': '20px' }}>
+            <label style={{
+              display: 'block',
+              'margin-bottom': '8px',
+              'font-weight': 'bold',
+              color: 'var(--color-text)'
+            }}>
+              {app.translate('password')}
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type="password"
+                value={password()}
+                onInput={(e) => setPassword(e.currentTarget.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 40px 12px 12px',
+                  border: `1px solid var(--color-border)`,
+                  'border-radius': '8px',
+                  'font-size': '16px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  direction: 'ltr',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                  'box-sizing': 'border-box'
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleLogin();
+                  }
+                }}
+              />
+              {password() && (
+                <button
+                  type="button"
+                  onClick={() => setPassword('')}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    'font-size': '18px',
+                    padding: '2px'
+                  }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {error() && (
+            <div style={{
+              color: 'var(--color-error)',
+              'margin-bottom': '20px',
+              'text-align': 'center',
+              padding: '10px',
+              'background-color': 'var(--color-surface)',
               'border-radius': '8px',
-              'font-size': '16px',
-              'box-sizing': 'border-box',
-              'margin-bottom': '10px'
-            }}
-          />
-          <input
-            type="password"
-            value={password()}
-            onInput={(e) => setPassword(e.currentTarget.value)}
-            placeholder="Password"
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleLogin();
-              }
-            }}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              'border-radius': '8px',
-              'font-size': '16px',
-              'box-sizing': 'border-box'
-            }}
-          />
-        </div>
+              border: `1px solid var(--color-error)`
+            }}>
+              {error()}
+            </div>
+          )}
 
-        {error() && (
-          <div style={{
-            color: '#dc2626',
-            'margin-bottom': '20px',
-            'text-align': 'center',
-            padding: '10px',
-            'background-color': '#fef2f2',
-            'border-radius': '8px'
-          }}>
-            {error()}
-          </div>
-        )}
-
-        <button
-          onClick={handleLogin}
-          style={{
-            width: '100%',
-            padding: '12px',
-            background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-            color: 'white',
-            border: 'none',
-            'border-radius': '8px',
-            'font-size': '16px',
-            'font-weight': 'bold',
-            cursor: 'pointer',
-            'margin-bottom': '20px'
-          }}
-        >
-          LOGIN (FORCE)
-        </button>
-
-        {/* Emergency Buttons */}
-        <div style={{
-          'text-align': 'center',
-          'border-top': '1px solid #e5e7eb',
-          'padding-top': '20px'
-        }}>
-          <div style={{ 'margin-bottom': '10px', 'font-size': '12px', color: '#dc2626' }}>
-            🚨 EMERGENCY LOGIN:
-          </div>
-          <div style={{
-            display: 'grid',
-            'grid-template-columns': '1fr 1fr',
-            gap: '8px'
-          }}>
-            <button
-              onClick={() => instantLogin('admin', 'test')}
-              style={{
-                padding: '8px',
-                'font-size': '11px',
-                background: '#dc2626',
-                color: 'white',
-                border: 'none',
-                'border-radius': '6px',
-                cursor: 'pointer'
-              }}
-            >
-              🚨 ADMIN
-            </button>
-            <button
-              onClick={() => instantLogin('student1', 'test')}
-              style={{
-                padding: '8px',
-                'font-size': '11px',
-                background: '#dc2626',
-                color: 'white',
-                border: 'none',
-                'border-radius': '6px',
-                cursor: 'pointer'
-              }}
-            >
-              🚨 STUDENT
-            </button>
-          </div>
-          
-          {/* Nuclear Option */}
           <button
-            onClick={() => {
-              console.log('☢️ NUCLEAR LOGIN');
-              const adminUser = demoUsers.find(u => u.username === 'admin');
-              if (adminUser) {
-                localStorage.setItem('currentUser', JSON.stringify(adminUser));
-                window.location.reload();
-              }
-            }}
+            type="submit"
             style={{
               width: '100%',
-              padding: '8px',
-              'font-size': '10px',
-              background: '#7c2d12',
+              padding: '12px',
+              background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
               color: 'white',
               border: 'none',
-              'border-radius': '6px',
+              'border-radius': '8px',
+              'font-size': '16px',
+              'font-weight': 'bold',
               cursor: 'pointer',
-              'margin-top': '10px'
+              transition: 'transform 0.2s',
+              'margin-bottom': '20px'
             }}
+            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            ☢️ NUCLEAR LOGIN (Admin)
+            {app.translate('login')}
           </button>
+        </form>
+
+        <div style={{
+          'text-align': 'center',
+          'font-size': '12px',
+          color: 'var(--color-text-secondary)',
+          padding: '15px',
+          background: 'var(--color-surface)',
+          'border-radius': '8px'
+        }}>
+          <p style={{ margin: '0 0 10px' }}>
+            حسابات التجربة:
+          </p>
+          <div style={{
+            display: 'grid',
+            gap: '5px',
+            'font-size': '11px'
+          }}>
+            <span>👑 admin/test (مدير عام)</span>
+            <span>🏛️ leiter/test (قائد)</span>
+            <span>👨‍🏫 lehrer/test (معلم)</span>
+            <span>👨‍🎓 student1/test (طالب)</span>
+            <span>👨‍🎓 student2/test (طالب)</span>
+          </div>
+
+          {/* QUICK LOGIN BUTTONS */}
+          <div style={{
+            'margin-top': '15px',
+            'border-top': '1px solid var(--color-border)',
+            'padding-top': '15px'
+          }}>
+            <div style={{
+              'font-weight': 'bold',
+              'margin-bottom': '10px',
+              'font-size': '12px'
+            }}>
+              🚀 Quick Login:
+            </div>
+            <div style={{
+              display: 'grid',
+              'grid-template-columns': '1fr 1fr',
+              gap: '8px'
+            }}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  // Prevent double-click issue by handling on mousedown
+                  e.preventDefault();
+                  e.stopPropagation();
+                  quickLogin('admin', 'test');
+                }}
+                style={{
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                👑 Admin
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  // Prevent double-click issue by handling on mousedown
+                  e.preventDefault();
+                  e.stopPropagation();
+                  quickLogin('leiter', 'test');
+                }}
+                style={{
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                🏛️ Leiter
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  // Prevent double-click issue by handling on mousedown
+                  e.preventDefault();
+                  e.stopPropagation();
+                  quickLogin('lehrer', 'test');
+                }}
+                style={{
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                👨‍🏫 Lehrer
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  // Prevent double-click issue by handling on mousedown
+                  e.preventDefault();
+                  e.stopPropagation();
+                  quickLogin('student1', 'test');
+                }}
+                style={{
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                👨‍🎓 Student1
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
