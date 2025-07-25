@@ -40,22 +40,22 @@ export function HomePage() {
         </div>
       }
     >
-      <HomePageContent user={currentUser()!} />
+      <SimpleHomePage user={currentUser()!} />
     </Show>
   );
 }
 
-function HomePageContent(props: { user: User }) {
+function SimpleHomePage(props: { user: User }) {
   const app = useApp();
   const { user } = props;
   
   // Add safety check
   if (!user) {
-    console.warn('⚠️ HomePageContent: No user provided');
+    console.warn('⚠️ SimpleHomePage: No user provided');
     return <div>No user data available</div>;
   }
   
-  console.log('🏠 HomePageContent rendering for user:', user.name, 'role:', user.role);
+  console.log('🏠 SimpleHomePage rendering for user:', user.name, 'role:', user.role);
   
   // Student-specific signals for search and filter
   const [searchTerm, setSearchTerm] = createSignal('');
@@ -88,152 +88,6 @@ function HomePageContent(props: { user: User }) {
       app.updateUser(updatedUser);
     } catch (error) {
       console.error('💥 Error setting favorites:', error);
-    }
-  };
-  
-  // Role-based dashboard data - make it safer
-  const dashboardData = createMemo(() => {
-    try {
-      const users = app.users() || [];
-      const halaqat = app.halaqat() || [];
-      
-      console.log('📊 Computing dashboard data for role:', user.role);
-      
-      switch (user.role) {
-        case 'student':
-          const studentData = user as Student;
-          const userHalaqat = halaqat.filter(h => h.student_ids?.includes(user.id));
-          return {
-            type: 'student',
-            data: { student: studentData, halaqat: userHalaqat, allUsers: users }
-          };
-          
-        case 'lehrer':
-          const teacherHalaqat = halaqat.filter(h => h.teacher_id === user.id);
-          return {
-            type: 'teacher',
-            data: { teacher: user, halaqat: teacherHalaqat, allUsers: users }
-          };
-          
-        case 'leitung':
-        case 'superuser':
-          const totalUsers = users.length;
-          const totalTeachers = users.filter(u => u.role === 'lehrer').length;
-          const totalHalaqat = halaqat.length;
-          const studentsWithStatus = users.filter(u => u.role === 'student') as Student[];
-          
-          const statusCounts = {
-            not_available: studentsWithStatus.filter(s => s.status === 'not_available').length,
-            revising: studentsWithStatus.filter(s => s.status === 'revising').length,
-            khatamat: studentsWithStatus.filter(s => s.status === 'khatamat').length
-          };
-          
-          return {
-            type: 'leadership',
-            data: { totalUsers, totalTeachers, totalHalaqat, statusCounts }
-          };
-          
-        default:
-          console.warn('⚠️ Unknown user role:', user.role);
-          return {
-            type: 'student',
-            data: { student: user, halaqat: [], allUsers: users }
-          };
-      }
-    } catch (error) {
-      console.error('💥 Error computing dashboard data:', error);
-      return {
-        type: 'error',
-        data: { error: 'Failed to load dashboard data' }
-      };
-    }
-  });
-
-  const renderContent = () => {
-    try {
-      const data = dashboardData();
-      
-      if (data.type === 'error') {
-        return (
-          <div style={{
-            padding: '20px',
-            'text-align': 'center',
-            color: 'var(--color-error)'
-          }}>
-            Error loading dashboard. Please refresh the page.
-          </div>
-        );
-      }
-      
-      // Return the appropriate dashboard based on type
-      if (data.type === 'student') {
-        return (
-          <StudentDashboard 
-            data={data.data} 
-            app={app}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            favorites={favorites}
-            setFavorites={setFavorites}
-          />
-        );
-      }
-      
-      if (data.type === 'teacher') {
-        return (
-          <TeacherDashboard 
-            data={data.data} 
-            app={app}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            favorites={favorites}
-            setFavorites={setFavorites}
-          />
-        );
-      }
-      
-      if (data.type === 'leadership') {
-        return <LeadershipDashboard data={data.data} app={app} role={data.type} />;
-      }
-      
-      return <div>Unknown dashboard type: {data.type}</div>;
-      
-    } catch (error) {
-      console.error('💥 Error rendering content:', error);
-      return (
-        <div style={{
-          padding: '20px',
-          'text-align': 'center',
-          color: 'var(--color-error)',
-          'background-color': 'var(--color-surface)',
-          'border-radius': '12px',
-          border: '1px solid var(--color-error)'
-        }}>
-          <h3>Dashboard Error</h3>
-          <p>Something went wrong loading the dashboard.</p>
-          <p style={{ 'font-size': '12px', color: 'var(--color-text-secondary)' }}>
-            Error: {error.message || 'Unknown error'}
-          </p>
-          <button 
-            onClick={() => window.location.reload()} 
-            style={{
-              padding: '8px 16px',
-              background: 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              'border-radius': '6px',
-              cursor: 'pointer',
-              'margin-top': '10px'
-            }}
-          >
-            Reload Page
-          </button>
-        </div>
-      );
     }
   };
 
@@ -269,8 +123,57 @@ function HomePageContent(props: { user: User }) {
         </div>
       </div>
 
-      {/* Role-based Dashboard Content */}
-      {renderContent()}
+      {/* Role-based Content */}
+      <Show when={user.role === 'student'}>
+        <StudentDashboard 
+          data={{ 
+            student: user as Student, 
+            halaqat: app.halaqat().filter(h => h.student_ids?.includes(user.id)),
+            allUsers: app.users()
+          }} 
+          app={app}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          favorites={favorites}
+          setFavorites={setFavorites}
+        />
+      </Show>
+
+      <Show when={user.role === 'lehrer'}>
+        <TeacherDashboard 
+          data={{ 
+            teacher: user,
+            halaqat: app.halaqat().filter(h => h.teacher_id === user.id),
+            allUsers: app.users()
+          }} 
+          app={app}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          favorites={favorites}
+          setFavorites={setFavorites}
+        />
+      </Show>
+
+      <Show when={user.role === 'leitung' || user.role === 'superuser'}>
+        <LeadershipDashboard 
+          data={{
+            totalUsers: app.users().length,
+            totalTeachers: app.users().filter(u => u.role === 'lehrer').length,
+            totalHalaqat: app.halaqat().length,
+            statusCounts: {
+              not_available: app.users().filter(u => u.role === 'student' && (u as Student).status === 'not_available').length,
+              revising: app.users().filter(u => u.role === 'student' && (u as Student).status === 'revising').length,
+              khatamat: app.users().filter(u => u.role === 'student' && (u as Student).status === 'khatamat').length
+            }
+          }}
+          app={app} 
+          role={user.role}
+        />
+      </Show>
     </div>
   );
 }
