@@ -276,15 +276,24 @@ export function AppProvider(props: { children: JSX.Element }) {
   };
   
   const updateUser = (updatedUser: User) => {
-    const newUsersData = users().map(u => u.id === updatedUser.id ? updatedUser : u);
+    console.log('📝 AppStore.updateUser called with:', updatedUser);
+    const currentUsers = users();
+    console.log('📋 Current users before update:', currentUsers);
+    
+    const newUsersData = currentUsers.map(u => u.id === updatedUser.id ? updatedUser : u);
+    console.log('🔄 New users data:', newUsersData);
+    
     setUsers(newUsersData);
+    
     if (currentUser()?.id === updatedUser.id) {
+      console.log('👤 Updating current user as well');
       setCurrentUser(updatedUser);
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     }
     
     // Save to localStorage  
     localStorage.setItem('usersData', JSON.stringify(newUsersData));
+    console.log('💾 Saved to localStorage');
   };
   
   const playAudio = (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => {

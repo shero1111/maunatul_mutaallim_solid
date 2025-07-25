@@ -173,14 +173,15 @@ function StudentDashboard(props: any) {
   };
   
   const statusInfo = getStatusInfo(student.status);
-  const lastChanged = student.lastStatusChange ? new Date(student.lastStatusChange).toLocaleDateString('ar') : '';
+  const lastChanged = student.status_changed_at ? new Date(student.status_changed_at).toLocaleDateString('ar') : '';
   
   const changeStatus = (newStatus: string) => {
     const updatedStudent = {
       ...student,
       status: newStatus,
-      lastStatusChange: new Date().toISOString()
+      status_changed_at: new Date().toISOString()
     };
+    console.log('🔄 Updating student status:', updatedStudent);
     app.updateUser(updatedStudent);
   };
   
@@ -401,8 +402,8 @@ function StudentDashboard(props: any) {
                 <For each={students}>
                   {(otherStudent) => {
                     const otherStatusInfo = getStatusInfo(otherStudent.status);
-                    const otherLastChanged = otherStudent.lastStatusChange ? 
-                      new Date(otherStudent.lastStatusChange).toLocaleDateString('ar') : '';
+                    const otherLastChanged = otherStudent.status_changed_at ? 
+                      new Date(otherStudent.status_changed_at).toLocaleDateString('ar') : '';
                     const isFavorite = favorites().includes(otherStudent.id);
                     
                     return (
@@ -608,8 +609,8 @@ function TeacherDashboard(props: any) {
                 <For each={students}>
                   {(student) => {
                     const statusInfo = getStatusInfo(student.status);
-                    const lastChanged = student.lastStatusChange ? 
-                      new Date(student.lastStatusChange).toLocaleDateString('ar') : '';
+                    const lastChanged = student.status_changed_at ? 
+                      new Date(student.status_changed_at).toLocaleDateString('ar') : '';
                     const isFavorite = favorites().includes(student.id);
                     
                     return (
