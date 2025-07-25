@@ -8,12 +8,20 @@ export function MutunPage() {
   const [levelFilter, setLevelFilter] = createSignal<string>('all');
   
   // Initialisiere alle Sections als aufgeklappt (false = aufgeklappt)
-  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({
-    'المستوى الأول': false,
-    'المستوى الثاني': false,
-    'المستوى الثالث': false,
-    'المستوى الرابع': false
-  });
+  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
+  
+  // Initialize collapsed sections on first render
+  const initializeCollapsedSections = () => {
+    const current = collapsedSections();
+    if (Object.keys(current).length === 0) {
+      const initialState: Record<string, boolean> = {};
+      allLevels.forEach(level => {
+        initialState[level] = false; // false = aufgeklappt
+      });
+      console.log('🚀 Initialize Collapsed Sections:', initialState);
+      setCollapsedSections(initialState);
+    }
+  };
 
   // Lokaler State für Notizen (für Live-Editing)
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
@@ -89,17 +97,25 @@ export function MutunPage() {
   };
 
   const toggleSection = (section: string) => {
-    setCollapsedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    console.log('🔄 Toggle Section:', section);
+    setCollapsedSections(prev => {
+      const newState = {
+        ...prev,
+        [section]: !prev[section]
+      };
+      console.log('📋 Collapsed Sections:', newState);
+      return newState;
+    });
   };
 
   const shouldExpandSection = (section: string) => {
-    return !collapsedSections()[section]; // undefined oder false = aufgeklappt (true), true = zugeklappt (false)
+    // undefined = aufgeklappt, false = aufgeklappt, true = zugeklappt
+    const collapsed = collapsedSections()[section];
+    return collapsed === undefined || collapsed === false;
   };
 
   const handleLevelFilterChange = (newFilter: string) => {
+    console.log('🎯 Level Filter Change:', newFilter);
     setLevelFilter(newFilter);
     
     if (newFilter === 'all') {
@@ -108,6 +124,7 @@ export function MutunPage() {
       allLevels.forEach(level => {
         newCollapsed[level] = false; // false = aufgeklappt
       });
+      console.log('📂 All expanded:', newCollapsed);
       setCollapsedSections(newCollapsed);
     } else {
       // Alle Sections zuklappen, außer dem ausgewählten Level
@@ -115,6 +132,7 @@ export function MutunPage() {
       allLevels.forEach(level => {
         newCollapsed[level] = level !== newFilter; // true = zugeklappt, false = aufgeklappt
       });
+      console.log('🎯 Filter specific:', newCollapsed);
       setCollapsedSections(newCollapsed);
     }
   };
@@ -383,7 +401,11 @@ export function MutunPage() {
       {/* Premium Collapsible Sections */}
       <For each={Object.entries(groupedMutun())}>
         {([section, mutun]) => {
+          // Initialize collapsed sections if needed
+          initializeCollapsedSections();
+          
           const isCollapsed = !shouldExpandSection(section);
+          console.log(`📁 Section "${section}" collapsed:`, isCollapsed, 'state:', collapsedSections()[section]);
           
           return (
             <div style={{ 'margin-bottom': '32px' }}>

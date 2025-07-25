@@ -37,13 +37,17 @@ export interface Matn {
   name: string;
   section: string;
   status: 'red' | 'orange' | 'green';
+  created_at?: string;
   lastChange_date?: string;
   user_id: string;
   threshold: number;
   description?: string;
   memorization_pdf_link?: string;
+  memorization_audio_link?: string;
   explanation_pdf_link?: string;
+  explanation_audio_link?: string;
   audio_link?: string;
+  days_since_last_revision?: number;
 }
 
 export interface Halaqa {

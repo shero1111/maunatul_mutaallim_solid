@@ -1,6 +1,6 @@
 import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 
-// Real Mutuun Template from React App - CORRECTED PDF LINKS
+// ORIGINAL Mutuun Template from React App with exact working audio links
 const mutunTemplate = [
   {
     title: 'المستوى الأول',
@@ -58,12 +58,14 @@ export const generatePersonalMutun = (userId: string): Matn[] => {
         status: 'red',
         description: '',
         threshold: 7, // Default 7 Tage
-        lastChange_date: new Date().toISOString(),
+        lastChange_date: new Date().toISOString().split('T')[0], // Same format as React app
         memorization_pdf_link: item.memorization_pdf_link,
         memorization_audio_link: item.memorization_audio_link,
         explanation_pdf_link: item.explanation_pdf_link,
         explanation_audio_link: item.explanation_audio_link,
+        created_at: new Date().toISOString(),
         user_id: userId,
+        days_since_last_revision: 0, // Add missing field from React app
         audio_link: item.memorization_audio_link // For compatibility
       });
       matnId++;
