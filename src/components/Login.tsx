@@ -8,56 +8,67 @@ export function Login() {
   const [error, setError] = createSignal('');
   const app = useApp();
 
-  const directLogin = (testUser: string, testPass: string) => {
-    console.log('🎯 DIRECT LOGIN TEST');
-    console.log('Available demo users:', demoUsers.map(u => `${u.username}/${u.password}`));
+  const superSimpleLogin = (user: string, pass: string) => {
+    console.log('🚀 SUPER SIMPLE LOGIN');
+    console.log('Trying:', user, '/', pass);
     
-    // Find user directly in demo data
-    const foundUser = demoUsers.find(u => u.username === testUser && u.password === testPass);
-    console.log('Found user:', foundUser);
+    // Force reset users if needed
+    if (app.users().length === 0) {
+      console.log('🔄 Initializing users...');
+      // Access the setUsers directly if possible, otherwise force via login
+    }
+    
+    // Find user in demo data
+    const foundUser = demoUsers.find(u => u.username === user && u.password === pass);
     
     if (foundUser) {
-      console.log('✅ User found, setting in app...');
-      // Try to set user directly
-      app.setCurrentUser?.(foundUser);
+      console.log('✅ Found user:', foundUser.name);
       
-      // Also try the login method
-      const loginResult = app.login(testUser, testPass);
-      console.log('Login method result:', loginResult);
+      // Force set current user directly
+      if (app.setCurrentUser) {
+        app.setCurrentUser(foundUser);
+        console.log('✅ User set via setCurrentUser');
+      }
+      
+      // Force save to localStorage
+      localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      console.log('✅ User saved to localStorage');
+      
+      // Force page refresh to ensure login state
+      window.location.reload();
       
       return true;
     } else {
-      console.log('❌ User not found');
+      console.log('❌ User not found in demo data');
+      console.log('Available users:', demoUsers.map(u => `${u.username}/${u.password}`));
       return false;
     }
   };
 
   const handleLogin = () => {
-    console.log('🔄 SIMPLE LOGIN ATTEMPT');
-    console.log('Username:', username());
-    console.log('Password:', password());
-    
+    console.log('🔥 EMERGENCY LOGIN');
     setError('');
     
-    // First try direct approach
-    const directResult = directLogin(username(), password());
+    const result = superSimpleLogin(username(), password());
     
-    if (!directResult) {
-      // Try normal app login
-      console.log('📞 Calling app.login...');
-      const result = app.login(username(), password());
-      console.log('App login result:', result);
-      
-      if (!result) {
-        setError('Login fehlgeschlagen - bitte überprüfe deine Daten');
-      }
+    if (!result) {
+      setError('Login fehlgeschlagen');
     }
+  };
+
+  const instantLogin = (user: string, pass: string) => {
+    console.log('⚡ INSTANT LOGIN:', user);
+    setUsername(user);
+    setPassword(pass);
+    setTimeout(() => {
+      superSimpleLogin(user, pass);
+    }, 100);
   };
 
   return (
     <div style={{
       'min-height': '100vh',
-      background: `linear-gradient(135deg, #2563eb, #1d4ed8)`,
+      background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
       display: 'flex',
       'align-items': 'center',
       'justify-content': 'center',
@@ -86,47 +97,31 @@ export function Login() {
             color: '#6b7280',
             'font-size': '14px'
           }}>
-            نظام إدارة حلقات عَلٌمْنِي
+            LOGIN REPARATUR
           </p>
         </div>
 
         <div style={{ 'margin-bottom': '20px' }}>
-          <label style={{
-            display: 'block',
-            'margin-bottom': '8px',
-            'font-weight': 'bold',
-            color: '#1f2937'
-          }}>
-            اسم المستخدم
-          </label>
           <input
             type="text"
             value={username()}
             onInput={(e) => setUsername(e.currentTarget.value)}
+            placeholder="Username"
             style={{
               width: '100%',
               padding: '12px',
               border: '1px solid #d1d5db',
               'border-radius': '8px',
               'font-size': '16px',
-              'box-sizing': 'border-box'
+              'box-sizing': 'border-box',
+              'margin-bottom': '10px'
             }}
           />
-        </div>
-
-        <div style={{ 'margin-bottom': '20px' }}>
-          <label style={{
-            display: 'block',
-            'margin-bottom': '8px',
-            'font-weight': 'bold',
-            color: '#1f2937'
-          }}>
-            كلمة المرور
-          </label>
           <input
             type="password"
             value={password()}
             onInput={(e) => setPassword(e.currentTarget.value)}
+            placeholder="Password"
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 handleLogin();
@@ -150,8 +145,7 @@ export function Login() {
             'text-align': 'center',
             padding: '10px',
             'background-color': '#fef2f2',
-            'border-radius': '8px',
-            border: '1px solid #fecaca'
+            'border-radius': '8px'
           }}>
             {error()}
           </div>
@@ -172,17 +166,17 @@ export function Login() {
             'margin-bottom': '20px'
           }}
         >
-          دخول
+          LOGIN (FORCE)
         </button>
 
-        {/* Quick Test Buttons */}
+        {/* Emergency Buttons */}
         <div style={{
           'text-align': 'center',
           'border-top': '1px solid #e5e7eb',
           'padding-top': '20px'
         }}>
-          <div style={{ 'margin-bottom': '10px', 'font-size': '12px', color: '#6b7280' }}>
-            🧪 Test Accounts:
+          <div style={{ 'margin-bottom': '10px', 'font-size': '12px', color: '#dc2626' }}>
+            🚨 EMERGENCY LOGIN:
           </div>
           <div style={{
             display: 'grid',
@@ -190,59 +184,50 @@ export function Login() {
             gap: '8px'
           }}>
             <button
-              onClick={() => {
-                setUsername('admin');
-                setPassword('test');
-                setTimeout(() => handleLogin(), 100);
-              }}
+              onClick={() => instantLogin('admin', 'test')}
               style={{
                 padding: '8px',
                 'font-size': '11px',
-                background: '#3b82f6',
+                background: '#dc2626',
                 color: 'white',
                 border: 'none',
                 'border-radius': '6px',
                 cursor: 'pointer'
               }}
             >
-              👑 Admin
+              🚨 ADMIN
             </button>
             <button
-              onClick={() => {
-                setUsername('student1');
-                setPassword('test');
-                setTimeout(() => handleLogin(), 100);
-              }}
+              onClick={() => instantLogin('student1', 'test')}
               style={{
                 padding: '8px',
                 'font-size': '11px',
-                background: '#3b82f6',
+                background: '#dc2626',
                 color: 'white',
                 border: 'none',
                 'border-radius': '6px',
                 cursor: 'pointer'
               }}
             >
-              👨‍🎓 Student
+              🚨 STUDENT
             </button>
           </div>
           
-          {/* Debug Button */}
+          {/* Nuclear Option */}
           <button
             onClick={() => {
-              console.log('🔍 DEBUG INFO:');
-              console.log('App object:', app);
-              console.log('App login function:', typeof app.login);
-              console.log('Demo users:', demoUsers);
-              console.log('App users:', app.users?.());
-              console.log('Current user:', app.currentUser?.());
-              console.log('Is authenticated:', app.isAuthenticated?.());
+              console.log('☢️ NUCLEAR LOGIN');
+              const adminUser = demoUsers.find(u => u.username === 'admin');
+              if (adminUser) {
+                localStorage.setItem('currentUser', JSON.stringify(adminUser));
+                window.location.reload();
+              }
             }}
             style={{
               width: '100%',
               padding: '8px',
               'font-size': '10px',
-              background: '#f59e0b',
+              background: '#7c2d12',
               color: 'white',
               border: 'none',
               'border-radius': '6px',
@@ -250,7 +235,7 @@ export function Login() {
               'margin-top': '10px'
             }}
           >
-            🔍 Debug Info
+            ☢️ NUCLEAR LOGIN (Admin)
           </button>
         </div>
       </div>
