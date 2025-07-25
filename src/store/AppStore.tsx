@@ -181,7 +181,12 @@ export function AppProvider(props: { children: JSX.Element }) {
   
   // Actions
   const login = (username: string, password: string): boolean => {
+    console.log('🔐 Login attempt:', { username, password });
+    console.log('🧑‍💼 Available users:', users().map(u => ({ username: u.username, password: u.password, role: u.role })));
+    
     const user = users().find(u => u.username === username && u.password === password);
+    console.log('👤 Found user:', user);
+    
     if (user) {
       setCurrentUser(user);
       
@@ -196,8 +201,10 @@ export function AppProvider(props: { children: JSX.Element }) {
       localStorage.setItem('usersData', JSON.stringify(users()));
       localStorage.setItem('newsData', JSON.stringify(news()));
       
+      console.log('✅ Login successful');
       return true;
     }
+    console.log('❌ Login failed - user not found');
     return false;
   };
   
