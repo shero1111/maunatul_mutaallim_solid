@@ -343,13 +343,38 @@ export function MutunPage() {
                       initializeNoteText(matn);
                       
                       return (
-                        <div style={{ 
-                          background: 'var(--color-surface)', 
-                          'border-radius': '12px', 
-                          padding: '16px', 
-                          border: `2px solid ${getMatnColor(matn.status)}`, 
-                          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
-                        }}>
+                        <div 
+                          style={{ 
+                            background: 'var(--color-surface)', 
+                            'border-radius': '16px', 
+                            padding: '20px', 
+                            border: 'none',
+                            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+                            transition: 'all 0.3s ease',
+                            position: 'relative' as const,
+                            overflow: 'hidden'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0px)';
+                            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)';
+                          }}
+                        >
+                          {/* Subtle Status Indicator */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '0',
+                            right: '0',
+                            width: '4px',
+                            height: '100%',
+                            background: getMatnColor(matn.status),
+                            'border-radius': '0 16px 16px 0',
+                            opacity: '0.6'
+                          }} />
+                          
                           {/* Title - Centered at Top */}
                           <h3 style={{ 
                             color: 'var(--color-text)', 
