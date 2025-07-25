@@ -1,4 +1,4 @@
-import { createSignal, createMemo, For, Show, onMount } from 'solid-js';
+import { createSignal, createMemo, For, Show } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { Matn } from '../types';
 import { getStatusColor } from '../styles/themes';
@@ -7,22 +7,8 @@ export function MutunPage() {
   const app = useApp();
   const [levelFilter, setLevelFilter] = createSignal<string>('all');
   
-  const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
-
-  // Simple show/hide state for each section
-  const [sectionVisible, setSectionVisible] = createSignal<Record<string, boolean>>({
-    'المستوى الأول': true,
-    'المستوى الثاني': true,
-    'المستوى الثالث': true,
-    'المستوى الرابع': true
-  });
-
-  // Lokaler State für Notizen (für Live-Editing)
-  const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
-
-  // Threshold Modal State
-  const [thresholdModalMatn, setThresholdModalMatn] = createSignal<Matn | null>(null);
-  const [tempThreshold, setTempThreshold] = createSignal<number>(7);
+  // Einfaches State für collapsed sections
+  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
 
   // Filter user's mutun
   const userMutun = createMemo(() => 
@@ -44,7 +30,63 @@ export function MutunPage() {
     return grouped;
   });
 
-  // Initialize note texts from existing descriptions
+  const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
+
+  // Einfache Toggle-Funktion
+  const toggleSection = (section: string) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
+  // Level Filter Handler
+  const handleLevelFilterChange = (newFilter: string) => {
+    setLevelFilter(newFilter);
+    // Bei Filter-Change alle Sections aufklappen
+    setCollapsedSections({});
+  };
+
+  // Status Change
+  const changeMatnStatus = (matnId: string) => {
+    const matn = app.mutun().find(m => m.id === matnId);
+    if (!matn) return;
+
+    const statusCycle = ['red', 'orange', 'green'] as const;
+    const currentIndex = statusCycle.indexOf(matn.status);
+    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
+
+    const updatedMatn = {
+      ...matn,
+      status: nextStatus,
+      lastChange_date: new Date().toISOString().split('T')[0]
+    };
+
+    app.updateMatn(updatedMatn);
+  };
+
+  const getMatnColor = (status: string) => {
+    switch (status) {
+      case 'red': return '#ef4444';
+      case 'orange': return '#f97316';
+      case 'green': return '#22c55e';
+      default: return '#6b7280';
+    }
+  };
+
+  const getMatnStatusText = (status: string) => {
+    switch (status) {
+      case 'red': return 'يحتاج مراجعة';
+      case 'orange': return 'قريب الانتهاء';
+      case 'green': return 'تم الختمة';
+      default: return 'غير محدد';
+    }
+  };
+
+  // Note State
+  const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
+
+  // Initialize note text
   const initializeNoteText = (matn: Matn) => {
     if (!noteTexts()[matn.id]) {
       setNoteTexts(prev => ({
@@ -54,7 +96,23 @@ export function MutunPage() {
     }
   };
 
-  // Threshold Functions
+  // Save note
+  const saveNote = (matn: Matn, value: string) => {
+    const updatedMatn = {
+      ...matn,
+      description: value
+    };
+    app.updateMatn(updatedMatn);
+    setNoteTexts(prev => ({
+      ...prev,
+      [matn.id]: value
+    }));
+  };
+
+  // Threshold Modal State
+  const [thresholdModalMatn, setThresholdModalMatn] = createSignal<Matn | null>(null);
+  const [tempThreshold, setTempThreshold] = createSignal<number>(7);
+
   const openThresholdModal = (matn: Matn) => {
     setThresholdModalMatn(matn);
     setTempThreshold(matn.threshold);
@@ -77,488 +135,192 @@ export function MutunPage() {
     }
   };
 
-  const updateMatnThreshold = (matnId: string, threshold: number) => {
-    const matn = app.mutun().find(m => m.id === matnId);
-    if (matn) {
-      const updatedMatn = {
-        ...matn,
-        threshold
-      };
-      app.updateMatn(updatedMatn);
-    }
-  };
-
-  // Simple toggle - just flip true/false
-  const toggleSection = (section: string) => {
-    setSectionVisible(prev => {
-      const newState = {
-        ...prev,
-        [section]: !prev[section]
-      };
-      console.log('🔄 Simple Toggle:', section, '→', newState[section]);
-      return newState;
-    });
-  };
-
-  const handleLevelFilterChange = (newFilter: string) => {
-    console.log('🎯 Level Filter Change:', newFilter);
-    setLevelFilter(newFilter);
-    
-    if (newFilter === 'all') {
-      // Alle Sections anzeigen
-      const newVisible: Record<string, boolean> = {};
-      allLevels.forEach(level => {
-        newVisible[level] = true; // true = sichtbar
-      });
-      setSectionVisible(newVisible);
-    } else {
-      // Nur ausgewählten Level anzeigen
-      const newVisible: Record<string, boolean> = {};
-      allLevels.forEach(level => {
-        newVisible[level] = level === newFilter; // true nur für selected level
-      });
-      setSectionVisible(newVisible);
-    }
-  };
-
-  const changeMatnStatus = (matnId: string) => {
-    const matn = app.mutun().find(m => m.id === matnId);
-    if (!matn) return;
-
-    const statusCycle = ['red', 'orange', 'green'] as const;
-    const currentIndex = statusCycle.indexOf(matn.status);
-    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-
-    const updatedMatn = {
-      ...matn,
-      status: nextStatus,
-      lastChange_date: new Date().toISOString()
-    };
-
-    app.updateMatn(updatedMatn);
-  };
-
-  const calculateDaysSinceLastGreen = (lastChange: string) => {
-    const now = new Date();
-    const lastChangeDate = new Date(lastChange);
-    const diffTime = Math.abs(now.getTime() - lastChangeDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const getMatnStatusText = (status: string) => {
-    switch (status) {
-      case 'red': return 'يحتاج مراجعة';
-      case 'orange': return 'قريب الانتهاء';
-      case 'green': return 'تم الختمة';
-      default: return 'غير محدد';
-    }
-  };
-
-  const getMatnColor = (status: string) => {
-    switch (status) {
-      case 'red': return 'var(--color-error)';
-      case 'orange': return 'var(--color-warning)';
-      case 'green': return 'var(--color-success)';
-      default: return 'var(--color-border)';
-    }
-  };
-
-  // Mobile Text Input Component
-  function MobileTextInput(props: {
-    value: string;
-    onInput: (value: string) => void;
-    placeholder: string;
-    matn: Matn;
-  }) {
-    const inputStyle = {
-      width: '100%',
-      padding: '12px 16px',
-      'font-size': '16px',
-      border: 'none',
-      'border-radius': '12px',
-      'background': 'linear-gradient(135deg, var(--color-background), var(--color-surface))',
-      color: 'var(--color-text)',
-      outline: 'none',
-      'box-sizing': 'border-box' as const,
-      resize: 'none' as const,
-      'min-height': '48px',
-      '-webkit-appearance': 'none',
-      '-webkit-tap-highlight-color': 'transparent',
-      'box-shadow': 'inset 0 2px 8px rgba(0,0,0,0.06)',
-      transition: 'all 0.3s ease',
-      'font-family': 'inherit'
-    };
-
-    const saveNote = (value: string) => {
-      const updatedMatn = {
-        ...props.matn,
-        description: value
-      };
-      app.updateMatn(updatedMatn);
-      setNoteTexts(prev => ({
-        ...prev,
-        [props.matn.id]: value
-      }));
-    };
-
-    return (
-      <div>
-        <textarea
-          value={props.value}
-          onInput={(e) => {
-            const value = e.currentTarget.value;
-            props.onInput(value);
-          }}
-          onClick={(e) => {
-            e.stopPropagation(); // Verhindert Section-Toggle
-          }}
-          onKeyPress={(e) => {
-            e.stopPropagation();
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              saveNote(e.currentTarget.value);
-            }
-          }}
-          placeholder={props.placeholder}
-          style={inputStyle}
-          rows={2}
-          onFocus={(e) => {
-            e.stopPropagation();
-            e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.1), 0 0 0 3px var(--color-primary)20';
-            e.currentTarget.style.background = 'var(--color-background)';
-          }}
-          onBlur={(e) => {
-            e.stopPropagation();
-            e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.06)';
-            e.currentTarget.style.background = 'linear-gradient(135deg, var(--color-background), var(--color-surface))';
-            
-            // Auto-Save on blur
-            saveNote(e.currentTarget.value);
-          }}
-        />
-        <div style={{
-          'margin-top': '8px',
-          'text-align': 'right',
-          'font-size': '12px',
-          color: 'var(--color-text-secondary)'
-        }}>
-           💡 Enter zum Speichern • Auto-Save beim Verlassen
-         </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ 
-      padding: '24px 20px 100px 20px',
-      background: 'linear-gradient(135deg, var(--color-background) 0%, var(--color-surface) 100%)',
-      'min-height': '100vh'
+      padding: '20px', 
+      'padding-bottom': '100px',
+      'max-width': '800px',
+      margin: '0 auto'
     }}>
-      {/* Premium Header */}
-      <div style={{ 'margin-bottom': '32px' }}>
-        <div style={{
-          background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-          'border-radius': '24px',
-          padding: '24px',
-          'box-shadow': '0 8px 32px rgba(0,0,0,0.12)',
-          position: 'relative',
-          overflow: 'hidden'
+      {/* Header */}
+      <div style={{ 'margin-bottom': '30px' }}>
+        <h1 style={{ 
+          color: 'var(--color-primary)', 
+          'font-size': '1.8rem', 
+          'margin-bottom': '15px',
+          display: 'flex',
+          'align-items': 'center',
+          gap: '10px'
         }}>
-          {/* Decorative Elements */}
-          <div style={{
-            position: 'absolute',
-            top: '-50px',
-            right: '-50px',
-            width: '150px',
-            height: '150px',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
-            'border-radius': '50%'
-          }}></div>
-          
-          <h1 style={{ 
-            color: 'white', 
-            'font-size': '2rem', 
-            'margin-bottom': '8px', 
-            display: 'flex', 
-            'align-items': 'center', 
-            gap: '12px',
-            'font-weight': '700',
-            'text-shadow': '0 2px 8px rgba(0,0,0,0.2)'
-          }}>
-            <span style={{ 'font-size': '2.2rem' }}>📚</span>
-            المتون
-          </h1>
-          <p style={{
-            color: 'rgba(255,255,255,0.9)',
-            'font-size': '1.1rem',
-            margin: '0',
-            'font-weight': '500'
-          }}>
-            مجموعتك الشخصية من المتون والنصوص
-          </p>
-        </div>
+          <span>📚</span>
+          المتون
+        </h1>
 
-        {/* Premium Level Filter */}
-        <div style={{ 'margin-top': '24px' }}>
-          <h3 style={{ 
-            color: 'var(--color-text)', 
-            'font-size': '1.1rem', 
-            'margin-bottom': '16px',
-            'font-weight': '600'
-          }}>
-            المستويات:
-          </h3>
-          <div style={{ 
-            display: 'flex', 
-            gap: '12px', 
-            'flex-wrap': 'wrap'
-          }}>
-            <button 
-              onClick={() => handleLevelFilterChange('all')} 
-              style={{ 
-                padding: '12px 20px', 
-                background: levelFilter() === 'all' 
-                  ? 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' 
-                  : 'var(--color-surface)', 
-                color: levelFilter() === 'all' ? 'white' : 'var(--color-text)', 
-                border: levelFilter() === 'all' ? 'none' : '2px solid var(--color-border)', 
-                'border-radius': '16px', 
-                cursor: 'pointer', 
-                'font-size': '14px',
-                'font-weight': '600',
-                'box-shadow': levelFilter() === 'all' 
-                  ? '0 4px 16px rgba(0,0,0,0.15)' 
-                  : '0 2px 8px rgba(0,0,0,0.05)',
-                transition: 'all 0.3s ease',
-                'min-width': '140px'
-              }}
-              onMouseOver={(e) => {
-                if (levelFilter() !== 'all') {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (levelFilter() !== 'all') {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
-                }
-              }}
-            >
-              ✨ جميع المستويات
-            </button>
-            <For each={allLevels}>
-              {(level) => (
-                <button 
-                  onClick={() => handleLevelFilterChange(level)} 
-                  style={{ 
-                    padding: '12px 20px', 
-                    background: levelFilter() === level 
-                      ? 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))' 
-                      : 'var(--color-surface)', 
-                    color: levelFilter() === level ? 'white' : 'var(--color-text)', 
-                    border: levelFilter() === level ? 'none' : '2px solid var(--color-border)', 
-                    'border-radius': '16px', 
-                    cursor: 'pointer', 
-                    'font-size': '14px',
-                    'font-weight': '600',
-                    'box-shadow': levelFilter() === level 
-                      ? '0 4px 16px rgba(0,0,0,0.15)' 
-                      : '0 2px 8px rgba(0,0,0,0.05)',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseOver={(e) => {
-                    if (levelFilter() !== level) {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (levelFilter() !== level) {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
-                    }
-                  }}
-                >
-                  {level}
-                </button>
-              )}
-            </For>
-          </div>
+        {/* Level Filter Buttons */}
+        <div style={{ 
+          display: 'flex', 
+          gap: '10px', 
+          'flex-wrap': 'wrap',
+          'margin-bottom': '20px'
+        }}>
+          <button 
+            onClick={() => handleLevelFilterChange('all')} 
+            style={{ 
+              padding: '12px 20px', 
+              background: levelFilter() === 'all' 
+                ? 'var(--color-primary)' 
+                : 'var(--color-surface)', 
+              color: levelFilter() === 'all' ? 'white' : 'var(--color-text)', 
+              border: '1px solid var(--color-border)', 
+              'border-radius': '8px', 
+              cursor: 'pointer', 
+              'font-size': '14px',
+              'font-weight': '600'
+            }}
+          >
+            جميع المستويات
+          </button>
+          <For each={allLevels}>
+            {(level) => (
+              <button 
+                onClick={() => handleLevelFilterChange(level)} 
+                style={{ 
+                  padding: '12px 20px', 
+                  background: levelFilter() === level 
+                    ? 'var(--color-primary)' 
+                    : 'var(--color-surface)', 
+                  color: levelFilter() === level ? 'white' : 'var(--color-text)', 
+                  border: '1px solid var(--color-border)', 
+                  'border-radius': '8px', 
+                  cursor: 'pointer', 
+                  'font-size': '14px',
+                  'font-weight': '600'
+                }}
+              >
+                {level}
+              </button>
+            )}
+          </For>
         </div>
       </div>
 
-            {/* Simple Show/Hide Sections */}
+      {/* Sections */}
       <For each={Object.entries(groupedMutun())}>
         {([section, mutun]) => {
-          const isVisible = sectionVisible()[section];
+          const isCollapsed = collapsedSections()[section] || false;
           
           return (
-            <Show when={isVisible}>
-              <div style={{ 'margin-bottom': '32px' }}>
-                {/* Simple Section Header */}
-                <button 
-                  onClick={() => {
-                    console.log('🖱️ Simple Click on section:', section);
-                    toggleSection(section);
-                  }} 
-                  style={{ 
-                    width: '100%',
-                    background: 'var(--color-surface)', 
-                    'border-radius': '12px', 
-                    padding: '15px 20px', 
-                    border: '1px solid var(--color-border)', 
-                    cursor: 'pointer',
-                    'margin-bottom': '15px',
-                    transition: 'all 0.3s ease',
-                    'box-shadow': '0 2px 4px rgba(0,0,0,0.1)',
-                    'text-align': 'left'
-                  }}
-                >
-                  <div style={{ 
-                    display: 'flex', 
-                    'justify-content': 'space-between', 
-                    'align-items': 'center'
-                  }}>
-                    <h2 style={{ 
-                      color: 'var(--color-primary)', 
-                      'font-size': '1.3rem', 
-                      margin: '0', 
-                      display: 'flex', 
-                      'align-items': 'center', 
-                      gap: '10px'
-                    }}>
-                      <span style={{ 'font-size': '1.5rem' }}>
-                        📂
-                      </span>
-                      {section}
-                    </h2>
-                    <span style={{ 
-                      color: 'var(--color-primary)', 
-                      'font-size': '1.5rem'
-                    }}>
-                      ❌
-                    </span>
-                  </div>
-                </button>
-                
-                {/* Section Content - Always visible when section is visible */}
+            <div style={{ 'margin-bottom': '25px' }}>
+              {/* Section Header */}
+              <div 
+                onClick={() => toggleSection(section)} 
+                style={{ 
+                  background: 'var(--color-surface)', 
+                  'border-radius': '12px', 
+                  padding: '15px 20px', 
+                  border: '1px solid var(--color-border)', 
+                  cursor: 'pointer',
+                  'margin-bottom': isCollapsed ? '0' : '15px',
+                  transition: 'all 0.3s ease',
+                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
                 <div style={{ 
-                  display: 'grid', 
-                  gap: '16px',
-                  animation: 'fadeInUp 0.5s ease-out'
+                  display: 'flex', 
+                  'justify-content': 'space-between', 
+                  'align-items': 'center' 
                 }}>
+                  <h2 style={{ 
+                    color: 'var(--color-primary)', 
+                    'font-size': '1.3rem', 
+                    margin: '0', 
+                    display: 'flex', 
+                    'align-items': 'center', 
+                    gap: '10px'
+                  }}>
+                    <span style={{ 'font-size': '1.5rem' }}>
+                      {isCollapsed ? '📁' : '📂'}
+                    </span>
+                    {section}
+                  </h2>
+                  <span style={{ 
+                    color: 'var(--color-primary)', 
+                    'font-size': '1.5rem', 
+                    transition: 'transform 0.3s ease', 
+                    transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'
+                  }}>
+                    ▼
+                  </span>
+                </div>
+              </div>
+              
+              {/* Section Content */}
+              <Show when={!isCollapsed}>
+                <div style={{ display: 'grid', gap: '15px' }}>
                   <For each={mutun}>
                     {(matn) => {
-                      // Initialize note text
                       initializeNoteText(matn);
                       
                       return (
                         <div style={{ 
-                          background: 'linear-gradient(135deg, var(--color-surface), var(--color-background))', 
-                          'border-radius': '20px', 
-                          padding: '24px', 
-                          border: `3px solid ${getMatnColor(matn.status)}20`, 
-                          'box-shadow': '0 8px 32px rgba(0,0,0,0.08)',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          transition: 'all 0.3s ease'
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-4px)';
-                          e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)';
-                        }}
-                        >
-                          {/* Status indicator stripe */}
-                          <div style={{
-                            position: 'absolute',
-                            top: '0',
-                            left: '0',
-                            width: '5px',
-                            height: '100%',
-                            background: `linear-gradient(180deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}80)`
-                          }}></div>
-
-                          {/* Header with Premium Status Badge */}
+                          background: 'var(--color-surface)', 
+                          'border-radius': '12px', 
+                          padding: '20px', 
+                          border: `2px solid ${getMatnColor(matn.status)}`, 
+                          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+                        }}>
+                          {/* Header */}
                           <div style={{ 
                             display: 'flex', 
                             'justify-content': 'space-between', 
                             'align-items': 'center', 
-                            'margin-bottom': '20px' 
+                            'margin-bottom': '15px' 
                           }}>
                             <h3 style={{ 
                               color: 'var(--color-text)', 
-                              'font-size': '1.2rem', 
+                              'font-size': '1.1rem', 
                               margin: '0', 
-                              flex: '1', 
-                              'font-weight': '700'
+                              flex: '1'
                             }}>
                               {matn.name}
                             </h3>
                             <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
                               <button 
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Verhindert Section-Toggle
+                                  e.stopPropagation();
                                   changeMatnStatus(matn.id);
                                 }} 
                                 style={{ 
-                                  background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
+                                  background: getMatnColor(matn.status), 
                                   color: 'white', 
-                                  padding: '10px 16px', 
-                                  'border-radius': '16px', 
-                                  'font-size': '0.8rem', 
-                                  'font-weight': '700',
+                                  padding: '8px 12px', 
+                                  'border-radius': '8px', 
+                                  'font-size': '12px', 
+                                  'font-weight': '600',
                                   border: 'none',
                                   cursor: 'pointer',
-                                  'min-width': '140px',
-                                  'text-align': 'center',
-                                  transition: 'all 0.3s ease',
-                                  'box-shadow': '0 4px 16px rgba(0,0,0,0.15)'
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.transform = 'scale(1.05)';
-                                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.transform = 'scale(1)';
-                                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+                                  'min-width': '120px'
                                 }}
                               >
                                 {getMatnStatusText(matn.status)}
                               </button>
                               <button 
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Verhindert Section-Toggle
+                                  e.stopPropagation();
                                   openThresholdModal(matn);
                                 }} 
                                 style={{ 
                                   background: 'var(--color-surface)', 
                                   border: '2px solid var(--color-border)', 
-                                  'border-radius': '12px', 
-                                  padding: '12px', 
+                                  'border-radius': '8px', 
+                                  padding: '8px', 
                                   cursor: 'pointer', 
                                   'font-size': '16px',
-                                  transition: 'all 0.2s',
-                                  'min-width': '44px',
-                                  'min-height': '44px',
+                                  'min-width': '36px',
+                                  'min-height': '36px',
                                   display: 'flex',
                                   'align-items': 'center',
-                                  'justify-content': 'center',
-                                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.background = 'var(--color-primary)';
-                                  e.currentTarget.style.color = 'white';
-                                  e.currentTarget.style.transform = 'scale(1.05)';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.background = 'var(--color-surface)';
-                                  e.currentTarget.style.color = 'inherit';
-                                  e.currentTarget.style.transform = 'scale(1)';
+                                  'justify-content': 'center'
                                 }}
                                 title="إعداد عتبة الإعادة"
                               >
@@ -566,37 +328,13 @@ export function MutunPage() {
                               </button>
                             </div>
                           </div>
-                          
-                          {/* Premium Note Field */}
-                          <div style={{ 'margin-bottom': '20px' }}>
-                            <label style={{
-                              display: 'block',
-                              'margin-bottom': '8px',
-                              'font-weight': '600',
-                              color: 'var(--color-text)',
-                              'font-size': '0.9rem'
-                            }}>
-                              📝 الملاحظات:
-                            </label>
-                            <MobileTextInput
-                              value={noteTexts()[matn.id] || ''}
-                              onInput={(value) => {
-                                setNoteTexts(prev => ({
-                                  ...prev,
-                                  [matn.id]: value
-                                }));
-                              }}
-                              placeholder="اكتب ملاحظاتك هنا..."
-                              matn={matn}
-                            />
-                          </div>
-                          
-                          {/* Premium Action Buttons */}
+
+                          {/* Buttons */}
                           <div style={{ 
                             display: 'flex', 
-                            gap: '12px', 
+                            gap: '10px', 
                             'flex-wrap': 'wrap',
-                            'margin-bottom': '16px'
+                            'margin-bottom': '15px'
                           }}>
                             <Show when={matn.memorization_pdf_link}>
                               <button 
@@ -605,24 +343,13 @@ export function MutunPage() {
                                   window.open(matn.memorization_pdf_link, '_blank');
                                 }} 
                                 style={{ 
-                                  padding: '10px 16px', 
-                                  background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))', 
+                                  padding: '8px 12px', 
+                                  background: 'var(--color-primary)', 
                                   color: 'white', 
                                   border: 'none', 
-                                  'border-radius': '12px', 
+                                  'border-radius': '8px', 
                                   cursor: 'pointer', 
-                                  'font-size': '13px',
-                                  'font-weight': '600',
-                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                  transition: 'all 0.3s ease'
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(-2px)';
-                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(0)';
-                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                  'font-size': '12px'
                                 }}
                               >
                                 📄 نص التحفيظ
@@ -636,24 +363,13 @@ export function MutunPage() {
                                   window.open(matn.explanation_pdf_link, '_blank');
                                 }} 
                                 style={{ 
-                                  padding: '10px 16px', 
-                                  background: 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))', 
+                                  padding: '8px 12px', 
+                                  background: 'var(--color-secondary)', 
                                   color: 'white', 
                                   border: 'none', 
-                                  'border-radius': '12px', 
+                                  'border-radius': '8px', 
                                   cursor: 'pointer', 
-                                  'font-size': '13px',
-                                  'font-weight': '600',
-                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                  transition: 'all 0.3s ease'
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(-2px)';
-                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(0)';
-                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                  'font-size': '12px'
                                 }}
                               >
                                 📖 نص الشرح
@@ -667,24 +383,13 @@ export function MutunPage() {
                                   app.playAudio(matn.id, matn.name, matn.memorization_audio_link);
                                 }} 
                                 style={{ 
-                                  padding: '10px 16px', 
-                                  background: 'linear-gradient(135deg, var(--color-success), #059669)', 
+                                  padding: '8px 12px', 
+                                  background: 'var(--color-success)', 
                                   color: 'white', 
                                   border: 'none', 
-                                  'border-radius': '12px', 
+                                  'border-radius': '8px', 
                                   cursor: 'pointer', 
-                                  'font-size': '13px',
-                                  'font-weight': '600',
-                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                  transition: 'all 0.3s ease'
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(-2px)';
-                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.transform = 'translateY(0)';
-                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                  'font-size': '12px'
                                 }}
                               >
                                 🎧 الصوتيات
@@ -692,62 +397,83 @@ export function MutunPage() {
                             </Show>
                           </div>
                           
-                          {/* Premium Days Counter */}
-                          <div style={{ 
-                            'text-align': 'center', 
-                            padding: '8px',
-                            background: 'var(--color-surface)',
-                            'border-radius': '8px',
-                            border: '1px solid var(--color-border)'
-                          }}>
-                            <span style={{ 
-                              color: 'var(--color-text-secondary)', 
-                              'font-size': '0.75rem',
-                              'font-weight': '400'
+                          {/* Note Field */}
+                          <div>
+                            <label style={{
+                              display: 'block',
+                              'margin-bottom': '5px',
+                              'font-weight': '600',
+                              color: 'var(--color-text)'
                             }}>
-                              آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
-                            </span>
+                              الملاحظات:
+                            </label>
+                            <textarea
+                              value={noteTexts()[matn.id] || ''}
+                              onInput={(e) => {
+                                const value = e.currentTarget.value;
+                                setNoteTexts(prev => ({
+                                  ...prev,
+                                  [matn.id]: value
+                                }));
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyPress={(e) => {
+                                e.stopPropagation();
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  saveNote(matn, e.currentTarget.value);
+                                }
+                              }}
+                              onBlur={(e) => {
+                                e.stopPropagation();
+                                saveNote(matn, e.currentTarget.value);
+                              }}
+                              placeholder="أضف ملاحظاتك هنا..."
+                              style={{
+                                width: '100%',
+                                padding: '10px',
+                                'font-size': '14px',
+                                border: '1px solid var(--color-border)',
+                                'border-radius': '8px',
+                                'background': 'var(--color-background)',
+                                color: 'var(--color-text)',
+                                outline: 'none',
+                                'box-sizing': 'border-box',
+                                resize: 'vertical',
+                                'min-height': '80px',
+                                'font-family': 'inherit'
+                              }}
+                              rows={3}
+                            />
+                            <div style={{
+                              'margin-top': '5px',
+                              'font-size': '11px',
+                              color: 'var(--color-text-secondary)'
+                            }}>
+                              💡 Enter zum Speichern
+                            </div>
                           </div>
                         </div>
                       );
                     }}
                   </For>
-                                  </div>
                 </div>
               </Show>
-            );
-          }}
-        </For>
+            </div>
+          );
+        }}
+      </For>
 
-      {/* Premium Empty State */}
+      {/* Empty State */}
       <Show when={filteredMutun().length === 0}>
-        <div style={{ 
-          'text-align': 'center', 
-          padding: '60px 20px', 
-          color: 'var(--color-text-secondary)',
-          background: 'linear-gradient(135deg, var(--color-surface), var(--color-background))',
-          'border-radius': '24px',
-          'box-shadow': '0 8px 32px rgba(0,0,0,0.08)'
+        <div style={{
+          'text-align': 'center',
+          padding: '40px 20px',
+          color: 'var(--color-text-secondary)'
         }}>
-          <div style={{ 
-            'font-size': '4rem', 
-            'margin-bottom': '16px',
-            opacity: '0.7'
-          }}>📚</div>
-          <h3 style={{
-            'font-size': '1.3rem',
-            'font-weight': '600',
-            'margin-bottom': '8px',
-            color: 'var(--color-text)'
-          }}>
-            لا توجد متون
-          </h3>
-          <p style={{
-            'font-size': '1rem',
-            opacity: '0.8'
-          }}>
-            لا توجد متون تطابق المرشح المحدد
-          </p>
+          <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>📚</div>
+          <h3 style={{ 'margin-bottom': '10px' }}>لا توجد متون</h3>
+          <p>لم يتم العثور على متون للمستوى المحدد</p>
         </div>
       </Show>
 
@@ -759,21 +485,20 @@ export function MutunPage() {
           left: '0',
           right: '0',
           bottom: '0',
-          background: 'var(--color-overlay)',
+          background: 'rgba(0,0,0,0.5)',
           display: 'flex',
           'align-items': 'center',
           'justify-content': 'center',
-          'z-index': '1003',
-          padding: '20px'
+          'z-index': '9999'
         }}>
           <div style={{
-            background: 'var(--color-surface)',
-            'border-radius': '20px',
-            padding: '25px',
-            'max-width': '350px',
-            width: '100%',
-            direction: app.language() === 'ar' ? 'rtl' : 'ltr',
-            'box-shadow': '0 20px 60px rgba(0,0,0,0.3)'
+            background: 'var(--color-background)',
+            'border-radius': '12px',
+            padding: '20px',
+            'max-width': '400px',
+            width: '90%',
+            'max-height': '80vh',
+            overflow: 'auto'
           }}>
             <div style={{
               display: 'flex',
@@ -781,121 +506,95 @@ export function MutunPage() {
               'align-items': 'center',
               'margin-bottom': '20px'
             }}>
-              <h3 style={{
-                margin: '0',
-                color: 'var(--color-text)',
-                'font-size': '1.2rem'
-              }}>
+              <h3 style={{ margin: '0', color: 'var(--color-text)' }}>
                 ⚙️ إعداد عتبة الإعادة
               </h3>
               <button 
-                onClick={closeThresholdModal} 
+                onClick={closeThresholdModal}
                 style={{
                   background: 'none',
                   border: 'none',
                   'font-size': '20px',
-                  color: 'var(--color-text-secondary)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  color: 'var(--color-text)'
                 }}
               >
                 ✕
               </button>
             </div>
-
+            
             <div style={{ 'margin-bottom': '20px' }}>
-              <p style={{
-                color: 'var(--color-text)',
-                'font-size': '1rem',
-                'margin-bottom': '10px',
-                'font-weight': 'bold'
-              }}>
+              <p style={{ color: 'var(--color-text)', 'margin-bottom': '10px' }}>
                 {thresholdModalMatn()?.name}
               </p>
-              <p style={{
-                color: 'var(--color-text-secondary)',
-                'font-size': '0.9rem',
-                'margin-bottom': '15px'
-              }}>
+              <p style={{ color: 'var(--color-text-secondary)', 'font-size': '14px' }}>
                 عدد الأيام قبل إعادة تعيين اللون إلى الأحمر
               </p>
               
               <div style={{
                 display: 'flex',
                 'align-items': 'center',
+                'justify-content': 'center',
                 gap: '15px',
-                'justify-content': 'center'
+                'margin': '20px 0'
               }}>
                 <button 
-                  onClick={() => setTempThreshold(Math.max(1, tempThreshold() - 1))} 
+                  onClick={() => setTempThreshold(Math.max(1, tempThreshold() - 1))}
                   style={{
-                    background: 'var(--color-primary)',
-                    color: 'white',
+                    background: 'var(--color-border)',
                     border: 'none',
-                    'border-radius': '8px',
-                    padding: '10px 15px',
-                    cursor: 'pointer',
-                    'font-size': '16px',
-                    'font-weight': 'bold'
+                    'border-radius': '50%',
+                    width: '40px',
+                    height: '40px',
+                    'font-size': '20px',
+                    cursor: 'pointer'
                   }}
                 >
                   -
                 </button>
-                
-                <div style={{
-                  background: 'var(--color-background)',
-                  border: '2px solid var(--color-border)',
-                  'border-radius': '8px',
-                  padding: '10px 20px',
-                  'min-width': '60px',
-                  'text-align': 'center'
-                }}>
-                  <span style={{
-                    color: 'var(--color-text)',
-                    'font-size': '1.5rem',
-                    'font-weight': 'bold'
+                <div style={{ 'text-align': 'center' }}>
+                  <div style={{ 
+                    'font-size': '24px', 
+                    'font-weight': 'bold',
+                    color: 'var(--color-primary)'
                   }}>
                     {tempThreshold()}
-                  </span>
-                  <div style={{
-                    color: 'var(--color-text-secondary)',
-                    'font-size': '0.8rem'
-                  }}>
+                  </div>
+                  <div style={{ 'font-size': '12px', color: 'var(--color-text-secondary)' }}>
                     أيام
                   </div>
                 </div>
-                
                 <button 
-                  onClick={() => setTempThreshold(Math.min(365, tempThreshold() + 1))} 
+                  onClick={() => setTempThreshold(Math.min(365, tempThreshold() + 1))}
                   style={{
-                    background: 'var(--color-primary)',
-                    color: 'white',
+                    background: 'var(--color-border)',
                     border: 'none',
-                    'border-radius': '8px',
-                    padding: '10px 15px',
-                    cursor: 'pointer',
-                    'font-size': '16px',
-                    'font-weight': 'bold'
+                    'border-radius': '50%',
+                    width: '40px',
+                    height: '40px',
+                    'font-size': '20px',
+                    cursor: 'pointer'
                   }}
                 >
                   +
                 </button>
               </div>
-
+              
               <div style={{
                 display: 'flex',
-                gap: '10px',
-                'margin-top': '15px',
-                'justify-content': 'center'
+                gap: '8px',
+                'justify-content': 'center',
+                'flex-wrap': 'wrap'
               }}>
                 <For each={[3, 7, 14, 30]}>
                   {(days) => (
                     <button 
-                      onClick={() => setTempThreshold(days)} 
+                      onClick={() => setTempThreshold(days)}
                       style={{
                         padding: '6px 12px',
-                        background: tempThreshold() === days ? 'var(--color-primary)' : 'var(--color-border)',
+                        background: tempThreshold() === days ? 'var(--color-primary)' : 'var(--color-surface)',
                         color: tempThreshold() === days ? 'white' : 'var(--color-text)',
-                        border: 'none',
+                        border: '1px solid var(--color-border)',
                         'border-radius': '6px',
                         cursor: 'pointer',
                         'font-size': '12px'
@@ -907,25 +606,25 @@ export function MutunPage() {
                 </For>
               </div>
             </div>
-
+            
             <div style={{ display: 'flex', gap: '10px' }}>
               <button 
-                onClick={saveThreshold} 
+                onClick={saveThreshold}
                 style={{
                   flex: '1',
                   padding: '12px',
-                  background: 'var(--color-success)',
+                  background: 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '8px',
                   cursor: 'pointer',
-                  'font-weight': 'bold'
+                  'font-weight': '600'
                 }}
               >
                 حفظ
               </button>
               <button 
-                onClick={closeThresholdModal} 
+                onClick={closeThresholdModal}
                 style={{
                   flex: '1',
                   padding: '12px',
