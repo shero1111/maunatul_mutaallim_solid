@@ -9,8 +9,13 @@ export function MutunPage() {
   
   const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
 
-  // Initialize collapsed sections (empty = all expanded by default)
-  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
+  // Simple show/hide state for each section
+  const [sectionVisible, setSectionVisible] = createSignal<Record<string, boolean>>({
+    'المستوى الأول': true,
+    'المستوى الثاني': true,
+    'المستوى الثالث': true,
+    'المستوى الرابع': true
+  });
 
   // Lokaler State für Notizen (für Live-Editing)
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
@@ -83,26 +88,16 @@ export function MutunPage() {
     }
   };
 
+  // Simple toggle - just flip true/false
   const toggleSection = (section: string) => {
-    console.log('🔄 Toggle Section:', section, 'Current state:', collapsedSections()[section]);
-    setCollapsedSections(prev => {
-      const currentValue = prev[section];
-      const newValue = !currentValue; // undefined -> true, false -> true, true -> false
+    setSectionVisible(prev => {
       const newState = {
         ...prev,
-        [section]: newValue
+        [section]: !prev[section]
       };
-      console.log('📋 New Collapsed Sections:', newState);
+      console.log('🔄 Simple Toggle:', section, '→', newState[section]);
       return newState;
     });
-  };
-
-  const shouldExpandSection = (section: string) => {
-    // Always respect the manual toggle state - undefined means expanded
-    const collapsed = collapsedSections()[section];
-    const result = !collapsed; // undefined or false = expanded, true = collapsed
-    console.log(`🔍 shouldExpandSection("${section}"):`, collapsed, '→', result);
-    return result;
   };
 
   const handleLevelFilterChange = (newFilter: string) => {
@@ -110,21 +105,19 @@ export function MutunPage() {
     setLevelFilter(newFilter);
     
     if (newFilter === 'all') {
-      // Alle Sections aufklappen
-      const newCollapsed: Record<string, boolean> = {};
+      // Alle Sections anzeigen
+      const newVisible: Record<string, boolean> = {};
       allLevels.forEach(level => {
-        newCollapsed[level] = false; // false = aufgeklappt
+        newVisible[level] = true; // true = sichtbar
       });
-      console.log('📂 All expanded:', newCollapsed);
-      setCollapsedSections(newCollapsed);
+      setSectionVisible(newVisible);
     } else {
-      // Alle Sections zuklappen, außer dem ausgewählten Level
-      const newCollapsed: Record<string, boolean> = {};
+      // Nur ausgewählten Level anzeigen
+      const newVisible: Record<string, boolean> = {};
       allLevels.forEach(level => {
-        newCollapsed[level] = level !== newFilter; // true = zugeklappt, false = aufgeklappt
+        newVisible[level] = level === newFilter; // true nur für selected level
       });
-      console.log('🎯 Filter specific:', newCollapsed);
-      setCollapsedSections(newCollapsed);
+      setSectionVisible(newVisible);
     }
   };
 
@@ -395,64 +388,61 @@ export function MutunPage() {
         </div>
       </div>
 
-      {/* Premium Collapsible Sections */}
+            {/* Simple Show/Hide Sections */}
       <For each={Object.entries(groupedMutun())}>
         {([section, mutun]) => {
-          const isCollapsed = !shouldExpandSection(section);
-          console.log(`📁 Section "${section}" collapsed:`, isCollapsed, 'state:', collapsedSections()[section]);
+          const isVisible = sectionVisible()[section];
           
           return (
-            <div style={{ 'margin-bottom': '32px' }}>
-              {/* Premium Section Header */}
-                            <button 
-                onClick={() => {
-                  console.log('🖱️ BUTTON Click on section:', section);
-                  toggleSection(section);
-                }} 
-                style={{ 
-                  width: '100%',
-                  background: 'var(--color-surface)', 
-                  'border-radius': '12px', 
-                  padding: '15px 20px', 
-                  border: '1px solid var(--color-border)', 
-                  cursor: 'pointer',
-                  'margin-bottom': isCollapsed ? '0' : '15px',
-                  transition: 'all 0.3s ease',
-                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)',
-                  'text-align': 'left'
-                }}
-              >
-                <div style={{ 
-                  display: 'flex', 
-                  'justify-content': 'space-between', 
-                  'align-items': 'center'
-                }}>
-                  <h2 style={{ 
-                    color: 'var(--color-primary)', 
-                    'font-size': '1.3rem', 
-                    margin: '0', 
+            <Show when={isVisible}>
+              <div style={{ 'margin-bottom': '32px' }}>
+                {/* Simple Section Header */}
+                <button 
+                  onClick={() => {
+                    console.log('🖱️ Simple Click on section:', section);
+                    toggleSection(section);
+                  }} 
+                  style={{ 
+                    width: '100%',
+                    background: 'var(--color-surface)', 
+                    'border-radius': '12px', 
+                    padding: '15px 20px', 
+                    border: '1px solid var(--color-border)', 
+                    cursor: 'pointer',
+                    'margin-bottom': '15px',
+                    transition: 'all 0.3s ease',
+                    'box-shadow': '0 2px 4px rgba(0,0,0,0.1)',
+                    'text-align': 'left'
+                  }}
+                >
+                  <div style={{ 
                     display: 'flex', 
-                    'align-items': 'center', 
-                    gap: '10px'
+                    'justify-content': 'space-between', 
+                    'align-items': 'center'
                   }}>
-                    <span style={{ 'font-size': '1.5rem' }}>
-                      {isCollapsed ? '📁' : '📂'}
+                    <h2 style={{ 
+                      color: 'var(--color-primary)', 
+                      'font-size': '1.3rem', 
+                      margin: '0', 
+                      display: 'flex', 
+                      'align-items': 'center', 
+                      gap: '10px'
+                    }}>
+                      <span style={{ 'font-size': '1.5rem' }}>
+                        📂
+                      </span>
+                      {section}
+                    </h2>
+                    <span style={{ 
+                      color: 'var(--color-primary)', 
+                      'font-size': '1.5rem'
+                    }}>
+                      ❌
                     </span>
-                    {section}
-                  </h2>
-                  <span style={{ 
-                    color: 'var(--color-primary)', 
-                    'font-size': '1.5rem', 
-                    transition: 'transform 0.3s ease', 
-                    transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'
-                  }}>
-                    ▼
-                  </span>
-                </div>
-              </button>
-              
-              {/* Premium Section Content */}
-              <Show when={!isCollapsed}>
+                  </div>
+                </button>
+                
+                {/* Section Content - Always visible when section is visible */}
                 <div style={{ 
                   display: 'grid', 
                   gap: '16px',
@@ -722,12 +712,12 @@ export function MutunPage() {
                       );
                     }}
                   </For>
+                                  </div>
                 </div>
               </Show>
-            </div>
-          );
-        }}
-      </For>
+            );
+          }}
+        </For>
 
       {/* Premium Empty State */}
       <Show when={filteredMutun().length === 0}>
