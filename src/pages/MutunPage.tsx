@@ -216,7 +216,11 @@ export function MutunPage() {
             const value = e.currentTarget.value;
             props.onInput(value);
           }}
+          onClick={(e) => {
+            e.stopPropagation(); // Verhindert Section-Toggle
+          }}
           onKeyPress={(e) => {
+            e.stopPropagation();
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
               saveNote(e.currentTarget.value);
@@ -226,10 +230,12 @@ export function MutunPage() {
           style={inputStyle}
           rows={2}
           onFocus={(e) => {
+            e.stopPropagation();
             e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.1), 0 0 0 3px var(--color-primary)20';
             e.currentTarget.style.background = 'var(--color-background)';
           }}
           onBlur={(e) => {
+            e.stopPropagation();
             e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.06)';
             e.currentTarget.style.background = 'linear-gradient(135deg, var(--color-background), var(--color-surface))';
             
@@ -505,7 +511,10 @@ export function MutunPage() {
                             </h3>
                             <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
                               <button 
-                                onClick={() => changeMatnStatus(matn.id)} 
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Verhindert Section-Toggle
+                                  changeMatnStatus(matn.id);
+                                }} 
                                 style={{ 
                                   background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
                                   color: 'white', 
@@ -532,27 +541,33 @@ export function MutunPage() {
                                 {getMatnStatusText(matn.status)}
                               </button>
                               <button 
-                                onClick={() => openThresholdModal(matn)} 
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Verhindert Section-Toggle
+                                  openThresholdModal(matn);
+                                }} 
                                 style={{ 
-                                  background: 'var(--color-border)', 
-                                  border: 'none', 
-                                  'border-radius': '8px', 
-                                  padding: '10px', 
+                                  background: 'var(--color-surface)', 
+                                  border: '2px solid var(--color-border)', 
+                                  'border-radius': '12px', 
+                                  padding: '12px', 
                                   cursor: 'pointer', 
                                   'font-size': '16px',
                                   transition: 'all 0.2s',
-                                  'min-width': '40px',
-                                  'min-height': '40px',
+                                  'min-width': '44px',
+                                  'min-height': '44px',
                                   display: 'flex',
                                   'align-items': 'center',
-                                  'justify-content': 'center'
+                                  'justify-content': 'center',
+                                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.background = 'var(--color-primary)20';
-                                  e.currentTarget.style.transform = 'scale(1.1)';
+                                  e.currentTarget.style.background = 'var(--color-primary)';
+                                  e.currentTarget.style.color = 'white';
+                                  e.currentTarget.style.transform = 'scale(1.05)';
                                 }}
                                 onMouseOut={(e) => {
-                                  e.currentTarget.style.background = 'var(--color-border)';
+                                  e.currentTarget.style.background = 'var(--color-surface)';
+                                  e.currentTarget.style.color = 'inherit';
                                   e.currentTarget.style.transform = 'scale(1)';
                                 }}
                                 title="إعداد عتبة الإعادة"
@@ -595,7 +610,10 @@ export function MutunPage() {
                           }}>
                             <Show when={matn.memorization_pdf_link}>
                               <button 
-                                onClick={() => window.open(matn.memorization_pdf_link, '_blank')} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(matn.memorization_pdf_link, '_blank');
+                                }} 
                                 style={{ 
                                   padding: '10px 16px', 
                                   background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))', 
@@ -623,7 +641,10 @@ export function MutunPage() {
                             
                             <Show when={matn.explanation_pdf_link}>
                               <button 
-                                onClick={() => window.open(matn.explanation_pdf_link, '_blank')} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(matn.explanation_pdf_link, '_blank');
+                                }} 
                                 style={{ 
                                   padding: '10px 16px', 
                                   background: 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))', 
@@ -651,7 +672,8 @@ export function MutunPage() {
                             
                             <Show when={matn.memorization_audio_link}>
                               <button 
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   app.playAudio(matn.id, matn.name, matn.memorization_audio_link);
                                 }} 
                                 style={{ 
