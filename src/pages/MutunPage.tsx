@@ -575,11 +575,15 @@ export function MutunPage() {
 
                           {/* Days Counter - am Ende als normaler Text */}
                           <div style={{
-                            'text-align': 'left',
+                            'text-align': app.language() === 'ar' ? 'right' : 'left',
                             color: 'var(--color-text-secondary)',
-                            'font-size': '12px'
+                            'font-size': '12px',
+                            direction: app.language() === 'ar' ? 'rtl' : 'ltr'
                           }}>
-                            آخر تغيير قبل: {calculateDaysSinceLastChange(matn.lastChange_date || '')} يوم
+                            {app.language() === 'ar' 
+                              ? `آخر تغيير قبل: ${calculateDaysSinceLastChange(matn.lastChange_date || '')} يوم`
+                              : `Last change: ${calculateDaysSinceLastChange(matn.lastChange_date || '')} days ago`
+                            }
                           </div>
                         </div>
                       );
