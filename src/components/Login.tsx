@@ -30,7 +30,7 @@ export function Login() {
     
     try {
       // Force a small delay to ensure UI updates
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
       
       const success = app.login(username(), password());
       console.log('📝 Login result:', success);
@@ -41,11 +41,13 @@ export function Login() {
         // Force page to home after successful login
         app.setCurrentPage('home');
         
-        // Small delay to ensure state is updated, then force a re-render
+        // Force immediate re-render
         setTimeout(() => {
-          // Force re-render by triggering a state change
-          window.dispatchEvent(new Event('resize'));
-        }, 50);
+          console.log('🔄 Forcing app re-render...');
+          // Force the entire app to re-evaluate
+          window.location.hash = '#refresh';
+          window.location.hash = '';
+        }, 100);
         
       } else {
         const errorMsg = app.translate('invalidCredentials');
@@ -62,11 +64,14 @@ export function Login() {
 
   const quickLogin = async (user: string, pass: string) => {
     console.log('🚀 Quick login attempt:', user);
+    
+    // SUPER ROBUST: Set values and wait longer
     setUsername(user);
     setPassword(pass);
     
-    // Small delay to ensure state is updated, then login
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Longer delay to ensure state is 100% updated
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     await handleLogin();
   };
 
