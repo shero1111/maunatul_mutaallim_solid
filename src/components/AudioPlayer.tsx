@@ -459,57 +459,7 @@ export function AudioPlayer() {
             </Show>
             
             <Show when={!player().isLoading}>
-              {/* 5s Skip Backward - LEFT */}
-              <button
-                style={skipButtonStyle}
-                onClick={app.skipBackward}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'white';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
-                  e.currentTarget.style.color = 'var(--color-text)';
-                }}
-                title="-5 Sekunden"
-              >
-                -5s
-              </button>
-              
-              {/* Play/Pause */}
-              <button
-                style={buttonStyle}
-                onClick={app.pauseAudio}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                }}
-              >
-                {player().isPlaying ? '⏸️' : '▶️'}
-              </button>
-              
-              {/* 5s Skip Forward - RIGHT */}
-              <button
-                style={skipButtonStyle}
-                onClick={app.skipForward}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'white';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
-                  e.currentTarget.style.color = 'var(--color-text)';
-                }}
-                title="+5 Sekunden"
-              >
-                +5s
-              </button>
-              
-              {/* Hold-to-Accelerate Skip Backward */}
+              {/* Hold-to-Accelerate Skip Backward - LEFTMOST */}
               <button
                 style={{
                   ...holdSkipButtonStyle,
@@ -540,7 +490,57 @@ export function AudioPlayer() {
                 ⏮
               </button>
               
-              {/* Hold-to-Accelerate Skip Forward */}
+              {/* 5s Skip Backward */}
+              <button
+                style={skipButtonStyle}
+                onClick={app.skipBackward}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                title="-5 Sekunden"
+              >
+                -5s
+              </button>
+              
+              {/* Play/Pause - CENTER */}
+              <button
+                style={buttonStyle}
+                onClick={app.pauseAudio}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                }}
+              >
+                {player().isPlaying ? '⏸️' : '▶️'}
+              </button>
+              
+              {/* 5s Skip Forward */}
+              <button
+                style={skipButtonStyle}
+                onClick={app.skipForward}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                title="+5 Sekunden"
+              >
+                +5s
+              </button>
+              
+              {/* Hold-to-Accelerate Skip Forward - RIGHTMOST */}
               <button
                 style={{
                   ...holdSkipButtonStyle,
