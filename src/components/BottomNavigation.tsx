@@ -97,26 +97,6 @@ export function BottomNavigation() {
             <button
               style={itemStyle(isActive())}
               onClick={() => handleNavigation(item.page)}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.95)';
-                e.currentTarget.style.opacity = '0.7';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.opacity = '1';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.opacity = '1';
-              }}
-              onTouchStart={(e) => {
-                e.currentTarget.style.transform = 'scale(0.95)';
-                e.currentTarget.style.opacity = '0.7';
-              }}
-              onTouchEnd={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.opacity = '1';
-              }}
               type="button"
             >
               {/* Top Indicator Bar - Nur bei aktiv */}
