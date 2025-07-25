@@ -4,6 +4,14 @@ import { demoUsers, demoHalaqat, demoMutun, demoNews, generatePersonalMutun } fr
 import { themeColors, setCSSVariables } from '../styles/themes';
 import { translations } from '../i18n/translations';
 
+// Audio Progress Interface
+interface AudioProgress {
+  [key: string]: {
+    memorization?: number;  // Progress in seconds for memorization audio
+    explanation?: number;   // Progress in seconds for explanation audio
+  };
+}
+
 export interface AppState {
   // Authentication
   currentUser: () => User | null;
@@ -22,6 +30,7 @@ export interface AppState {
   
   // Audio Player
   audioPlayer: () => AudioPlayerState;
+  audioProgress: () => AudioProgress;
   
   // Timer
   timer: () => TimerState;
@@ -37,11 +46,12 @@ export interface AppState {
   setLanguage: (language: Language) => void;
   updateMatn: (matn: Matn) => void;
   updateUser: (user: User) => void;
-  playAudio: (matnId: string, title: string, audioUrl: string) => void;
+  playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
   skipBackward: () => void;
   skipForward: () => void;
+  seekAudio: (percentage: number) => void;
   startTimer: (minutes: number) => void;
   stopTimer: () => void;
   resetTimer: () => void;
@@ -73,6 +83,9 @@ export function AppProvider(props: { children: JSX.Element }) {
     matnId: ''
   });
   
+  // Audio Progress State
+  const [audioProgress, setAudioProgress] = createSignal<AudioProgress>({});
+  
   // Timer State
   const [timer, setTimer] = createSignal<TimerState>({
     time: 0,
@@ -99,6 +112,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     const savedUsersData = localStorage.getItem('usersData');
     const savedNewsData = localStorage.getItem('newsData');
     const savedCurrentPage = localStorage.getItem('currentPage') as Page;
+    const savedAudioProgress = localStorage.getItem('audioProgress');
     
     if (savedTheme) {
       setTheme(savedTheme);
@@ -110,6 +124,17 @@ export function AppProvider(props: { children: JSX.Element }) {
     if (savedCurrentPage) {
       setCurrentPage(savedCurrentPage);
       console.log('🔄 Restored last page:', savedCurrentPage);
+    }
+    
+    // Load audio progress
+    if (savedAudioProgress) {
+      try {
+        const progress = JSON.parse(savedAudioProgress);
+        setAudioProgress(progress);
+        console.log('🎵 Audio progress loaded:', Object.keys(progress).length, 'items');
+      } catch (e) {
+        console.error('Error parsing saved audio progress:', e);
+      }
     }
     
     // AUTO LOGIN - User bleibt angemeldet
@@ -259,44 +284,82 @@ export function AppProvider(props: { children: JSX.Element }) {
     localStorage.setItem('usersData', JSON.stringify(newUsersData));
   };
   
-  const playAudio = (matnId: string, title: string, audioUrl: string) => {
+  const playAudio = (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => {
     // Stop current audio if playing
     if (audioElement) {
       audioElement.pause();
     }
+    
+    // Get saved progress for this audio
+    const savedProgress = audioProgress()[matnId]?.[audioType] || 0;
     
     audioElement = new Audio(audioUrl);
     
     setAudioPlayer({
       title,
       isPlaying: false,
-      currentTime: 0,
+      currentTime: savedProgress,
       duration: 0,
       isLoading: true,
       matnId
     });
     
     audioElement.addEventListener('loadedmetadata', () => {
+      // Set to saved progress when metadata loads
+      audioElement!.currentTime = savedProgress;
+      
       setAudioPlayer(prev => ({
         ...prev,
         duration: audioElement?.duration || 0,
+        currentTime: savedProgress,
         isLoading: false
       }));
     });
     
     audioElement.addEventListener('timeupdate', () => {
+      const currentTime = audioElement?.currentTime || 0;
+      
       setAudioPlayer(prev => ({
         ...prev,
-        currentTime: audioElement?.currentTime || 0
+        currentTime
       }));
+      
+      // Save progress every second
+      setAudioProgress(prev => {
+        const newProgress = {
+          ...prev,
+          [matnId]: {
+            ...prev[matnId],
+            [audioType]: currentTime
+          }
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('audioProgress', JSON.stringify(newProgress));
+        
+        return newProgress;
+      });
     });
     
     audioElement.addEventListener('ended', () => {
       setAudioPlayer(prev => ({
         ...prev,
-        isPlaying: false,
-        currentTime: 0
+        isPlaying: false
       }));
+      
+      // Reset progress when audio ends
+      setAudioProgress(prev => {
+        const newProgress = {
+          ...prev,
+          [matnId]: {
+            ...prev[matnId],
+            [audioType]: 0
+          }
+        };
+        
+        localStorage.setItem('audioProgress', JSON.stringify(newProgress));
+        return newProgress;
+      });
     });
     
     audioElement.play().then(() => {
@@ -332,6 +395,7 @@ export function AppProvider(props: { children: JSX.Element }) {
       isLoading: false,
       matnId: ''
     });
+    setAudioProgress({}); // Reset progress for all audios
   };
 
   const skipBackward = () => {
@@ -343,6 +407,12 @@ export function AppProvider(props: { children: JSX.Element }) {
   const skipForward = () => {
     if (audioElement) {
       audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
+    }
+  };
+
+  const seekAudio = (percentage: number) => {
+    if (audioElement) {
+      audioElement.currentTime = audioElement.duration * percentage;
     }
   };
   
@@ -405,6 +475,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     mutun,
     news,
     audioPlayer,
+    audioProgress,
     timer,
     searchTerm,
     login,
@@ -426,6 +497,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     stopAudio,
     skipBackward,
     skipForward,
+    seekAudio,
     startTimer,
     stopTimer,
     resetTimer,

@@ -671,7 +671,7 @@ export function MutunPage() {
                 <button 
                   onClick={() => {
                     const matn = audioModalMatn()!;
-                    app.playAudio(matn.id, matn.name + ' - التحفيظ', matn.memorization_audio_link!);
+                    app.playAudio(matn.id, matn.name + ' - التحفيظ', matn.memorization_audio_link!, 'memorization');
                     closeAudioModal();
                   }}
                   style={{
@@ -692,7 +692,7 @@ export function MutunPage() {
                 <button 
                   onClick={() => {
                     const matn = audioModalMatn()!;
-                    app.playAudio(matn.id, matn.name + ' - الشرح', matn.explanation_audio_link!);
+                    app.playAudio(matn.id, matn.name + ' - الشرح', matn.explanation_audio_link!, 'explanation');
                     closeAudioModal();
                   }}
                   style={{
