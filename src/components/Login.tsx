@@ -5,381 +5,164 @@ export function Login() {
   const [username, setUsername] = createSignal('student1');
   const [password, setPassword] = createSignal('test');
   const [error, setError] = createSignal('');
-  const [isLogging, setIsLogging] = createSignal(false);
   const app = useApp();
 
-  const handleLogin = (e?: Event) => {
+  const doLogin = () => {
+    console.log('🔄 SIMPLE LOGIN START');
+    setError('');
+    
     try {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      
-      if (isLogging()) {
-        console.log('⏳ Login already in progress...');
-        return;
-      }
-      
-      setIsLogging(true);
-      setError('');
-      
-      console.log('🔄 LOGIN ATTEMPT:', { 
-        username: username(), 
-        password: password(),
-        usersCount: app.users().length
-      });
-      
       const success = app.login(username(), password());
       console.log('📝 Login result:', success);
       
-      if (success) {
-        console.log('✅ Login successful - user logged in:', app.currentUser()?.name);
-        // AppStore handles everything - no need to force anything
-      } else {
-        const errorMsg = app.translate('invalidCredentials');
-        setError(errorMsg);
-        console.log('❌ Login failed - error set:', errorMsg);
+      if (!success) {
+        setError('Login fehlgeschlagen');
       }
     } catch (error) {
       console.error('💥 Login error:', error);
-      setError('Ein Fehler ist aufgetreten');
-    } finally {
-      setIsLogging(false);
+      setError('Fehler beim Login');
     }
   };
 
-  const quickLogin = (user: string, pass: string) => {
-    try {
-      console.log('🚀 Quick login attempt:', user);
-      setUsername(user);
-      setPassword(pass);
-      
-      // Simple timeout to ensure state is set
-      setTimeout(() => {
-        handleLogin(); // No event parameter!
-      }, 100);
-    } catch (error) {
-      console.error('💥 Quick login error:', error);
-    }
+  const fastLogin = (user: string, pass: string) => {
+    console.log('🚀 Fast login:', user);
+    setUsername(user);
+    setPassword(pass);
+    setTimeout(doLogin, 50);
   };
 
   return (
     <div style={{
       'min-height': '100vh',
-      background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
+      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
       display: 'flex',
       'align-items': 'center',
       'justify-content': 'center',
-      padding: '20px',
-      direction: app.language() === 'ar' ? 'rtl' : 'ltr'
+      padding: '20px'
     }}>
       <div style={{
-        background: 'var(--color-background)',
+        background: 'white',
         'border-radius': '20px',
         padding: '40px',
         'max-width': '400px',
         width: '100%',
         'box-shadow': '0 20px 40px rgba(0,0,0,0.1)'
       }}>
-        <div style={{
-          'text-align': 'center',
-          'margin-bottom': '30px'
-        }}>
-          <h1 style={{
-            color: 'var(--color-text)',
-            'font-size': '1.8rem',
-            'margin-bottom': '10px'
-          }}>
-            {app.translate('appName')}
+        {/* Header */}
+        <div style={{ 'text-align': 'center', 'margin-bottom': '30px' }}>
+          <h1 style={{ color: '#1f2937', 'font-size': '1.8rem', 'margin-bottom': '10px' }}>
+            معونة المتعلم
           </h1>
-          <p style={{
-            color: 'var(--color-text-secondary)',
-            'font-size': '14px'
-          }}>
+          <p style={{ color: '#6b7280', 'font-size': '14px' }}>
             نظام إدارة حلقات عَلٌمْنِي
           </p>
         </div>
 
-        <form onSubmit={handleLogin}>
-          <div style={{ 'margin-bottom': '20px' }}>
-            <label style={{
-              display: 'block',
-              'margin-bottom': '8px',
-              'font-weight': 'bold',
-              color: 'var(--color-text)'
-            }}>
-              {app.translate('username')}
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="text"
-                value={username()}
-                onInput={(e) => setUsername(e.currentTarget.value)}
-                disabled={isLogging()}
-                style={{
-                  width: '100%',
-                  padding: '12px 40px 12px 12px',
-                  border: `1px solid var(--color-border)`,
-                  'border-radius': '8px',
-                  'font-size': '16px',
-                  'background-color': 'var(--color-surface)',
-                  color: 'var(--color-text)',
-                  direction: 'ltr',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  'box-sizing': 'border-box',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
-                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
-              />
-              {username() && !isLogging() && (
-                <button
-                  type="button"
-                  onClick={() => setUsername('')}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    'font-size': '18px',
-                    padding: '2px'
-                  }}
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div style={{ 'margin-bottom': '20px' }}>
-            <label style={{
-              display: 'block',
-              'margin-bottom': '8px',
-              'font-weight': 'bold',
-              color: 'var(--color-text)'
-            }}>
-              {app.translate('password')}
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="password"
-                value={password()}
-                onInput={(e) => setPassword(e.currentTarget.value)}
-                disabled={isLogging()}
-                style={{
-                  width: '100%',
-                  padding: '12px 40px 12px 12px',
-                  border: `1px solid var(--color-border)`,
-                  'border-radius': '8px',
-                  'font-size': '16px',
-                  'background-color': 'var(--color-surface)',
-                  color: 'var(--color-text)',
-                  direction: 'ltr',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  'box-sizing': 'border-box',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-                onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
-                onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !isLogging()) {
-                    e.preventDefault();
-                    handleLogin();
-                  }
-                }}
-              />
-              {password() && !isLogging() && (
-                <button
-                  type="button"
-                  onClick={() => setPassword('')}
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    'font-size': '18px',
-                    padding: '2px'
-                  }}
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
-
-          {error() && (
-            <div style={{
-              color: 'var(--color-error)',
-              'margin-bottom': '20px',
-              'text-align': 'center',
-              padding: '10px',
-              'background-color': 'var(--color-surface)',
-              'border-radius': '8px',
-              border: `1px solid var(--color-error)`
-            }}>
-              {error()}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLogging()}
+        {/* Form */}
+        <div style={{ 'margin-bottom': '20px' }}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username()}
+            onInput={(e) => setUsername(e.currentTarget.value)}
             style={{
               width: '100%',
               padding: '12px',
-              background: isLogging() 
-                ? 'var(--color-text-secondary)' 
-                : `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
+              border: '1px solid #d1d5db',
+              'border-radius': '8px',
+              'font-size': '16px',
+              'margin-bottom': '15px',
+              'box-sizing': 'border-box'
+            }}
+          />
+          
+          <input
+            type="password"
+            placeholder="Password"
+            value={password()}
+            onInput={(e) => setPassword(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '1px solid #d1d5db',
+              'border-radius': '8px',
+              'font-size': '16px',
+              'margin-bottom': '15px',
+              'box-sizing': 'border-box'
+            }}
+          />
+          
+          <button
+            onClick={doLogin}
+            style={{
+              width: '100%',
+              padding: '12px',
+              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
               color: 'white',
               border: 'none',
               'border-radius': '8px',
               'font-size': '16px',
               'font-weight': 'bold',
-              cursor: isLogging() ? 'not-allowed' : 'pointer',
-              transition: 'transform 0.2s',
-              'margin-bottom': '20px',
-              opacity: isLogging() ? '0.6' : '1'
+              cursor: 'pointer'
             }}
-            onMouseDown={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(0.98)')}
-            onMouseUp={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(1)')}
-            onMouseLeave={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(1)')}
           >
-            {isLogging() ? '⏳ Logging in...' : app.translate('login')}
+            Login
           </button>
-        </form>
+        </div>
 
+        {/* Error */}
+        {error() && (
+          <div style={{
+            color: '#ef4444',
+            'text-align': 'center',
+            'margin-bottom': '20px',
+            padding: '10px',
+            background: '#fef2f2',
+            'border-radius': '8px'
+          }}>
+            {error()}
+          </div>
+        )}
+
+        {/* Quick Login */}
         <div style={{
           'text-align': 'center',
           'font-size': '12px',
-          color: 'var(--color-text-secondary)',
+          color: '#6b7280',
           padding: '15px',
-          background: 'var(--color-surface)',
+          background: '#f9fafb',
           'border-radius': '8px'
         }}>
-          <p style={{ margin: '0 0 10px' }}>
-            حسابات التجربة:
-          </p>
-          <div style={{
-            display: 'grid',
-            gap: '5px',
-            'font-size': '11px'
-          }}>
-            <span>👑 admin/test (مدير عام)</span>
-            <span>🏛️ leiter/test (قائد)</span>
-            <span>👨‍🏫 lehrer/test (معلم)</span>
-            <span>👨‍🎓 student1/test (طالب)</span>
-            <span>👨‍🎓 student2/test (طالب)</span>
-          </div>
-
-          {/* QUICK LOGIN BUTTONS */}
-          <div style={{
-            'margin-top': '15px',
-            'border-top': '1px solid var(--color-border)',
-            'padding-top': '15px'
-          }}>
-            <div style={{
-              'font-weight': 'bold',
-              'margin-bottom': '10px',
-              'font-size': '12px'
+          <p style={{ margin: '0 0 10px' }}>Quick Login:</p>
+          
+          <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '8px' }}>
+            <button onClick={() => fastLogin('admin', 'test')} style={{
+              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
+              border: 'none', 'border-radius': '6px', cursor: 'pointer'
             }}>
-              🚀 Quick Login:
-            </div>
-            <div style={{
-              display: 'grid',
-              'grid-template-columns': '1fr 1fr',
-              gap: '8px'
+              👑 Admin
+            </button>
+            
+            <button onClick={() => fastLogin('leiter', 'test')} style={{
+              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
+              border: 'none', 'border-radius': '6px', cursor: 'pointer'
             }}>
-              <button
-                type="button"
-                disabled={isLogging()}
-                onClick={() => {
-                  if (isLogging()) return;
-                  quickLogin('admin', 'test');
-                }}
-                style={{
-                  padding: '8px',
-                  'font-size': '10px',
-                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
-                  cursor: isLogging() ? 'not-allowed' : 'pointer',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-              >
-                👑 Admin
-              </button>
-              <button
-                type="button"
-                disabled={isLogging()}
-                onClick={() => {
-                  if (isLogging()) return;
-                  quickLogin('leiter', 'test');
-                }}
-                style={{
-                  padding: '8px',
-                  'font-size': '10px',
-                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
-                  cursor: isLogging() ? 'not-allowed' : 'pointer',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-              >
-                🏛️ Leiter
-              </button>
-              <button
-                type="button"
-                disabled={isLogging()}
-                onClick={() => {
-                  if (isLogging()) return;
-                  quickLogin('lehrer', 'test');
-                }}
-                style={{
-                  padding: '8px',
-                  'font-size': '10px',
-                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
-                  cursor: isLogging() ? 'not-allowed' : 'pointer',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-              >
-                👨‍🏫 Lehrer
-              </button>
-              <button
-                type="button"
-                disabled={isLogging()}
-                onClick={() => {
-                  if (isLogging()) return;
-                  quickLogin('student1', 'test');
-                }}
-                style={{
-                  padding: '8px',
-                  'font-size': '10px',
-                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
-                  cursor: isLogging() ? 'not-allowed' : 'pointer',
-                  opacity: isLogging() ? '0.6' : '1'
-                }}
-              >
-                👨‍🎓 Student1
-              </button>
-            </div>
+              🏛️ Leiter
+            </button>
+            
+            <button onClick={() => fastLogin('lehrer', 'test')} style={{
+              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
+              border: 'none', 'border-radius': '6px', cursor: 'pointer'
+            }}>
+              👨‍🏫 Lehrer
+            </button>
+            
+            <button onClick={() => fastLogin('student1', 'test')} style={{
+              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
+              border: 'none', 'border-radius': '6px', cursor: 'pointer'
+            }}>
+              👨‍🎓 Student
+            </button>
           </div>
         </div>
       </div>
