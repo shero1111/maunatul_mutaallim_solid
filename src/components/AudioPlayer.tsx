@@ -143,6 +143,7 @@ export function AudioPlayer() {
   const controlsStyle = {
     display: 'flex',
     'align-items': 'center',
+    'justify-content': 'center',
     gap: '12px'
   };
   
