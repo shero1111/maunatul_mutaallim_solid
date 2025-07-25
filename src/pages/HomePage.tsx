@@ -8,53 +8,62 @@ export function HomePage() {
   
   // Role-based computed data
   const dashboardData = createMemo(() => {
-    const currentUser = app.currentUser();
-    if (!currentUser) return null;
-    
-    if (currentUser.role === 'student') {
-      // Student Dashboard Data
-      const studentData = currentUser as Student;
-      const userHalaqat = app.halaqat().filter(h => h.student_ids.includes(currentUser.id));
-      const mutunData = app.mutun();
-      const recentNews = app.news().slice(0, 3); // Last 3 news items
+    try {
+      const currentUser = app.currentUser();
+      if (!currentUser) return null;
       
+      if (currentUser.role === 'student') {
+        // Student Dashboard Data
+        const studentData = currentUser as Student;
+        const userHalaqat = app.halaqat()?.filter(h => h.student_ids?.includes(currentUser.id)) || [];
+        const mutunData = app.mutun?.() || [];
+        const recentNews = app.news()?.slice(0, 3) || []; // Last 3 news items
+        
+        return {
+          type: 'student',
+          personalStatus: studentData.status || 'not_available',
+          halaqatCount: userHalaqat.length,
+          activeHalaqat: userHalaqat.filter(h => h.status === 'active').length,
+          totalMutun: mutunData.length,
+          completedMutun: mutunData.filter(m => m.status === 'completed').length,
+          inProgressMutun: mutunData.filter(m => m.status === 'in_progress').length,
+          recentNews,
+          userHalaqat
+        };
+      } else {
+        // Admin/Teacher Dashboard Data
+        const users = app.users() || [];
+        const halaqat = app.halaqat() || [];
+        const students = users.filter(u => u.role === 'student') as Student[];
+        const teachers = users.filter(u => u.role === 'lehrer');
+        
+        const statusCounts = {
+          not_available: students.filter(s => s.status === 'not_available').length,
+          revising: students.filter(s => s.status === 'revising').length,
+          khatamat: students.filter(s => s.status === 'khatamat').length
+        };
+        
+        return {
+          type: 'admin',
+          totalUsers: users.length,
+          totalStudents: students.length,
+          totalTeachers: teachers.length,
+          totalHalaqat: halaqat.length,
+          statusCounts
+        };
+      }
+    } catch (error) {
+      console.error('Error in dashboardData:', error);
       return {
-        type: 'student',
-        personalStatus: studentData.status,
-        halaqatCount: userHalaqat.length,
-        activeHalaqat: userHalaqat.filter(h => h.status === 'active').length,
-        totalMutun: mutunData.length,
-        completedMutun: mutunData.filter(m => m.status === 'completed').length,
-        inProgressMutun: mutunData.filter(m => m.status === 'in_progress').length,
-        recentNews,
-        userHalaqat
-      };
-    } else {
-      // Admin/Teacher Dashboard Data
-      const users = app.users();
-      const halaqat = app.halaqat();
-      const students = users.filter(u => u.role === 'student') as Student[];
-      const teachers = users.filter(u => u.role === 'lehrer');
-      
-      const statusCounts = {
-        not_available: students.filter(s => s.status === 'not_available').length,
-        revising: students.filter(s => s.status === 'revising').length,
-        khatamat: students.filter(s => s.status === 'khatamat').length
-      };
-      
-      return {
-        type: 'admin',
-        totalUsers: users.length,
-        totalStudents: students.length,
-        totalTeachers: teachers.length,
-        totalHalaqat: halaqat.length,
-        statusCounts
+        type: 'error',
+        message: 'Loading error'
       };
     }
   });
 
   const data = dashboardData();
   if (!data) return <div>Loading...</div>;
+  if (data.type === 'error') return <div>Error loading dashboard. Please refresh.</div>;
 
   return (
     <div style={{ 
