@@ -8,27 +8,27 @@ export function Login() {
   const [isLogging, setIsLogging] = createSignal(false);
   const app = useApp();
 
-  const handleLogin = (e?: SubmitEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (isLogging()) {
-      console.log('⏳ Login already in progress...');
-      return;
-    }
-    
-    setIsLogging(true);
-    setError('');
-    
-    console.log('🔄 LOGIN ATTEMPT:', { 
-      username: username(), 
-      password: password(),
-      usersCount: app.users().length
-    });
-    
+  const handleLogin = (e?: Event) => {
     try {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      if (isLogging()) {
+        console.log('⏳ Login already in progress...');
+        return;
+      }
+      
+      setIsLogging(true);
+      setError('');
+      
+      console.log('🔄 LOGIN ATTEMPT:', { 
+        username: username(), 
+        password: password(),
+        usersCount: app.users().length
+      });
+      
       const success = app.login(username(), password());
       console.log('📝 Login result:', success);
       
@@ -49,14 +49,18 @@ export function Login() {
   };
 
   const quickLogin = (user: string, pass: string) => {
-    console.log('🚀 Quick login attempt:', user);
-    setUsername(user);
-    setPassword(pass);
-    
-    // Simple timeout to ensure state is set
-    setTimeout(() => {
-      handleLogin();
-    }, 100);
+    try {
+      console.log('🚀 Quick login attempt:', user);
+      setUsername(user);
+      setPassword(pass);
+      
+      // Simple timeout to ensure state is set
+      setTimeout(() => {
+        handleLogin(); // No event parameter!
+      }, 100);
+    } catch (error) {
+      console.error('💥 Quick login error:', error);
+    }
   };
 
   return (
@@ -298,10 +302,8 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={(e) => {
+                onClick={() => {
                   if (isLogging()) return;
-                  e.preventDefault();
-                  e.stopPropagation();
                   quickLogin('admin', 'test');
                 }}
                 style={{
@@ -320,10 +322,8 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={(e) => {
+                onClick={() => {
                   if (isLogging()) return;
-                  e.preventDefault();
-                  e.stopPropagation();
                   quickLogin('leiter', 'test');
                 }}
                 style={{
@@ -342,10 +342,8 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={(e) => {
+                onClick={() => {
                   if (isLogging()) return;
-                  e.preventDefault();
-                  e.stopPropagation();
                   quickLogin('lehrer', 'test');
                 }}
                 style={{
@@ -364,10 +362,8 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={(e) => {
+                onClick={() => {
                   if (isLogging()) return;
-                  e.preventDefault();
-                  e.stopPropagation();
                   quickLogin('student1', 'test');
                 }}
                 style={{
