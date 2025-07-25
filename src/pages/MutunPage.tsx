@@ -18,6 +18,10 @@ export function MutunPage() {
   // Lokaler State für Notizen (für Live-Editing)
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
 
+  // Threshold Modal State
+  const [thresholdModalMatn, setThresholdModalMatn] = createSignal<Matn | null>(null);
+  const [tempThreshold, setTempThreshold] = createSignal<number>(7);
+
   // Filter user's mutun
   const userMutun = createMemo(() => 
     app.mutun().filter(m => m.user_id === app.currentUser()?.id)
@@ -47,6 +51,40 @@ export function MutunPage() {
         ...prev,
         [matn.id]: matn.description || ''
       }));
+    }
+  };
+
+  // Threshold Functions
+  const openThresholdModal = (matn: Matn) => {
+    setThresholdModalMatn(matn);
+    setTempThreshold(matn.threshold);
+  };
+
+  const closeThresholdModal = () => {
+    setThresholdModalMatn(null);
+    setTempThreshold(7);
+  };
+
+  const saveThreshold = () => {
+    const matn = thresholdModalMatn();
+    if (matn) {
+      const updatedMatn = {
+        ...matn,
+        threshold: tempThreshold()
+      };
+      app.updateMatn(updatedMatn);
+      closeThresholdModal();
+    }
+  };
+
+  const updateMatnThreshold = (matnId: string, threshold: number) => {
+    const matn = app.mutun().find(m => m.id === matnId);
+    if (matn) {
+      const updatedMatn = {
+        ...matn,
+        threshold
+      };
+      app.updateMatn(updatedMatn);
     }
   };
 
@@ -196,8 +234,8 @@ export function MutunPage() {
           'font-size': '12px',
           color: 'var(--color-text-secondary)'
         }}>
-          💡 Enter zum Speichern • Auto-Save beim Verlassen
-        </div>
+           💡 Enter zum Speichern • Auto-Save beim Verlassen
+         </div>
       </div>
     );
   }
@@ -489,33 +527,63 @@ export function MutunPage() {
                             }}>
                               {matn.name}
                             </h3>
-                            <button 
-                              onClick={() => changeMatnStatus(matn.id)} 
-                              style={{ 
-                                background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
-                                color: 'white', 
-                                padding: '10px 16px', 
-                                'border-radius': '16px', 
-                                'font-size': '0.8rem', 
-                                'font-weight': '700',
-                                border: 'none',
-                                cursor: 'pointer',
-                                'min-width': '140px',
-                                'text-align': 'center',
-                                transition: 'all 0.3s ease',
-                                'box-shadow': '0 4px 16px rgba(0,0,0,0.15)'
-                              }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.05)';
-                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
-                              }}
-                            >
-                              {getMatnStatusText(matn.status)}
-                            </button>
+                            <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
+                              <button 
+                                onClick={() => changeMatnStatus(matn.id)} 
+                                style={{ 
+                                  background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
+                                  color: 'white', 
+                                  padding: '10px 16px', 
+                                  'border-radius': '16px', 
+                                  'font-size': '0.8rem', 
+                                  'font-weight': '700',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  'min-width': '140px',
+                                  'text-align': 'center',
+                                  transition: 'all 0.3s ease',
+                                  'box-shadow': '0 4px 16px rgba(0,0,0,0.15)'
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1.05)';
+                                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.transform = 'scale(1)';
+                                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+                                }}
+                              >
+                                {getMatnStatusText(matn.status)}
+                              </button>
+                              <button 
+                                onClick={() => openThresholdModal(matn)} 
+                                style={{ 
+                                  background: 'var(--color-border)', 
+                                  border: 'none', 
+                                  'border-radius': '8px', 
+                                  padding: '10px', 
+                                  cursor: 'pointer', 
+                                  'font-size': '16px',
+                                  transition: 'all 0.2s',
+                                  'min-width': '40px',
+                                  'min-height': '40px',
+                                  display: 'flex',
+                                  'align-items': 'center',
+                                  'justify-content': 'center'
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.background = 'var(--color-primary)20';
+                                  e.currentTarget.style.transform = 'scale(1.1)';
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.background = 'var(--color-border)';
+                                  e.currentTarget.style.transform = 'scale(1)';
+                                }}
+                                title="إعداد عتبة الإعادة"
+                              >
+                                ⚙️
+                              </button>
+                            </div>
                           </div>
                           
                           {/* Premium Note Field */}
@@ -639,17 +707,17 @@ export function MutunPage() {
                           {/* Premium Days Counter */}
                           <div style={{ 
                             'text-align': 'center', 
-                            padding: '12px',
-                            background: 'linear-gradient(135deg, var(--color-background), var(--color-surface))',
-                            'border-radius': '12px',
+                            padding: '8px',
+                            background: 'var(--color-surface)',
+                            'border-radius': '8px',
                             border: '1px solid var(--color-border)'
                           }}>
                             <span style={{ 
                               color: 'var(--color-text-secondary)', 
-                              'font-size': '0.85rem',
-                              'font-weight': '500'
+                              'font-size': '0.75rem',
+                              'font-weight': '400'
                             }}>
-                              ⏰ آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
+                              آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
                             </span>
                           </div>
                         </div>
@@ -692,6 +760,198 @@ export function MutunPage() {
           }}>
             لا توجد متون تطابق المرشح المحدد
           </p>
+        </div>
+      </Show>
+
+      {/* Threshold Modal */}
+      <Show when={thresholdModalMatn()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          right: '0',
+          bottom: '0',
+          background: 'var(--color-overlay)',
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          'z-index': '1003',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'var(--color-surface)',
+            'border-radius': '20px',
+            padding: '25px',
+            'max-width': '350px',
+            width: '100%',
+            direction: app.language() === 'ar' ? 'rtl' : 'ltr',
+            'box-shadow': '0 20px 60px rgba(0,0,0,0.3)'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'margin-bottom': '20px'
+            }}>
+              <h3 style={{
+                margin: '0',
+                color: 'var(--color-text)',
+                'font-size': '1.2rem'
+              }}>
+                ⚙️ إعداد عتبة الإعادة
+              </h3>
+              <button 
+                onClick={closeThresholdModal} 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  'font-size': '20px',
+                  color: 'var(--color-text-secondary)',
+                  cursor: 'pointer'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ 'margin-bottom': '20px' }}>
+              <p style={{
+                color: 'var(--color-text)',
+                'font-size': '1rem',
+                'margin-bottom': '10px',
+                'font-weight': 'bold'
+              }}>
+                {thresholdModalMatn()?.name}
+              </p>
+              <p style={{
+                color: 'var(--color-text-secondary)',
+                'font-size': '0.9rem',
+                'margin-bottom': '15px'
+              }}>
+                عدد الأيام قبل إعادة تعيين اللون إلى الأحمر
+              </p>
+              
+              <div style={{
+                display: 'flex',
+                'align-items': 'center',
+                gap: '15px',
+                'justify-content': 'center'
+              }}>
+                <button 
+                  onClick={() => setTempThreshold(Math.max(1, tempThreshold() - 1))} 
+                  style={{
+                    background: 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    padding: '10px 15px',
+                    cursor: 'pointer',
+                    'font-size': '16px',
+                    'font-weight': 'bold'
+                  }}
+                >
+                  -
+                </button>
+                
+                <div style={{
+                  background: 'var(--color-background)',
+                  border: '2px solid var(--color-border)',
+                  'border-radius': '8px',
+                  padding: '10px 20px',
+                  'min-width': '60px',
+                  'text-align': 'center'
+                }}>
+                  <span style={{
+                    color: 'var(--color-text)',
+                    'font-size': '1.5rem',
+                    'font-weight': 'bold'
+                  }}>
+                    {tempThreshold()}
+                  </span>
+                  <div style={{
+                    color: 'var(--color-text-secondary)',
+                    'font-size': '0.8rem'
+                  }}>
+                    أيام
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => setTempThreshold(Math.min(365, tempThreshold() + 1))} 
+                  style={{
+                    background: 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    padding: '10px 15px',
+                    cursor: 'pointer',
+                    'font-size': '16px',
+                    'font-weight': 'bold'
+                  }}
+                >
+                  +
+                </button>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                gap: '10px',
+                'margin-top': '15px',
+                'justify-content': 'center'
+              }}>
+                <For each={[3, 7, 14, 30]}>
+                  {(days) => (
+                    <button 
+                      onClick={() => setTempThreshold(days)} 
+                      style={{
+                        padding: '6px 12px',
+                        background: tempThreshold() === days ? 'var(--color-primary)' : 'var(--color-border)',
+                        color: tempThreshold() === days ? 'white' : 'var(--color-text)',
+                        border: 'none',
+                        'border-radius': '6px',
+                        cursor: 'pointer',
+                        'font-size': '12px'
+                      }}
+                    >
+                      {days}د
+                    </button>
+                  )}
+                </For>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                onClick={saveThreshold} 
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  background: 'var(--color-success)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '8px',
+                  cursor: 'pointer',
+                  'font-weight': 'bold'
+                }}
+              >
+                حفظ
+              </button>
+              <button 
+                onClick={closeThresholdModal} 
+                style={{
+                  flex: '1',
+                  padding: '12px',
+                  background: 'var(--color-border)',
+                  color: 'var(--color-text)',
+                  border: 'none',
+                  'border-radius': '8px',
+                  cursor: 'pointer'
+                }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
         </div>
       </Show>
     </div>
