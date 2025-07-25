@@ -1,5 +1,78 @@
 import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 
+// Real Mutuun Template from React App - CORRECTED PDF LINKS
+const mutunTemplate = [
+  {
+    title: 'المستوى الأول',
+    items: [
+      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/1-1-usul-althalatha.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/1-1-usul-althalatha.mp3' },
+      { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3' },
+      { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3' },
+      { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
+      { name: 'الزيادة الرجبية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الآداب العشرة', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الخلاصة الحسناء', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الباقيات الصالحات', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' }
+    ]
+  },
+  {
+    title: 'المستوى الثاني',
+    items: [
+      { name: 'بهجة الطلب في آداب الطلب', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'فضل الإسلام', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'المقدمة الفقهية الصغرى', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'خلاصة تعظيم العلم', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'العقيدة الواسطية', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' }
+    ]
+  },
+  {
+    title: 'المستوى الثالث',
+    items: [
+      { name: 'كتاب التوحيد', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'القواعد الأربع', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'كشف الشبهات', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' }
+    ]
+  },
+  {
+    title: 'المستوى الرابع',
+    items: [
+      { name: 'منظومة القواعد الفقهية', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'المقدمة الآجرومية', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'خلاصة مقدمة أصول التفسير', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'نخبة الفكر', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
+      { name: 'الورقات في أصول الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' }
+    ]
+  }
+];
+
+export const generatePersonalMutun = (userId: string): Matn[] => {
+  const personalMutun: Matn[] = [];
+  let matnId = 1;
+  
+  mutunTemplate.forEach(section => {
+    section.items.forEach(item => {
+      personalMutun.push({
+        id: `${userId}_matn_${matnId}`,
+        name: item.name,
+        section: section.title,
+        status: 'red',
+        description: '',
+        threshold: 7, // Default 7 Tage
+        lastChange_date: new Date().toISOString(),
+        memorization_pdf_link: item.memorization_pdf_link,
+        memorization_audio_link: item.memorization_audio_link,
+        explanation_pdf_link: item.explanation_pdf_link,
+        explanation_audio_link: item.explanation_audio_link,
+        user_id: userId,
+        audio_link: item.memorization_audio_link // For compatibility
+      });
+      matnId++;
+    });
+  });
+  
+  return personalMutun;
+};
+
 // Demo Users
 export const demoUsers: (Student | Teacher | User)[] = [
   { 
@@ -86,41 +159,8 @@ export const demoHalaqat: Halaqa[] = [
   }
 ];
 
-// Demo Mutun
-export const demoMutun: Matn[] = [
-  {
-    id: 'matn1',
-    name: 'القرآن الكريم',
-    section: 'القرآن',
-    status: 'green',
-    lastChange_date: '2024-01-10',
-    user_id: 'student1',
-    threshold: 30,
-    description: 'الحفظ مع التجويد',
-    audio_link: 'https://example.com/quran-audio.mp3'
-  },
-  {
-    id: 'matn2', 
-    name: 'صحيح البخاري',
-    section: 'الحديث',
-    status: 'orange',
-    lastChange_date: '2024-01-05',
-    user_id: 'student1',
-    threshold: 45,
-    description: 'أحاديث مختارة',
-    memorization_pdf_link: 'https://example.com/bukhari.pdf'
-  },
-  {
-    id: 'matn3',
-    name: 'الأجرومية',
-    section: 'النحو',
-    status: 'red',
-    user_id: 'student1', 
-    threshold: 60,
-    description: 'قواعد النحو الأساسية',
-    explanation_pdf_link: 'https://example.com/ajrumiya-explanation.pdf'
-  }
-];
+// Demo Mutun - Empty, will be generated per user
+export const demoMutun: Matn[] = [];
 
 // Demo News
 export const demoNews: NewsItem[] = [
@@ -139,40 +179,3 @@ export const demoNews: NewsItem[] = [
     author_id: 'leiter'
   }
 ];
-
-// Helper function to generate personal mutun for a user
-export const generatePersonalMutun = (userId: string): Matn[] => {
-  const sections = ['القرآن', 'الحديث', 'العقيدة', 'الفقه', 'النحو', 'البلاغة'];
-  const mutunNames: Record<string, string[]> = {
-    'القرآن': ['القرآن الكريم', 'التفسير الميسر'],
-    'الحديث': ['صحيح البخاري', 'صحيح مسلم', 'رياض الصالحين'],
-    'العقيدة': ['العقيدة الطحاوية', 'كتاب التوحيد'],
-    'الفقه': ['عمدة الفقه', 'الكافي في الفقه'],
-    'النحو': ['الأجرومية', 'قطر الندى'],
-    'البلاغة': ['البلاغة الواضحة', 'تلخيص المفتاح']
-  };
-
-  const result: Matn[] = [];
-  let matnId = 1;
-
-  sections.forEach(section => {
-    mutunNames[section].forEach(name => {
-      result.push({
-        id: `matn_${userId}_${matnId}`,
-        name,
-        section,
-        status: ['red', 'orange', 'green'][Math.floor(Math.random() * 3)] as 'red' | 'orange' | 'green',
-        lastChange_date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-        user_id: userId,
-        threshold: 30 + Math.floor(Math.random() * 60),
-        description: '',
-        audio_link: Math.random() > 0.7 ? `https://example.com/audio/${matnId}.mp3` : undefined,
-        memorization_pdf_link: Math.random() > 0.5 ? `https://example.com/pdf/${matnId}.pdf` : undefined,
-        explanation_pdf_link: Math.random() > 0.8 ? `https://example.com/explanation/${matnId}.pdf` : undefined
-      });
-      matnId++;
-    });
-  });
-
-  return result;
-};

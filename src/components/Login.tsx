@@ -9,11 +9,18 @@ export function Login() {
 
   const handleLogin = (e?: Event) => {
     e?.preventDefault();
+    console.log('🔄 handleLogin called with:', { username: username(), password: password() });
+    
     const success = app.login(username(), password());
+    console.log('📝 Login result:', success);
+    
     if (success) {
       setError('');
+      console.log('✅ Login successful - error cleared');
     } else {
-      setError(app.translate('invalidCredentials'));
+      const errorMsg = app.translate('invalidCredentials');
+      setError(errorMsg);
+      console.log('❌ Login failed - error set:', errorMsg);
     }
   };
 
@@ -260,6 +267,30 @@ export function Login() {
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
               >
                 👑 Admin
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  console.log('🚀 Direct login test with admin/test');
+                  const success = app.login('admin', 'test');
+                  console.log('🎯 Direct login result:', success);
+                  if (!success) {
+                    setError('Direct login failed!');
+                  }
+                }}
+                style={{
+                  padding: '8px 12px',
+                  'background-color': 'var(--color-warning)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  'font-size': '10px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                🧪 TEST
               </button>
 
               <button
