@@ -8,7 +8,7 @@ export function Login() {
   const [isLogging, setIsLogging] = createSignal(false);
   const app = useApp();
 
-  const handleLogin = async (e?: SubmitEvent) => {
+  const handleLogin = (e?: SubmitEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -29,26 +29,12 @@ export function Login() {
     });
     
     try {
-      // Force a small delay to ensure UI updates
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
       const success = app.login(username(), password());
       console.log('📝 Login result:', success);
       
       if (success) {
         console.log('✅ Login successful - user logged in:', app.currentUser()?.name);
-        
-        // Force page to home after successful login
-        app.setCurrentPage('home');
-        
-        // Force immediate re-render
-        setTimeout(() => {
-          console.log('🔄 Forcing app re-render...');
-          // Force the entire app to re-evaluate
-          window.location.hash = '#refresh';
-          window.location.hash = '';
-        }, 100);
-        
+        // AppStore handles everything - no need to force anything
       } else {
         const errorMsg = app.translate('invalidCredentials');
         setError(errorMsg);
@@ -62,17 +48,15 @@ export function Login() {
     }
   };
 
-  const quickLogin = async (user: string, pass: string) => {
+  const quickLogin = (user: string, pass: string) => {
     console.log('🚀 Quick login attempt:', user);
-    
-    // SUPER ROBUST: Set values and wait longer
     setUsername(user);
     setPassword(pass);
     
-    // Longer delay to ensure state is 100% updated
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    await handleLogin();
+    // Simple timeout to ensure state is set
+    setTimeout(() => {
+      handleLogin();
+    }, 100);
   };
 
   return (
@@ -314,11 +298,11 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={async (e) => {
+                onMouseDown={(e) => {
                   if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  await quickLogin('admin', 'test');
+                  quickLogin('admin', 'test');
                 }}
                 style={{
                   padding: '8px',
@@ -336,11 +320,11 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={async (e) => {
+                onMouseDown={(e) => {
                   if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  await quickLogin('leiter', 'test');
+                  quickLogin('leiter', 'test');
                 }}
                 style={{
                   padding: '8px',
@@ -358,11 +342,11 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={async (e) => {
+                onMouseDown={(e) => {
                   if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  await quickLogin('lehrer', 'test');
+                  quickLogin('lehrer', 'test');
                 }}
                 style={{
                   padding: '8px',
@@ -380,11 +364,11 @@ export function Login() {
               <button
                 type="button"
                 disabled={isLogging()}
-                onMouseDown={async (e) => {
+                onMouseDown={(e) => {
                   if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  await quickLogin('student1', 'test');
+                  quickLogin('student1', 'test');
                 }}
                 style={{
                   padding: '8px',
