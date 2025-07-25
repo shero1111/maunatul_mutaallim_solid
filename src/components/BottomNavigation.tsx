@@ -14,7 +14,7 @@ export function BottomNavigation() {
     { page: 'more', icon: '⚙️', label: app.translate('more') }
   ];
   
-  const containerStyle = {
+  const containerStyle = (itemCount: number) => ({
     position: 'fixed' as const,
     bottom: '0',
     left: '0',
@@ -22,10 +22,10 @@ export function BottomNavigation() {
     'background-color': 'var(--color-background)',
     'border-top': '1px solid var(--color-border)',
     display: 'grid',
-    'grid-template-columns': 'repeat(6, 1fr)',
+    'grid-template-columns': `repeat(${itemCount}, 1fr)`,
     'z-index': '1000',
     'box-shadow': '0 -2px 10px rgba(0, 0, 0, 0.1)'
-  };
+  });
   
   const itemStyle = (isActive: boolean) => ({
     display: 'flex',
@@ -81,9 +81,11 @@ export function BottomNavigation() {
     app.setCurrentPage(page);
   };
   
+  const visibleItems = getVisibleItems();
+  
   return (
-    <nav style={containerStyle}>
-      <For each={getVisibleItems()}>
+    <nav style={containerStyle(visibleItems.length)}>
+      <For each={visibleItems}>
         {(item) => {
           const isActive = () => app.currentPage() === item.page;
           

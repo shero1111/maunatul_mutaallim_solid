@@ -398,12 +398,13 @@ export function MutunPage() {
           return (
             <div style={{ 'margin-bottom': '32px' }}>
               {/* Premium Section Header */}
-              <div 
+                            <button 
                 onClick={() => {
-                  console.log('🖱️ Simple Click on section:', section);
+                  console.log('🖱️ BUTTON Click on section:', section);
                   toggleSection(section);
                 }} 
                 style={{ 
+                  width: '100%',
                   background: 'var(--color-surface)', 
                   'border-radius': '12px', 
                   padding: '15px 20px', 
@@ -411,9 +412,10 @@ export function MutunPage() {
                   cursor: 'pointer',
                   'margin-bottom': isCollapsed ? '0' : '15px',
                   transition: 'all 0.3s ease',
-                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
+                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)',
+                  'text-align': 'left'
                 }}
-                              >
+              >
                 <div style={{ 
                   display: 'flex', 
                   'justify-content': 'space-between', 
@@ -441,7 +443,7 @@ export function MutunPage() {
                     ▼
                   </span>
                 </div>
-              </div>
+              </button>
               
               {/* Premium Section Content */}
               <Show when={!isCollapsed}>

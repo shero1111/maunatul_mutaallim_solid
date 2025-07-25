@@ -96,6 +96,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     const savedMutunData = localStorage.getItem('mutunData');
     const savedUsersData = localStorage.getItem('usersData');
     const savedNewsData = localStorage.getItem('newsData');
+    const savedCurrentPage = localStorage.getItem('currentPage') as Page;
     
     if (savedTheme) {
       setTheme(savedTheme);
@@ -103,6 +104,10 @@ export function AppProvider(props: { children: JSX.Element }) {
     }
     if (savedLanguage) {
       setLanguage(savedLanguage);
+    }
+    if (savedCurrentPage) {
+      setCurrentPage(savedCurrentPage);
+      console.log('🔄 Restored last page:', savedCurrentPage);
     }
     
     // AUTO LOGIN - User bleibt angemeldet
@@ -390,7 +395,11 @@ export function AppProvider(props: { children: JSX.Element }) {
     searchTerm,
     login,
     logout,
-    setCurrentPage,
+    setCurrentPage: (page: Page) => {
+      setCurrentPage(page);
+      localStorage.setItem('currentPage', page);
+      console.log('📍 Page saved to localStorage:', page);
+    },
     setTheme: (newTheme: Theme) => {
       setTheme(newTheme);
       setCSSVariables(newTheme);
