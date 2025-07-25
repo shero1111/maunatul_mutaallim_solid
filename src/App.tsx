@@ -14,6 +14,15 @@ import { AboutUsPage } from './pages/AboutUsPage';
 function AppContent() {
   const app = useApp();
   
+  // DEBUG AUTHENTICATION
+  const currentUser = app.currentUser();
+  const isAuth = app.isAuthenticated();
+  
+  console.log('🔍 APP STATE:', {
+    currentUser: currentUser?.name || 'NULL',
+    isAuthenticated: isAuth
+  });
+  
   const renderCurrentPage = () => {
     switch (app.currentPage()) {
       case 'home': return <HomePage />;
@@ -33,6 +42,21 @@ function AppContent() {
       'background-color': 'var(--color-surface)',
       'font-family': 'system-ui, -apple-system, sans-serif'
     }}>
+      {/* DEBUG */}
+      <div style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        background: 'black',
+        color: 'white',
+        padding: '5px',
+        'font-size': '12px',
+        'z-index': '9999'
+      }}>
+        User: {currentUser?.name || 'NONE'}<br/>
+        Auth: {isAuth ? 'YES' : 'NO'}
+      </div>
+      
       <Show 
         when={app.isAuthenticated()}
         fallback={<Login />}
