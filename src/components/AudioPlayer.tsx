@@ -114,7 +114,8 @@ export function AudioPlayer() {
     'box-shadow': '0 -4px 20px rgba(0, 0, 0, 0.15)',
     transform: player().title ? 'translateY(0)' : 'translateY(100%)',
     transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    'backdrop-filter': 'blur(10px)'
+    'backdrop-filter': 'blur(10px)',
+    direction: 'ltr' as const
   });
   
   const contentStyle = {
@@ -137,14 +138,16 @@ export function AudioPlayer() {
     overflow: 'hidden',
     'text-overflow': 'ellipsis',
     flex: '1',
-    'margin-right': '12px'
+    'margin-right': '12px',
+    'text-align': 'left' as const
   };
   
   const controlsStyle = {
     display: 'flex',
     'align-items': 'center',
     'justify-content': 'center',
-    gap: '12px'
+    gap: '12px',
+    direction: 'ltr' as const
   };
   
   const buttonStyle = {
@@ -207,7 +210,8 @@ export function AudioPlayer() {
     'font-size': '12px',
     color: 'var(--color-text-secondary)',
     'margin-bottom': '8px',
-    'font-weight': '500'
+    'font-weight': '500',
+    direction: 'ltr' as const
   };
   
   const progressBarStyle = {
@@ -219,7 +223,8 @@ export function AudioPlayer() {
     cursor: 'pointer',
     position: 'relative' as const,
     'box-shadow': 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
-    'touch-action': 'none'
+    'touch-action': 'none',
+    direction: 'ltr' as const
   };
   
   const progressFillStyle = () => {
