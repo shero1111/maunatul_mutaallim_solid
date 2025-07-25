@@ -210,7 +210,7 @@ export function MutunPage() {
             'font-weight': '600',
             'white-space': 'nowrap'
           }}>
-            مستويات:
+            المستويات:
           </span>
 
           {/* الجميع Button */}
@@ -277,7 +277,7 @@ export function MutunPage() {
                                   style={{ 
                     background: 'var(--color-surface)', 
                     'border-radius': '12px', 
-                    padding: '15px 20px', 
+                    padding: '10px 16px', 
                     border: '2px solid var(--color-primary)', 
                     cursor: 'pointer',
                     'margin-bottom': isCollapsed() ? '0' : '15px',
@@ -346,68 +346,69 @@ export function MutunPage() {
                         <div style={{ 
                           background: 'var(--color-surface)', 
                           'border-radius': '12px', 
-                          padding: '20px', 
+                          padding: '16px', 
                           border: `2px solid ${getMatnColor(matn.status)}`, 
                           'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
                         }}>
-                          {/* Header with Title and Status */}
+                          {/* Title - Centered at Top */}
+                          <h3 style={{ 
+                            color: 'var(--color-text)', 
+                            'font-size': '1.1rem', 
+                            margin: '0 0 12px 0',
+                            'text-align': 'center',
+                            'font-weight': '600'
+                          }}>
+                            {matn.name}
+                          </h3>
+
+                          {/* Status Button and Settings - Below Title */}
                           <div style={{ 
                             display: 'flex', 
                             'justify-content': 'space-between', 
                             'align-items': 'center', 
                             'margin-bottom': '15px' 
                           }}>
-                            <h3 style={{ 
-                              color: 'var(--color-text)', 
-                              'font-size': '1.1rem', 
-                              margin: '0', 
-                              flex: '1'
-                            }}>
-                              {matn.name}
-                            </h3>
-                            <div style={{ display: 'flex', gap: '8px', 'align-items': 'center' }}>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  changeMatnStatus(matn.id);
-                                }} 
-                                style={{ 
-                                  background: getMatnColor(matn.status), 
-                                  color: 'white', 
-                                  padding: '8px 12px', 
-                                  'border-radius': '8px', 
-                                  'font-size': '12px', 
-                                  'font-weight': '600',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  'min-width': '120px'
-                                }}
-                              >
-                                {getMatnStatusText(matn.status)}
-                              </button>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openThresholdModal(matn);
-                                }} 
-                                style={{ 
-                                  background: 'var(--color-surface)', 
-                                  border: '2px solid var(--color-border)', 
-                                  'border-radius': '8px', 
-                                  padding: '8px', 
-                                  cursor: 'pointer', 
-                                  'font-size': '16px',
-                                  'min-width': '36px',
-                                  'min-height': '36px',
-                                  display: 'flex',
-                                  'align-items': 'center',
-                                  'justify-content': 'center'
-                                }}
-                                title="إعداد عتبة الإعادة"
-                              >
-                                ⚙️
-                              </button>
-                            </div>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                changeMatnStatus(matn.id);
+                              }} 
+                              style={{ 
+                                background: getMatnColor(matn.status), 
+                                color: 'white', 
+                                padding: '8px 12px', 
+                                'border-radius': '8px', 
+                                'font-size': '12px', 
+                                'font-weight': '600',
+                                border: 'none',
+                                cursor: 'pointer',
+                                'min-width': '120px'
+                              }}
+                            >
+                              {getMatnStatusText(matn.status)}
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openThresholdModal(matn);
+                              }} 
+                              style={{ 
+                                background: 'var(--color-surface)', 
+                                border: '2px solid var(--color-border)', 
+                                'border-radius': '8px', 
+                                padding: '8px', 
+                                cursor: 'pointer', 
+                                'font-size': '16px',
+                                'min-width': '36px',
+                                'min-height': '36px',
+                                display: 'flex',
+                                'align-items': 'center',
+                                'justify-content': 'center'
+                              }}
+                              title="إعداد عتبة الإعادة"
+                            >
+                              ⚙️
+                            </button>
                           </div>
 
                           {/* Note Field - direkt unter Titel */}

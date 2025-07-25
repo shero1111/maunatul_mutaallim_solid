@@ -159,13 +159,13 @@ export function MorePage() {
     },
     {
       icon: '📖',
-      text: app.translate('guide'),
+      text: app.translate('userGuide'),
       type: 'action' as const,
       action: () => alert('User guide coming soon!')
     },
     {
       icon: '🏷️',
-      text: app.translate('version'),
+      text: app.translate('appVersion'),
       type: 'info' as const,
       value: '2.0.0'
     }
@@ -262,7 +262,7 @@ export function MorePage() {
       {/* General */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>
-          General
+          {app.translate('general')}
         </div>
         <For each={generalItems}>
           {(item, index) => (

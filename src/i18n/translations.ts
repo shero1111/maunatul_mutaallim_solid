@@ -87,7 +87,10 @@ export const translations = {
     noNews: 'لا توجد أخبار',
     searchUsers: 'البحث في المستخدمين',
     noUsersFound: 'لا يوجد مستخدمون',
-    newPassword: 'كلمة المرور الجديدة'
+    newPassword: 'كلمة المرور الجديدة',
+    general: 'عام',
+    userGuide: 'دليل المستخدم',
+    appVersion: 'إصدار التطبيق'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -177,6 +180,9 @@ export const translations = {
     noNews: 'No news available',
     searchUsers: 'Search Users',
     noUsersFound: 'No users found',
-    newPassword: 'New Password'
+    newPassword: 'New Password',
+    general: 'General',
+    userGuide: 'User Guide',
+    appVersion: 'App Version'
   }
 };
