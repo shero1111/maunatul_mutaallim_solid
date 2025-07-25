@@ -19,37 +19,48 @@ export function Login() {
     setError('');
     
     try {
+      console.log('🆕 Calling app.login...');
       const loginSuccess = app.login(username(), password());
       console.log('🆕 FRESH LOGIN RESULT:', loginSuccess);
       
       if (loginSuccess) {
         console.log('🆕 SUCCESS! Current user:', app.currentUser()?.name);
+        console.log('🆕 Starting reload process...');
         
-        // FORCE APP UPDATE AFTER LOGIN
-        setTimeout(() => {
-          console.log('🔄 FORCING APP REFRESH...');
-          window.location.reload();
-        }, 500);
+        // IMMEDIATE RELOAD - NO WAITING
+        window.location.reload();
         
       } else {
         setError('Login fehlgeschlagen - Username oder Password falsch');
       }
     } catch (err) {
       console.error('🆕 LOGIN ERROR:', err);
-      setError('Fehler beim Login');
+      console.log('🆕 ERROR occurred, but forcing reload anyway...');
+      
+      // EVEN IF ERROR - TRY TO RELOAD
+      try {
+        window.location.reload();
+      } catch (reloadErr) {
+        console.error('🆕 RELOAD ERROR:', reloadErr);
+        setError('Fehler beim Login - versuche es nochmal');
+      }
     }
   };
 
   // INSTANT LOGIN BUTTONS
   const instantLogin = (user: string, pass: string) => {
-    console.log('🆕 INSTANT LOGIN:', user);
-    setUsername(user);
-    setPassword(pass);
-    
-    // Wait a bit for state to update then login
-    setTimeout(() => {
-      performLogin();
-    }, 100);
+    try {
+      console.log('🆕 INSTANT LOGIN:', user);
+      setUsername(user);
+      setPassword(pass);
+      
+      // Wait a bit for state to update then login
+      setTimeout(() => {
+        performLogin();
+      }, 100);
+    } catch (err) {
+      console.error('🆕 INSTANT LOGIN ERROR:', err);
+    }
   };
 
   return (
