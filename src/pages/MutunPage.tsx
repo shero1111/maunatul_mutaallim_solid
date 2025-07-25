@@ -198,47 +198,64 @@ export function MutunPage() {
         {/* Level Filter Buttons */}
         <div style={{ 
           display: 'flex', 
-          gap: '10px', 
+          'align-items': 'center',
+          gap: '12px', 
           'flex-wrap': 'wrap',
           'margin-bottom': '20px'
         }}>
+          {/* Label */}
+          <span style={{
+            color: 'var(--color-text)',
+            'font-size': '16px',
+            'font-weight': '600',
+            'white-space': 'nowrap'
+          }}>
+            مستويات:
+          </span>
+
+          {/* الجميع Button */}
           <button 
             onClick={() => handleLevelFilterChange('all')} 
             style={{ 
-              padding: '12px 20px', 
+              padding: '8px 16px', 
               background: levelFilter() === 'all' 
                 ? 'var(--color-primary)' 
                 : 'var(--color-surface)', 
               color: levelFilter() === 'all' ? 'white' : 'var(--color-text)', 
               border: '1px solid var(--color-border)', 
-              'border-radius': '8px', 
+              'border-radius': '6px', 
               cursor: 'pointer', 
               'font-size': '14px',
-              'font-weight': '600'
+              'font-weight': '500'
             }}
           >
-            جميع المستويات
+            الجميع
           </button>
-          <For each={allLevels}>
-            {(level) => (
-              <button 
-                onClick={() => handleLevelFilterChange(level)} 
-                style={{ 
-                  padding: '12px 20px', 
-                  background: levelFilter() === level 
-                    ? 'var(--color-primary)' 
-                    : 'var(--color-surface)', 
-                  color: levelFilter() === level ? 'white' : 'var(--color-text)', 
-                  border: '1px solid var(--color-border)', 
-                  'border-radius': '8px', 
-                  cursor: 'pointer', 
-                  'font-size': '14px',
-                  'font-weight': '600'
-                }}
-              >
-                {level}
-              </button>
-            )}
+
+          {/* Individual Level Buttons */}
+          <For each={['الأول', 'الثاني', 'الثالث', 'الرابع']}>
+            {(levelShort, index) => {
+              const fullLevel = allLevels[index()];
+              return (
+                <button 
+                  onClick={() => handleLevelFilterChange(fullLevel)} 
+                  style={{ 
+                    padding: '8px 16px', 
+                    background: levelFilter() === fullLevel 
+                      ? 'var(--color-primary)' 
+                      : 'var(--color-surface)', 
+                    color: levelFilter() === fullLevel ? 'white' : 'var(--color-text)', 
+                    border: '1px solid var(--color-border)', 
+                    'border-radius': '6px', 
+                    cursor: 'pointer', 
+                    'font-size': '14px',
+                    'font-weight': '500'
+                  }}
+                >
+                  {levelShort}
+                </button>
+              );
+            }}
           </For>
         </div>
       </div>
