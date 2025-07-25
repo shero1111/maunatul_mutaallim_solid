@@ -157,7 +157,14 @@ export function HomePage() {
 // Student Dashboard Component
 function StudentDashboard(props: any) {
   const { data, app, searchTerm, setSearchTerm, statusFilter, setStatusFilter, favorites, setFavorites } = props;
-  const { student, halaqat, allUsers } = data;
+  const { halaqat, allUsers } = data;
+  
+  // Make student reactive to current user changes
+  const student = createMemo(() => {
+    const currentUser = app.currentUser();
+    console.log('🔄 Student memo updated:', currentUser);
+    return currentUser;
+  });
   
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -172,17 +179,32 @@ function StudentDashboard(props: any) {
     }
   };
   
-  const statusInfo = getStatusInfo(student.status);
-  const lastChanged = student.status_changed_at ? new Date(student.status_changed_at).toLocaleDateString('ar') : '';
+  const statusInfo = createMemo(() => getStatusInfo(student()?.status || 'not_available'));
+  const lastChanged = createMemo(() => 
+    student()?.status_changed_at ? new Date(student().status_changed_at).toLocaleDateString('ar') : ''
+  );
   
   const changeStatus = (newStatus: string) => {
+    console.log('🎯 Status button clicked:', newStatus);
+    console.log('👤 Current student:', student());
+    
+    const currentStudent = student();
+    if (!currentStudent) return;
+    
     const updatedStudent = {
-      ...student,
-      status: newStatus,
+      ...currentStudent,
+      status: newStatus as any,
       status_changed_at: new Date().toISOString()
     };
-    console.log('🔄 Updating student status:', updatedStudent);
+    console.log('🔄 Updated student object:', updatedStudent);
+    
     app.updateUser(updatedStudent);
+    
+    // Force a re-render by checking if the data actually changed
+    setTimeout(() => {
+      const currentUserData = app.currentUser();
+      console.log('✅ Current user after update:', currentUserData);
+    }, 100);
   };
   
   const toggleFavorite = (userId: string) => {
@@ -200,7 +222,7 @@ function StudentDashboard(props: any) {
     
     let students = halaqa.student_ids
       .map(id => allUsers.find(u => u.id === id))
-      .filter(u => u && u.id !== student.id && u.isActive !== false) as Student[];
+      .filter(u => u && u.id !== student()?.id && u.isActive !== false) as Student[];
     
     // Apply search filter
     if (searchTerm()) {
@@ -233,32 +255,31 @@ function StudentDashboard(props: any) {
         'border-radius': '15px', 
         padding: '20px', 
         'margin-bottom': '20px',
-        border: `2px solid ${statusInfo.color}`,
+        border: `2px solid ${statusInfo().color}`,
         'text-align': 'center'
       }}>
-        <div style={{ 'font-size': '3rem', 'margin-bottom': '10px' }}>{statusInfo.icon}</div>
         <h3 style={{ 
           color: 'var(--color-text)', 
           'margin-bottom': '5px',
           'font-size': '1.3rem'
         }}>
-          {student.name}
+          {student()?.name}
         </h3>
         <p style={{ 
-          color: statusInfo.color, 
+          color: statusInfo().color, 
           'font-size': '1.1rem',
           'font-weight': '600',
           'margin-bottom': '5px'
         }}>
-          {statusInfo.text}
+          {statusInfo().text}
         </p>
-        {lastChanged && (
+        {lastChanged() && (
           <p style={{ 
             color: 'var(--color-text-secondary)', 
             'font-size': '0.9rem',
             'margin-bottom': '15px'
           }}>
-            آخر تحديث: {lastChanged}
+            آخر تحديث: {lastChanged()}
           </p>
         )}
         
@@ -285,8 +306,8 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus('not_available')}
             style={{
-              background: student.status === 'not_available' ? 'var(--color-error)' : 'var(--color-surface)',
-              color: student.status === 'not_available' ? 'white' : 'var(--color-error)',
+              background: student()?.status === 'not_available' ? 'var(--color-error)' : 'var(--color-surface)',
+              color: student()?.status === 'not_available' ? 'white' : 'var(--color-error)',
               border: '2px solid var(--color-error)',
               padding: '8px 16px',
               'border-radius': '8px',
@@ -300,8 +321,8 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus('revising')}
             style={{
-              background: student.status === 'revising' ? 'var(--color-warning)' : 'var(--color-surface)',
-              color: student.status === 'revising' ? 'white' : 'var(--color-warning)',
+              background: student()?.status === 'revising' ? 'var(--color-warning)' : 'var(--color-surface)',
+              color: student()?.status === 'revising' ? 'white' : 'var(--color-warning)',
               border: '2px solid var(--color-warning)',
               padding: '8px 16px',
               'border-radius': '8px',
@@ -315,8 +336,8 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus('khatamat')}
             style={{
-              background: student.status === 'khatamat' ? 'var(--color-success)' : 'var(--color-surface)',
-              color: student.status === 'khatamat' ? 'white' : 'var(--color-success)',
+              background: student()?.status === 'khatamat' ? 'var(--color-success)' : 'var(--color-surface)',
+              color: student()?.status === 'khatamat' ? 'white' : 'var(--color-success)',
               border: '2px solid var(--color-success)',
               padding: '8px 16px',
               'border-radius': '8px',
