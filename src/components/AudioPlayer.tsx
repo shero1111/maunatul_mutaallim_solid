@@ -9,7 +9,13 @@ export function AudioPlayer() {
   const [isDragging, setIsDragging] = createSignal(false);
   const [dragPosition, setDragPosition] = createSignal(0);
   
+  // Hold-to-accelerate skip state
+  const [isHoldingSkip, setIsHoldingSkip] = createSignal<'forward' | 'backward' | null>(null);
+  const [skipSpeed, setSkipSpeed] = createSignal(1);
+  
   let progressBarRef: HTMLDivElement | undefined;
+  let skipIntervalRef: number | undefined;
+  let accelerationTimeoutRef: number | undefined;
   
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -89,9 +95,75 @@ export function AudioPlayer() {
     setupGlobalListeners();
   };
   
+  // Accelerated skip functions
+  const startAcceleratedSkip = (direction: 'forward' | 'backward') => {
+    setIsHoldingSkip(direction);
+    setSkipSpeed(1);
+    
+    // Initial skip
+    if (direction === 'forward') {
+      app.skipForward();
+    } else {
+      app.skipBackward();
+    }
+    
+    // Start continuous skipping with acceleration
+    let currentSpeed = 1;
+    const baseInterval = 200; // Base interval in ms
+    
+    const skip = () => {
+      if (direction === 'forward') {
+        app.skipForward();
+      } else {
+        app.skipBackward();
+      }
+    };
+    
+    const scheduleNextSkip = () => {
+      if (isHoldingSkip() === direction) {
+        skipIntervalRef = setTimeout(() => {
+          skip();
+          scheduleNextSkip();
+        }, Math.max(50, baseInterval / currentSpeed)); // Minimum 50ms interval
+      }
+    };
+    
+    // Start the skipping loop
+    skipIntervalRef = setTimeout(() => {
+      scheduleNextSkip();
+    }, baseInterval);
+    
+    // Acceleration: increase speed every 500ms
+    const accelerate = () => {
+      if (isHoldingSkip() === direction && currentSpeed < 10) { // Max 10x speed
+        currentSpeed += 0.5;
+        setSkipSpeed(currentSpeed);
+        accelerationTimeoutRef = setTimeout(accelerate, 500);
+      }
+    };
+    
+    accelerationTimeoutRef = setTimeout(accelerate, 500);
+  };
+  
+  const stopAcceleratedSkip = () => {
+    setIsHoldingSkip(null);
+    setSkipSpeed(1);
+    
+    if (skipIntervalRef) {
+      clearTimeout(skipIntervalRef);
+      skipIntervalRef = undefined;
+    }
+    
+    if (accelerationTimeoutRef) {
+      clearTimeout(accelerationTimeoutRef);
+      accelerationTimeoutRef = undefined;
+    }
+  };
+
   // Clean up on component unmount
   onCleanup(() => {
     removeGlobalListeners();
+    stopAcceleratedSkip();
   });
   
   // Simple click handler for non-drag clicks
@@ -322,6 +394,23 @@ export function AudioPlayer() {
             </div>
           </div>
           
+          {/* Speed Indicator */}
+          <Show when={isHoldingSkip()}>
+            <div style={{
+              textAlign: 'center',
+              fontSize: '12px',
+              color: 'var(--color-primary)',
+              fontWeight: '600',
+              marginBottom: '8px',
+              background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              animation: 'pulse 0.5s ease-in-out infinite alternate'
+            }}>
+              {skipSpeed().toFixed(1)}x {isHoldingSkip() === 'forward' ? 'Vorspulen' : 'Zurückspulen'}
+            </div>
+          </Show>
+
           {/* Controls */}
           <div style={controlsStyle}>
             <Show when={player().isLoading}>
@@ -339,17 +428,32 @@ export function AudioPlayer() {
             <Show when={!player().isLoading}>
               {/* Skip Backward - LEFT (LTR Logic) */}
               <button
-                style={skipButtonStyle}
+                style={{
+                  ...skipButtonStyle,
+                  transform: isHoldingSkip() === 'backward' ? 'scale(1.1)' : 'scale(1)',
+                  backgroundColor: isHoldingSkip() === 'backward' ? 'var(--color-primary)' : 'var(--color-surface)',
+                  color: isHoldingSkip() === 'backward' ? 'white' : 'var(--color-text)',
+                  boxShadow: isHoldingSkip() === 'backward' ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
+                }}
                 onClick={app.skipBackward}
+                onMouseDown={() => startAcceleratedSkip('backward')}
+                onMouseUp={stopAcceleratedSkip}
+                onMouseLeave={stopAcceleratedSkip}
+                onTouchStart={() => startAcceleratedSkip('backward')}
+                onTouchEnd={stopAcceleratedSkip}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'white';
+                  if (!isHoldingSkip()) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'white';
+                  }
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
-                  e.currentTarget.style.color = 'var(--color-text)';
+                  if (!isHoldingSkip()) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                    e.currentTarget.style.color = 'var(--color-text)';
+                  }
                 }}
-                title="-5 Sekunden"
+                title={isHoldingSkip() === 'backward' ? `${skipSpeed().toFixed(1)}x Speed` : 'Halten für schnelleres Zurückspulen'}
               >
                 ⏮
               </button>
@@ -372,17 +476,32 @@ export function AudioPlayer() {
               
               {/* Skip Forward - RIGHT (LTR Logic) */}
               <button
-                style={skipButtonStyle}
+                style={{
+                  ...skipButtonStyle,
+                  transform: isHoldingSkip() === 'forward' ? 'scale(1.1)' : 'scale(1)',
+                  backgroundColor: isHoldingSkip() === 'forward' ? 'var(--color-primary)' : 'var(--color-surface)',
+                  color: isHoldingSkip() === 'forward' ? 'white' : 'var(--color-text)',
+                  boxShadow: isHoldingSkip() === 'forward' ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
+                }}
                 onClick={app.skipForward}
+                onMouseDown={() => startAcceleratedSkip('forward')}
+                onMouseUp={stopAcceleratedSkip}
+                onMouseLeave={stopAcceleratedSkip}
+                onTouchStart={() => startAcceleratedSkip('forward')}
+                onTouchEnd={stopAcceleratedSkip}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'white';
+                  if (!isHoldingSkip()) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                    e.currentTarget.style.color = 'white';
+                  }
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
-                  e.currentTarget.style.color = 'var(--color-text)';
+                  if (!isHoldingSkip()) {
+                    e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                    e.currentTarget.style.color = 'var(--color-text)';
+                  }
                 }}
-                title="+5 Sekunden"
+                title={isHoldingSkip() === 'forward' ? `${skipSpeed().toFixed(1)}x Speed` : 'Halten für schnelleres Vorspulen'}
               >
                 ⏭
               </button>
