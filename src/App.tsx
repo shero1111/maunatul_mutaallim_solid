@@ -9,6 +9,7 @@ import { HalaqatPage } from './pages/HalaqatPage';
 import { UsersPage } from './pages/UsersPage';
 import { NewsPage } from './pages/NewsPage';
 import { MorePage } from './pages/MorePage';
+import { AboutUsPage } from './pages/AboutUsPage';
 
 function AppContent() {
   const app = useApp();
@@ -21,6 +22,7 @@ function AppContent() {
       case 'users': return <UsersPage />;
       case 'news': return <NewsPage />;
       case 'more': return <MorePage />;
+      case 'about-us': return <AboutUsPage />;
       default: return <HomePage />;
     }
   };

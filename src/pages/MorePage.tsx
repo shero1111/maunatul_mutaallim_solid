@@ -155,7 +155,7 @@ export function MorePage() {
       icon: 'ℹ️',
       text: app.translate('aboutUs'),
       type: 'action' as const,
-      action: () => alert('Maunatul Mutaallim v2.0 - Built with SolidJS')
+      action: () => app.setCurrentPage('about-us')
     },
     {
       icon: '📖',

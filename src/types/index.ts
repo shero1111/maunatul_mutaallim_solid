@@ -87,4 +87,4 @@ export interface TimerState {
 
 export type Theme = 'light' | 'dark';
 export type Language = 'ar' | 'en';
-export type Page = 'home' | 'mutuun' | 'halaqat' | 'users' | 'news' | 'more';
+export type Page = 'home' | 'mutuun' | 'halaqat' | 'users' | 'news' | 'more' | 'about-us';
