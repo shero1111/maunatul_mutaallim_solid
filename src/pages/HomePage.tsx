@@ -12,7 +12,28 @@ export function HomePage() {
   // Student-specific signals for search and filter
   const [searchTerm, setSearchTerm] = createSignal('');
   const [statusFilter, setStatusFilter] = createSignal<string>('all');
-  const [favorites, setFavorites] = createSignal<string[]>([]);
+  
+  // Get favorites from current user data
+  const favorites = createMemo(() => {
+    const user = currentUser;
+    return user?.favorites || [];
+  });
+  
+  const setFavorites = (newFavorites: string[] | ((prev: string[]) => string[])) => {
+    if (!currentUser) return;
+    
+    const finalFavorites = typeof newFavorites === 'function' 
+      ? newFavorites(favorites()) 
+      : newFavorites;
+    
+    const updatedUser = {
+      ...currentUser,
+      favorites: finalFavorites
+    };
+    
+    console.log('⭐ Updating user favorites:', finalFavorites);
+    app.updateUser(updatedUser);
+  };
   
   // Role-based dashboard data
   const dashboardData = createMemo(() => {
@@ -208,10 +229,15 @@ function StudentDashboard(props: any) {
   };
   
   const toggleFavorite = (userId: string) => {
+    console.log('⭐ Student: Toggle favorite clicked for:', userId);
     const current = favorites();
+    console.log('⭐ Student: Current favorites:', current);
+    
     if (current.includes(userId)) {
+      console.log('⭐ Student: Removing from favorites');
       setFavorites(current.filter(id => id !== userId));
     } else {
+      console.log('⭐ Student: Adding to favorites');
       setFavorites([...current, userId]);
     }
   };
@@ -517,10 +543,15 @@ function TeacherDashboard(props: any) {
   };
   
   const toggleFavorite = (userId: string) => {
+    console.log('⭐ Teacher: Toggle favorite clicked for:', userId);
     const current = favorites();
+    console.log('⭐ Teacher: Current favorites:', current);
+    
     if (current.includes(userId)) {
+      console.log('⭐ Teacher: Removing from favorites');
       setFavorites(current.filter(id => id !== userId));
     } else {
+      console.log('⭐ Teacher: Adding to favorites');
       setFavorites([...current, userId]);
     }
   };
