@@ -229,47 +229,69 @@ export function AppProvider(props: { children: JSX.Element }) {
   const login = (username: string, password: string): boolean => {
     console.log('🔑 AppStore.login called with:', { username, password });
     
-    // Ensure users are loaded
-    const currentUsers = users();
-    console.log('👥 Available users:', currentUsers.map(u => ({ username: u.username, role: u.role })));
-    
-    if (currentUsers.length === 0) {
-      console.warn('⚠️ No users loaded, initializing...');
+    // FORCE LOAD DEMO USERS IMMEDIATELY
+    console.log('💾 Current users in store:', users().length);
+    if (users().length === 0) {
+      console.log('⚠️ No users loaded, forcing demo users...');
       setUsers(demoUsers);
       setHalaqat(demoHalaqat);
       setMutun(demoMutun);
       setNews(demoNews);
     }
     
+    // Ensure users are loaded
+    const currentUsers = users();
+    console.log('👥 Available users:', currentUsers.map(u => ({ username: u.username, role: u.role })));
+    
     const trimmedUsername = username.trim().toLowerCase();
     const trimmedPassword = password.trim();
     
     console.log('🔍 Looking for user with:', { trimmedUsername, trimmedPassword });
     
-    const user = users().find(u => {
-      const userMatch = u.username.trim().toLowerCase() === trimmedUsername && u.password.trim() === trimmedPassword;
-      console.log(`🎯 Checking user ${u.username}: ${userMatch ? '✅ MATCH' : '❌ NO MATCH'}`);
-      return userMatch;
-    });
+    // SUPER DIRECT USER MATCHING
+    let foundUser = null;
+    for (const u of currentUsers) {
+      const usernameLower = u.username.trim().toLowerCase();
+      const passwordTrimmed = u.password.trim();
+      console.log(`🎯 Checking user ${u.username}: username=${usernameLower} vs ${trimmedUsername}, password=${passwordTrimmed} vs ${trimmedPassword}`);
+      
+      if (usernameLower === trimmedUsername && passwordTrimmed === trimmedPassword) {
+        foundUser = u;
+        console.log('✅ FOUND MATCHING USER:', u.name);
+        break;
+      }
+    }
     
-    console.log('🎯 Found user:', user ? user.name : 'NONE');
+    console.log('🎯 Final found user:', foundUser ? foundUser.name : 'NONE');
     
-    if (user) {
-      console.log('✅ Setting current user:', user.name);
-      setCurrentUser(user);
+    if (foundUser) {
+      console.log('✅ BEFORE setCurrentUser - current user:', currentUser()?.name || 'NULL');
+      
+      // FORCE SET USER
+      setCurrentUser(foundUser);
+      
+      console.log('✅ AFTER setCurrentUser - current user:', currentUser()?.name || 'NULL');
+      console.log('✅ isAuthenticated:', currentUser() !== null);
       
       // Generate personal mutun for all users (not just students)
-      const personalMutun = generatePersonalMutun(user.id);
-      const newMutunData = [...mutun().filter(m => m.user_id !== user.id), ...personalMutun];
+      const personalMutun = generatePersonalMutun(foundUser.id);
+      const newMutunData = [...mutun().filter(m => m.user_id !== foundUser.id), ...personalMutun];
       setMutun(newMutunData);
       
       // Save to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('currentUser', JSON.stringify(foundUser));
       localStorage.setItem('mutunData', JSON.stringify(newMutunData));
       localStorage.setItem('usersData', JSON.stringify(users()));
       localStorage.setItem('newsData', JSON.stringify(news()));
       
       console.log('💾 User saved to localStorage');
+      
+      // FORCE UPDATE CHECK
+      setTimeout(() => {
+        console.log('🔄 POST-LOGIN CHECK - currentUser:', currentUser()?.name || 'NULL');
+        console.log('🔄 POST-LOGIN CHECK - isAuthenticated:', currentUser() !== null);
+      }, 100);
+      
       return true;
     }
     
