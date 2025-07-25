@@ -438,14 +438,6 @@ export function MutunPage() {
 
                           {/* Note Field - direkt unter Titel */}
                           <div style={{ 'margin-bottom': '15px' }}>
-                            <label style={{
-                              display: 'block',
-                              'margin-bottom': '5px',
-                              'font-weight': '600',
-                              color: 'var(--color-text)'
-                            }}>
-                              الملاحظات:
-                            </label>
                             <div style={{ 
                               display: 'flex', 
                               gap: '15px', 
