@@ -41,6 +41,7 @@ export interface AppState {
   // Actions
   login: (username: string, password: string) => boolean;
   logout: () => void;
+  setCurrentUser: (user: User | null) => void;
   setCurrentPage: (page: Page) => void;
   setTheme: (theme: Theme) => void;
   setLanguage: (language: Language) => void;
@@ -524,6 +525,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     searchTerm,
     login,
     logout,
+    setCurrentUser,
     setCurrentPage: (page: Page) => {
       setCurrentPage(page);
       localStorage.setItem('currentPage', page);
