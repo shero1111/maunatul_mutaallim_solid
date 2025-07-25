@@ -277,7 +277,7 @@ export function MutunPage() {
                                   style={{ 
                     background: 'var(--color-surface)', 
                     'border-radius': '12px', 
-                    padding: '8px 12px', 
+                    padding: '6px 10px', 
                     border: '2px solid var(--color-primary)', 
                     cursor: 'pointer',
                     'margin-bottom': isCollapsed() ? '0' : '15px',
@@ -302,15 +302,16 @@ export function MutunPage() {
                 }}>
                                       <h2 style={{ 
                       color: 'var(--color-primary)', 
-                      'font-size': '1.3rem', 
+                      'font-size': '1.1rem', 
                       margin: '0', 
                       display: 'flex', 
                       'align-items': 'center', 
-                      gap: '10px',
-                      transition: 'color 0.3s ease'
+                      gap: '8px',
+                      transition: 'color 0.3s ease',
+                      'font-weight': '500'
                     }}>
                       <span style={{ 
-                        'font-size': '1.5rem',
+                        'font-size': '1.2rem',
                         transition: 'transform 0.3s ease'
                       }}>
                         {isCollapsed() ? '📁' : '📂'}
@@ -611,25 +612,31 @@ export function MutunPage() {
 
       {/* PDF Modal */}
       <Show when={pdfModalMatn()}>
-        <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          'z-index': '9999'
-        }}>
-          <div style={{
-            background: 'var(--color-background)',
-            'border-radius': '12px',
-            padding: '20px',
-            'max-width': '400px',
-            width: '90%'
-          }}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'z-index': '9999'
+          }}
+          onClick={closePdfModal}
+        >
+          <div 
+            style={{
+              background: 'var(--color-background)',
+              'border-radius': '12px',
+              padding: '20px',
+              'max-width': '400px',
+              width: '90%'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div style={{
               display: 'flex',
               'justify-content': 'space-between',
@@ -700,25 +707,31 @@ export function MutunPage() {
 
       {/* Audio Modal */}
       <Show when={audioModalMatn()}>
-        <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          'z-index': '9999'
-        }}>
-          <div style={{
-            background: 'var(--color-background)',
-            'border-radius': '12px',
-            padding: '20px',
-            'max-width': '400px',
-            width: '90%'
-          }}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'z-index': '9999'
+          }}
+          onClick={closeAudioModal}
+        >
+          <div 
+            style={{
+              background: 'var(--color-background)',
+              'border-radius': '12px',
+              padding: '20px',
+              'max-width': '400px',
+              width: '90%'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div style={{
               display: 'flex',
               'justify-content': 'space-between',
