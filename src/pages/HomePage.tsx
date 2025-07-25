@@ -275,105 +275,251 @@ function StudentDashboard(props: any) {
   
   return (
     <>
-      {/* Student Info Card */}
+      {/* Student Info Card - Premium Design */}
       <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '15px', 
-        padding: '20px', 
-        'margin-bottom': '20px',
-        border: `2px solid ${statusInfo().color}`,
-        'text-align': 'center'
+        background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)', 
+        'border-radius': '24px', 
+        padding: '32px', 
+        'margin-bottom': '24px',
+        border: '1px solid var(--color-border)',
+        'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.12)',
+        'text-align': 'center',
+        position: 'relative' as const,
+        overflow: 'hidden'
       }}>
-        <h3 style={{ 
-          color: 'var(--color-text)', 
-          'margin-bottom': '5px',
-          'font-size': '1.3rem'
-        }}>
-          {student()?.name}
-        </h3>
-        <p style={{ 
-          color: statusInfo().color, 
-          'font-size': '1.1rem',
-          'font-weight': '600',
-          'margin-bottom': '5px'
-        }}>
-          {statusInfo().text}
-        </p>
-        {lastChanged() && (
-          <p style={{ 
-            color: 'var(--color-text-secondary)', 
-            'font-size': '0.9rem',
-            'margin-bottom': '15px'
-          }}>
-            آخر تحديث: {lastChanged()}
-          </p>
-        )}
-        
-        <hr style={{ 
-          border: 'none', 
-          height: '1px', 
-          background: 'var(--color-border)', 
-          margin: '15px 0' 
+        {/* Decorative Background Element */}
+        <div style={{
+          position: 'absolute',
+          top: '-50%',
+          right: '-50%',
+          width: '200%',
+          height: '200%',
+          background: `radial-gradient(circle, ${statusInfo().color}15 0%, transparent 50%)`,
+          'pointer-events': 'none',
+          'z-index': '0'
         }} />
         
-        <p style={{ 
-          color: 'var(--color-text)', 
-          'margin-bottom': '10px',
-          'font-weight': '600'
-        }}>
-          تغيير الحالة
-        </p>
-        
-        <div style={{ 
-          display: 'flex', 
-          gap: '10px', 
-          'justify-content': 'center' 
-        }}>
-          <button
-            onClick={() => changeStatus('not_available')}
-            style={{
-              background: student()?.status === 'not_available' ? 'var(--color-error)' : 'var(--color-surface)',
-              color: student()?.status === 'not_available' ? 'white' : 'var(--color-error)',
-              border: '2px solid var(--color-error)',
-              padding: '8px 16px',
-              'border-radius': '8px',
-              cursor: 'pointer',
-              'font-weight': '600',
-              'font-size': '0.9rem'
-            }}
-          >
-            🔴 غير متاح
-          </button>
-          <button
-            onClick={() => changeStatus('revising')}
-            style={{
-              background: student()?.status === 'revising' ? 'var(--color-warning)' : 'var(--color-surface)',
-              color: student()?.status === 'revising' ? 'white' : 'var(--color-warning)',
-              border: '2px solid var(--color-warning)',
-              padding: '8px 16px',
-              'border-radius': '8px',
-              cursor: 'pointer',
-              'font-weight': '600',
-              'font-size': '0.9rem'
-            }}
-          >
-            🟡 مراجعة
-          </button>
-          <button
-            onClick={() => changeStatus('khatamat')}
-            style={{
-              background: student()?.status === 'khatamat' ? 'var(--color-success)' : 'var(--color-surface)',
-              color: student()?.status === 'khatamat' ? 'white' : 'var(--color-success)',
-              border: '2px solid var(--color-success)',
-              padding: '8px 16px',
-              'border-radius': '8px',
-              cursor: 'pointer',
-              'font-weight': '600',
-              'font-size': '0.9rem'
-            }}
-          >
-            🟢 ختمات
-          </button>
+        {/* Content */}
+        <div style={{ position: 'relative', 'z-index': '1' }}>
+          {/* Status Indicator */}
+          <div style={{
+            display: 'inline-flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            width: '80px',
+            height: '80px',
+            'border-radius': '50%',
+            background: statusInfo().color,
+            'margin-bottom': '20px',
+            'box-shadow': `0 8px 24px ${statusInfo().color}40`,
+            position: 'relative'
+          }}>
+            <div style={{
+              'font-size': '2.5rem',
+              filter: 'brightness(1.2)'
+            }}>
+              {statusInfo().icon}
+            </div>
+            {/* Pulse Ring */}
+            <div style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              'border-radius': '50%',
+              border: `3px solid ${statusInfo().color}`,
+              animation: 'pulse 2s infinite',
+              opacity: '0.6'
+            }} />
+          </div>
+          
+          <h3 style={{ 
+            color: 'var(--color-text)', 
+            'margin-bottom': '8px',
+            'font-size': '1.5rem',
+            'font-weight': '700',
+            'letter-spacing': '0.5px'
+          }}>
+            {student()?.name}
+          </h3>
+          
+          <div style={{
+            display: 'inline-block',
+            background: statusInfo().color,
+            color: 'white',
+            padding: '8px 20px',
+            'border-radius': '25px',
+            'font-size': '1rem',
+            'font-weight': '600',
+            'margin-bottom': '8px',
+            'box-shadow': `0 4px 12px ${statusInfo().color}30`
+          }}>
+            {statusInfo().text}
+          </div>
+          
+          {lastChanged() && (
+            <p style={{ 
+              color: 'var(--color-text-secondary)', 
+              'font-size': '0.85rem',
+              'margin-bottom': '24px',
+              'font-style': 'italic'
+            }}>
+              آخر تحديث: {lastChanged()}
+            </p>
+          )}
+          
+          {/* Elegant Divider */}
+          <div style={{
+            width: '60px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent, var(--color-border), transparent)',
+            margin: '24px auto',
+            'border-radius': '1px'
+          }} />
+          
+          <h4 style={{ 
+            color: 'var(--color-text)', 
+            'margin-bottom': '20px',
+            'font-weight': '600',
+            'font-size': '1.1rem',
+            'letter-spacing': '0.3px'
+          }}>
+            تحديث الحالة
+          </h4>
+          
+          {/* Premium Status Buttons */}
+          <div style={{ 
+            display: 'grid', 
+            'grid-template-columns': 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: '12px',
+            'max-width': '500px',
+            margin: '0 auto'
+          }}>
+            <button
+              onClick={() => changeStatus('not_available')}
+              style={{
+                background: student()?.status === 'not_available' 
+                  ? 'linear-gradient(135deg, var(--color-error), #d32f2f)' 
+                  : 'linear-gradient(135deg, var(--color-surface), var(--color-background))',
+                color: student()?.status === 'not_available' ? 'white' : 'var(--color-error)',
+                border: student()?.status === 'not_available' 
+                  ? '2px solid var(--color-error)' 
+                  : '2px solid var(--color-error)40',
+                padding: '14px 20px',
+                'border-radius': '16px',
+                cursor: 'pointer',
+                'font-weight': '600',
+                'font-size': '0.95rem',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                'box-shadow': student()?.status === 'not_available'
+                  ? '0 8px 24px var(--color-error)30'
+                  : '0 4px 12px rgba(0, 0, 0, 0.1)',
+                position: 'relative',
+                overflow: 'hidden',
+                'backdrop-filter': 'blur(10px)'
+              }}
+              onMouseOver={(e) => {
+                if (student()?.status !== 'not_available') {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--color-error)20';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (student()?.status !== 'not_available') {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                }
+              }}
+            >
+              <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '8px' }}>
+                <span style={{ 'font-size': '1.1rem' }}>🔴</span>
+                <span>غير متاح</span>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => changeStatus('revising')}
+              style={{
+                background: student()?.status === 'revising' 
+                  ? 'linear-gradient(135deg, var(--color-warning), #f57c00)' 
+                  : 'linear-gradient(135deg, var(--color-surface), var(--color-background))',
+                color: student()?.status === 'revising' ? 'white' : 'var(--color-warning)',
+                border: student()?.status === 'revising' 
+                  ? '2px solid var(--color-warning)' 
+                  : '2px solid var(--color-warning)40',
+                padding: '14px 20px',
+                'border-radius': '16px',
+                cursor: 'pointer',
+                'font-weight': '600',
+                'font-size': '0.95rem',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                'box-shadow': student()?.status === 'revising'
+                  ? '0 8px 24px var(--color-warning)30'
+                  : '0 4px 12px rgba(0, 0, 0, 0.1)',
+                position: 'relative',
+                overflow: 'hidden',
+                'backdrop-filter': 'blur(10px)'
+              }}
+              onMouseOver={(e) => {
+                if (student()?.status !== 'revising') {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--color-warning)20';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (student()?.status !== 'revising') {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                }
+              }}
+            >
+              <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '8px' }}>
+                <span style={{ 'font-size': '1.1rem' }}>🟡</span>
+                <span>مراجعة</span>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => changeStatus('khatamat')}
+              style={{
+                background: student()?.status === 'khatamat' 
+                  ? 'linear-gradient(135deg, var(--color-success), #388e3c)' 
+                  : 'linear-gradient(135deg, var(--color-surface), var(--color-background))',
+                color: student()?.status === 'khatamat' ? 'white' : 'var(--color-success)',
+                border: student()?.status === 'khatamat' 
+                  ? '2px solid var(--color-success)' 
+                  : '2px solid var(--color-success)40',
+                padding: '14px 20px',
+                'border-radius': '16px',
+                cursor: 'pointer',
+                'font-weight': '600',
+                'font-size': '0.95rem',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                'box-shadow': student()?.status === 'khatamat'
+                  ? '0 8px 24px var(--color-success)30'
+                  : '0 4px 12px rgba(0, 0, 0, 0.1)',
+                position: 'relative',
+                overflow: 'hidden',
+                'backdrop-filter': 'blur(10px)'
+              }}
+              onMouseOver={(e) => {
+                if (student()?.status !== 'khatamat') {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--color-success)20';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (student()?.status !== 'khatamat') {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                }
+              }}
+            >
+              <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center', gap: '8px' }}>
+                <span style={{ 'font-size': '1.1rem' }}>🟢</span>
+                <span>ختمات</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
