@@ -391,10 +391,14 @@ function StudentDashboard(props: any) {
               'outline': 'none'
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              if (e?.currentTarget) {
+                e.currentTarget.style.borderColor = 'var(--color-primary)';
+              }
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border)';
+              if (e?.currentTarget) {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }
             }}
           />
           <div style={{
@@ -691,7 +695,11 @@ function TeacherDashboard(props: any) {
             type="text"
             placeholder="البحث عن طالب..."
             value={searchTerm()}
-            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+                          onInput={(e) => {
+                if (e?.currentTarget) {
+                  setSearchTerm(e.currentTarget.value);
+                }
+              }}
             style={{
               width: '100%',
               padding: '10px 40px 10px 12px',
@@ -704,10 +712,14 @@ function TeacherDashboard(props: any) {
               'outline': 'none'
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              if (e?.currentTarget) {
+                e.currentTarget.style.borderColor = 'var(--color-primary)';
+              }
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border)';
+              if (e?.currentTarget) {
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }
             }}
           />
           <div style={{
