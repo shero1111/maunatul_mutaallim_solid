@@ -236,7 +236,11 @@ export function AudioPlayer() {
     'justify-content': 'center',
     transition: 'all 0.2s ease',
     'box-shadow': '0 4px 12px rgba(0, 0, 0, 0.15)',
-    '-webkit-tap-highlight-color': 'transparent'
+    '-webkit-tap-highlight-color': 'transparent',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
 
   const skipButtonStyle = {
@@ -253,7 +257,32 @@ export function AudioPlayer() {
     'justify-content': 'center',
     transition: 'all 0.2s ease',
     'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
-    '-webkit-tap-highlight-color': 'transparent'
+    '-webkit-tap-highlight-color': 'transparent',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
+  };
+
+  const holdSkipButtonStyle = {
+    width: '40px',
+    height: '40px',
+    'border-radius': '50%',
+    border: '2px solid var(--color-border)',
+    'background-color': 'var(--color-surface)',
+    color: 'var(--color-text)',
+    'font-size': '16px',
+    cursor: 'pointer',
+    display: 'flex',
+    'align-items': 'center',
+    'justify-content': 'center',
+    transition: 'all 0.2s ease',
+    'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
+    '-webkit-tap-highlight-color': 'transparent',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
   
   const closeButtonStyle = {
@@ -269,7 +298,11 @@ export function AudioPlayer() {
     'align-items': 'center',
     'justify-content': 'center',
     transition: 'all 0.2s ease',
-    '-webkit-tap-highlight-color': 'transparent'
+    '-webkit-tap-highlight-color': 'transparent',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
   
   const progressContainerStyle = {
@@ -426,16 +459,65 @@ export function AudioPlayer() {
             </Show>
             
             <Show when={!player().isLoading}>
-              {/* Skip Backward - LEFT (LTR Logic) */}
+              {/* 5s Skip Backward - LEFT */}
+              <button
+                style={skipButtonStyle}
+                onClick={app.skipBackward}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                title="-5 Sekunden"
+              >
+                -5s
+              </button>
+              
+              {/* Play/Pause */}
+              <button
+                style={buttonStyle}
+                onClick={app.pauseAudio}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                }}
+              >
+                {player().isPlaying ? '⏸️' : '▶️'}
+              </button>
+              
+              {/* 5s Skip Forward - RIGHT */}
+              <button
+                style={skipButtonStyle}
+                onClick={app.skipForward}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                title="+5 Sekunden"
+              >
+                +5s
+              </button>
+              
+              {/* Hold-to-Accelerate Skip Backward */}
               <button
                 style={{
-                  ...skipButtonStyle,
+                  ...holdSkipButtonStyle,
                   transform: isHoldingSkip() === 'backward' ? 'scale(1.1)' : 'scale(1)',
                   backgroundColor: isHoldingSkip() === 'backward' ? 'var(--color-primary)' : 'var(--color-surface)',
                   color: isHoldingSkip() === 'backward' ? 'white' : 'var(--color-text)',
                   boxShadow: isHoldingSkip() === 'backward' ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
                 }}
-                onClick={app.skipBackward}
                 onMouseDown={() => startAcceleratedSkip('backward')}
                 onMouseUp={stopAcceleratedSkip}
                 onMouseLeave={stopAcceleratedSkip}
@@ -458,32 +540,15 @@ export function AudioPlayer() {
                 ⏮
               </button>
               
-              {/* Play/Pause */}
-              <button
-                style={buttonStyle}
-                onClick={app.pauseAudio}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                }}
-              >
-                {player().isPlaying ? '⏸️' : '▶️'}
-              </button>
-              
-              {/* Skip Forward - RIGHT (LTR Logic) */}
+              {/* Hold-to-Accelerate Skip Forward */}
               <button
                 style={{
-                  ...skipButtonStyle,
+                  ...holdSkipButtonStyle,
                   transform: isHoldingSkip() === 'forward' ? 'scale(1.1)' : 'scale(1)',
                   backgroundColor: isHoldingSkip() === 'forward' ? 'var(--color-primary)' : 'var(--color-surface)',
                   color: isHoldingSkip() === 'forward' ? 'white' : 'var(--color-text)',
                   boxShadow: isHoldingSkip() === 'forward' ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0, 0, 0, 0.1)'
                 }}
-                onClick={app.skipForward}
                 onMouseDown={() => startAcceleratedSkip('forward')}
                 onMouseUp={stopAcceleratedSkip}
                 onMouseLeave={stopAcceleratedSkip}
