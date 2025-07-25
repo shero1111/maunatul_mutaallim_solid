@@ -126,7 +126,7 @@ export function HomePage() {
               'font-size': '0.9rem', 
               margin: '0' 
             }}>
-              نط
+              نظام إدارة حلقات عَلٌمْنِي
             </p>
           </div>
         </div>
