@@ -36,23 +36,19 @@ export function BottomNavigation() {
     'min-height': '60px',
     cursor: 'pointer',
     'background-color': 'transparent',
-    color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-    transition: 'all 0.3s ease',
+    color: isActive ? 'var(--color-primary)' : 'var(--color-text)',
+    transition: 'all 0.2s ease',
     'text-decoration': 'none',
     border: 'none',
     '-webkit-tap-highlight-color': 'transparent',
-    position: 'relative' as const,
-    'border-radius': isActive ? '12px 12px 0 0' : '0',
-    'background': isActive 
-      ? 'linear-gradient(135deg, var(--color-primary)08, var(--color-primary)12)' 
-      : 'transparent'
+    position: 'relative' as const
   });
   
   const iconStyle = (isActive: boolean) => ({
     'font-size': isActive ? '22px' : '20px',
     'margin-bottom': '4px',
-    transition: 'all 0.3s ease',
-    transform: isActive ? 'scale(1.1)' : 'scale(1)'
+    transition: 'all 0.2s ease',
+    transform: isActive ? 'scale(1.05)' : 'scale(1)'
   });
   
   const labelStyle = (isActive: boolean) => ({
@@ -60,7 +56,7 @@ export function BottomNavigation() {
     'font-weight': isActive ? '600' : '500',
     'text-align': 'center' as const,
     'line-height': '1.2',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.2s ease'
   });
   
   // Filter navigation based on user role
@@ -101,20 +97,40 @@ export function BottomNavigation() {
             <button
               style={itemStyle(isActive())}
               onClick={() => handleNavigation(item.page)}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.95)';
+                e.currentTarget.style.opacity = '0.7';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.opacity = '1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.opacity = '1';
+              }}
+              onTouchStart={(e) => {
+                e.currentTarget.style.transform = 'scale(0.95)';
+                e.currentTarget.style.opacity = '0.7';
+              }}
+              onTouchEnd={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.opacity = '1';
+              }}
               type="button"
             >
-              {/* Top Indicator Bar */}
+              {/* Top Indicator Bar - Nur bei aktiv */}
               <div style={{
                 position: 'absolute',
                 top: '0',
-                left: '20%',
-                right: '20%',
+                left: '25%',
+                right: '25%',
                 height: '3px',
                 'background': isActive() 
-                  ? 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))' 
+                  ? 'var(--color-primary)' 
                   : 'transparent',
-                'border-radius': '0 0 3px 3px',
-                transition: 'all 0.3s ease'
+                'border-radius': '0 0 2px 2px',
+                transition: 'all 0.2s ease'
               }} />
               
               <div style={iconStyle(isActive())}>{item.icon}</div>
