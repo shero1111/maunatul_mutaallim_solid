@@ -1,9 +1,15 @@
-import { Show } from 'solid-js';
+import { Show, createSignal, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 
 export function AudioPlayer() {
   const app = useApp();
   const player = app.audioPlayer;
+  
+  // Drag state for progress bar
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [dragPosition, setDragPosition] = createSignal(0);
+  
+  let progressBarRef: HTMLDivElement | undefined;
   
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -11,12 +17,89 @@ export function AudioPlayer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  const handleProgressClick = (e: MouseEvent) => {
-    const progressBar = e.currentTarget as HTMLElement;
-    const rect = progressBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = clickX / rect.width;
+  const calculatePosition = (clientX: number): number => {
+    if (!progressBarRef) return 0;
+    const rect = progressBarRef.getBoundingClientRect();
+    const position = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    return position;
+  };
+  
+  // Mouse events
+  const handleMouseDown = (e: MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const percentage = calculatePosition(e.clientX);
+    setDragPosition(percentage);
     app.seekAudio(percentage);
+  };
+  
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging()) return;
+    const percentage = calculatePosition(e.clientX);
+    setDragPosition(percentage);
+    app.seekAudio(percentage);
+  };
+  
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    removeGlobalListeners();
+  };
+  
+  // Touch events for mobile
+  const handleTouchStart = (e: TouchEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const touch = e.touches[0];
+    const percentage = calculatePosition(touch.clientX);
+    setDragPosition(percentage);
+    app.seekAudio(percentage);
+  };
+  
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging()) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const percentage = calculatePosition(touch.clientX);
+    setDragPosition(percentage);
+    app.seekAudio(percentage);
+  };
+  
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    removeGlobalListeners();
+  };
+  
+  // Global event listeners for drag
+  const setupGlobalListeners = () => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+  
+  const removeGlobalListeners = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+  };
+  
+  // Setup listeners when dragging starts
+  const startDragging = () => {
+    setupGlobalListeners();
+  };
+  
+  // Clean up on component unmount
+  onCleanup(() => {
+    removeGlobalListeners();
+  });
+  
+  // Simple click handler for non-drag clicks
+  const handleProgressClick = (e: MouseEvent) => {
+    if (!isDragging()) {
+      const percentage = calculatePosition(e.clientX);
+      app.seekAudio(percentage);
+    }
   };
   
   const playerStyle = () => ({
@@ -128,23 +211,55 @@ export function AudioPlayer() {
   
   const progressBarStyle = {
     width: '100%',
-    height: '6px',
+    height: '8px',
     'background-color': 'var(--color-border)',
-    'border-radius': '3px',
-    overflow: 'hidden',
+    'border-radius': '4px',
+    overflow: 'visible',
     cursor: 'pointer',
     position: 'relative' as const,
-    'box-shadow': 'inset 0 1px 3px rgba(0, 0, 0, 0.1)'
+    'box-shadow': 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
+    'touch-action': 'none'
   };
   
-  const progressFillStyle = () => ({
-    height: '100%',
-    'background': 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-    width: `${player().duration > 0 ? (player().currentTime / player().duration) * 100 : 0}%`,
-    transition: 'width 0.1s linear',
-    'border-radius': '3px',
-    'box-shadow': '0 1px 3px rgba(0, 0, 0, 0.2)'
-  });
+  const progressFillStyle = () => {
+    const currentProgress = isDragging() 
+      ? dragPosition() * 100 
+      : player().duration > 0 
+        ? (player().currentTime / player().duration) * 100 
+        : 0;
+    
+    return {
+      height: '100%',
+      'background': 'linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+      width: `${currentProgress}%`,
+      transition: isDragging() ? 'none' : 'width 0.1s linear',
+      'border-radius': '4px',
+      'box-shadow': '0 1px 3px rgba(0, 0, 0, 0.2)'
+    };
+  };
+  
+  const dragHandleStyle = () => {
+    const currentProgress = isDragging() 
+      ? dragPosition() * 100 
+      : player().duration > 0 
+        ? (player().currentTime / player().duration) * 100 
+        : 0;
+    
+    return {
+      position: 'absolute' as const,
+      top: '50%',
+      left: `${currentProgress}%`,
+      transform: 'translate(-50%, -50%)',
+      width: isDragging() ? '16px' : '12px',
+      height: isDragging() ? '16px' : '12px',
+      'background-color': 'white',
+      'border-radius': '50%',
+      'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.3)',
+      transition: isDragging() ? 'none' : 'all 0.2s ease',
+      cursor: 'grab',
+      'z-index': '10'
+    };
+  };
   
   return (
     <Show when={player().title}>
@@ -166,20 +281,38 @@ export function AudioPlayer() {
             </button>
           </div>
           
-          {/* Progress Bar with Time */}
+          {/* Enhanced Progress Bar with Drag & Drop */}
           <div style={progressContainerStyle}>
             {/* Time Display */}
             <div style={timeStyle}>
-              <span>{formatTime(player().currentTime)}</span>
+              <span>
+                {isDragging() 
+                  ? formatTime(dragPosition() * player().duration) 
+                  : formatTime(player().currentTime)
+                }
+              </span>
               <span>{formatTime(player().duration)}</span>
             </div>
             
-            {/* Progress Bar */}
+            {/* Draggable Progress Bar */}
             <div 
+              ref={progressBarRef}
               style={progressBarStyle}
+              onMouseDown={(e) => {
+                handleMouseDown(e);
+                startDragging();
+              }}
+              onTouchStart={(e) => {
+                handleTouchStart(e);
+                startDragging();
+              }}
               onClick={handleProgressClick}
             >
+              {/* Progress Fill */}
               <div style={progressFillStyle()} />
+              
+              {/* Drag Handle */}
+              <div style={dragHandleStyle()} />
             </div>
           </div>
           
@@ -198,7 +331,7 @@ export function AudioPlayer() {
             </Show>
             
             <Show when={!player().isLoading}>
-              {/* Skip Backward */}
+              {/* Skip Backward - ALWAYS LEFT */}
               <button
                 style={skipButtonStyle}
                 onClick={app.skipBackward}
@@ -212,7 +345,7 @@ export function AudioPlayer() {
                 }}
                 title="-5 Sekunden"
               >
-                ⏪
+                ⏮
               </button>
               
               {/* Play/Pause */}
@@ -231,7 +364,7 @@ export function AudioPlayer() {
                 {player().isPlaying ? '⏸️' : '▶️'}
               </button>
               
-              {/* Skip Forward */}
+              {/* Skip Forward - ALWAYS RIGHT */}
               <button
                 style={skipButtonStyle}
                 onClick={app.skipForward}
@@ -245,7 +378,7 @@ export function AudioPlayer() {
                 }}
                 title="+5 Sekunden"
               >
-                ⏩
+                ⏭
               </button>
             </Show>
           </div>
