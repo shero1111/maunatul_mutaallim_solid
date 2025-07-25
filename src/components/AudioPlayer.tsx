@@ -332,10 +332,10 @@ export function AudioPlayer() {
             </Show>
             
             <Show when={!player().isLoading}>
-              {/* Skip Backward - ALWAYS LEFT */}
+              {/* Skip Forward - NOW LEFT */}
               <button
                 style={skipButtonStyle}
-                onClick={app.skipBackward}
+                onClick={app.skipForward}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = 'var(--color-primary)';
                   e.currentTarget.style.color = 'white';
@@ -344,9 +344,9 @@ export function AudioPlayer() {
                   e.currentTarget.style.backgroundColor = 'var(--color-surface)';
                   e.currentTarget.style.color = 'var(--color-text)';
                 }}
-                title="-5 Sekunden"
+                title="+5 Sekunden"
               >
-                ⏮
+                ⏭
               </button>
               
               {/* Play/Pause */}
@@ -365,10 +365,10 @@ export function AudioPlayer() {
                 {player().isPlaying ? '⏸️' : '▶️'}
               </button>
               
-              {/* Skip Forward - ALWAYS RIGHT */}
+              {/* Skip Backward - NOW RIGHT */}
               <button
                 style={skipButtonStyle}
-                onClick={app.skipForward}
+                onClick={app.skipBackward}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = 'var(--color-primary)';
                   e.currentTarget.style.color = 'white';
@@ -377,9 +377,9 @@ export function AudioPlayer() {
                   e.currentTarget.style.backgroundColor = 'var(--color-surface)';
                   e.currentTarget.style.color = 'var(--color-text)';
                 }}
-                title="+5 Sekunden"
+                title="-5 Sekunden"
               >
-                ⏭
+                ⏮
               </button>
             </Show>
           </div>
