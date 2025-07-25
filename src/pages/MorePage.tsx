@@ -129,7 +129,7 @@ export function MorePage() {
   
   const currentUser = app.currentUser();
   
-  const settingsItems = [
+  const getSettingsItems = () => [
     {
       icon: '🌙',
       text: app.translate('theme'),
@@ -218,12 +218,12 @@ export function MorePage() {
         <div style={sectionTitleStyle}>
           {app.translate('settings')}
         </div>
-        <For each={settingsItems}>
+        <For each={getSettingsItems()}>
           {(item, index) => (
             <div
               style={{
                 ...menuItemStyle,
-                'border-bottom': index() === settingsItems.length - 1 ? 'none' : '1px solid var(--color-border)'
+                'border-bottom': index() === getSettingsItems().length - 1 ? 'none' : '1px solid var(--color-border)'
               }}
               data-action={item.text}
               onClick={() => handleMenuItemClick(item)}
