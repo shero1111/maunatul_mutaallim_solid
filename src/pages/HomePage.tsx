@@ -126,18 +126,9 @@ export function HomePage() {
               'font-size': '0.9rem', 
               margin: '0' 
             }}>
-              نظام إدارة التعلم الإسلامي
+              نط
             </p>
           </div>
-        </div>
-        <div>
-          <h2 style={{ 
-            color: 'var(--color-text)', 
-            'font-size': '1.4rem', 
-            'margin-bottom': '8px' 
-          }}>
-            {app.translate('welcome')}, {currentUser.name}
-          </h2>
         </div>
       </div>
 
