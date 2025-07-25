@@ -6,8 +6,19 @@ import { getStatusColor } from '../styles/themes';
 export function HomePage() {
   const app = useApp();
   
-  const currentUser = app.currentUser();
-  if (!currentUser) return <div>Not logged in</div>;
+  // Make currentUser reactive
+  const currentUser = createMemo(() => app.currentUser());
+  
+  return (
+    <Show when={currentUser()} fallback={<div>Not logged in</div>}>
+      <HomePageContent currentUser={currentUser()} />
+    </Show>
+  );
+}
+
+function HomePageContent(props: { currentUser: User }) {
+  const app = useApp();
+  const { currentUser } = props;
   
   // Student-specific signals for search and filter
   const [searchTerm, setSearchTerm] = createSignal('');

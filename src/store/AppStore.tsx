@@ -145,9 +145,19 @@ export function AppProvider(props: { children: JSX.Element }) {
     if (savedCurrentUser) {
       try {
         const user = JSON.parse(savedCurrentUser);
-        setCurrentUser(user);
+        console.log('🔄 Auto-login attempt for user:', user.name);
+        
+        // Verify user still exists in demo data
+        const userExists = demoUsers.find(u => u.id === user.id && u.username === user.username);
+        if (userExists) {
+          setCurrentUser(user);
+          console.log('✅ Auto-login successful for:', user.name);
+        } else {
+          console.warn('⚠️ Saved user no longer exists, clearing localStorage');
+          localStorage.removeItem('currentUser');
+        }
       } catch (e) {
-        console.error('Error parsing saved user:', e);
+        console.error('💥 Error parsing saved user:', e);
         localStorage.removeItem('currentUser');
       }
     }

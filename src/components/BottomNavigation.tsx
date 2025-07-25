@@ -1,9 +1,12 @@
-import { For } from 'solid-js';
+import { For, createMemo } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { Page } from '../types';
 
 export function BottomNavigation() {
   const app = useApp();
+  
+  // Make currentUser reactive and safe
+  const currentUser = createMemo(() => app.currentUser());
   
   const navigationItems: { page: Page; icon: string; label: string }[] = [
     { page: 'home', icon: '🏠', label: app.translate('home') },
@@ -48,66 +51,93 @@ export function BottomNavigation() {
   const iconStyle = (isActive: boolean) => ({
     'font-size': isActive ? '22px' : '20px',
     'margin-bottom': '4px',
-    transition: 'all 0.2s ease',
-    transform: isActive ? 'scale(1.05)' : 'scale(1)'
-  });
-  
-  const labelStyle = (isActive: boolean) => ({
-    'font-size': '11px',
-    'font-weight': isActive ? '600' : '500',
-    'text-align': 'center' as const,
-    'line-height': '1.2',
+    transform: isActive ? 'scale(1.05)' : 'scale(1)',
     transition: 'all 0.2s ease'
   });
   
-  // Filter navigation based on user role
-  const getVisibleItems = () => {
-    const user = app.currentUser();
-    if (!user) return [];
-    
-    switch (user.role) {
-      case 'student':
-        return navigationItems.filter(item => 
-          ['home', 'mutuun', 'news', 'more'].includes(item.page)
-        );
-      case 'lehrer':
-        return navigationItems.filter(item => 
-          ['home', 'mutuun', 'halaqat', 'users', 'news', 'more'].includes(item.page)
-        );
-      case 'leitung':
-      case 'superuser':
-        return navigationItems;
-      default:
-        return navigationItems;
-    }
+  const labelStyle = {
+    'font-size': '10px',
+    'font-weight': '500' as const
   };
+  
+  // Safely get visible items based on user role
+  const getVisibleItems = createMemo(() => {
+    const user = currentUser();
+    if (!user) {
+      console.warn('⚠️ No current user for navigation');
+      return []; // Return empty array if no user
+    }
+    
+    try {
+      switch (user.role) {
+        case 'superuser':
+        case 'leitung':
+          return navigationItems;
+        case 'lehrer':
+          return navigationItems.filter(item => 
+            ['home', 'mutuun', 'news', 'more'].includes(item.page)
+          );
+        case 'student':
+          return navigationItems.filter(item => 
+            ['home', 'mutuun', 'news', 'more'].includes(item.page)
+          );
+        default:
+          console.warn('⚠️ Unknown user role:', user.role);
+          return navigationItems.filter(item => 
+            ['home', 'mutuun', 'news', 'more'].includes(item.page)
+          );
+      }
+    } catch (error) {
+      console.error('💥 Error in getVisibleItems:', error);
+      return []; // Safe fallback
+    }
+  });
   
   const handleNavigation = (page: Page) => {
-    // Mark news as read when navigating to news page
-    if (page === 'news') {
-      const currentUser = app.currentUser();
-      if (currentUser) {
-        const updatedUser = {
-          ...currentUser,
-          lastNewsRead: new Date().toISOString()
-        };
-        app.updateUser(updatedUser);
+    try {
+      console.log('🔄 Navigation to:', page);
+      
+      // Mark news as read when navigating to news page
+      if (page === 'news') {
+        const user = currentUser();
+        if (user) {
+          const updatedUser = {
+            ...user,
+            lastNewsRead: new Date().toISOString()
+          };
+          app.updateUser(updatedUser);
+        }
       }
+      
+      app.setCurrentPage(page);
+      console.log('✅ Navigation successful to:', page);
+    } catch (error) {
+      console.error('💥 Navigation error:', error);
     }
-    app.setCurrentPage(page);
   };
   
-  // Calculate unread news count
-  const getUnreadNewsCount = () => {
-    const currentUser = app.currentUser();
-    if (!currentUser) return 0;
-    
-    const lastRead = currentUser.lastNewsRead ? new Date(currentUser.lastNewsRead) : new Date(0);
-    const unreadNews = app.news().filter(news => new Date(news.created_at) > lastRead);
-    return unreadNews.length;
-  };
+  // Calculate unread news count safely
+  const getUnreadNewsCount = createMemo(() => {
+    try {
+      const user = currentUser();
+      if (!user) return 0;
+      
+      const lastRead = user.lastNewsRead ? new Date(user.lastNewsRead) : new Date(0);
+      const unreadNews = app.news().filter(news => new Date(news.created_at) > lastRead);
+      return unreadNews.length;
+    } catch (error) {
+      console.error('💥 Error calculating unread news:', error);
+      return 0;
+    }
+  });
   
   const visibleItems = getVisibleItems();
+  
+  // Don't render if no items or no user
+  if (!visibleItems.length || !currentUser()) {
+    console.warn('⚠️ BottomNavigation: No items or user, not rendering');
+    return null;
+  }
   
   return (
     <nav style={containerStyle(visibleItems.length)}>
@@ -128,39 +158,35 @@ export function BottomNavigation() {
                 left: '25%',
                 right: '25%',
                 height: '3px',
-                'background': isActive() 
-                  ? 'var(--color-primary)' 
-                  : 'transparent',
+                'background-color': isActive() ? 'var(--color-primary)' : 'transparent',
                 'border-radius': '0 0 2px 2px',
-                transition: 'all 0.2s ease'
+                transition: 'background-color 0.2s ease'
               }} />
               
-              <div style={{ position: 'relative' }}>
-                <div style={iconStyle(isActive())}>{item.icon}</div>
+              <div style={iconStyle(isActive())}>
+                {item.icon}
                 {/* News Badge */}
                 {item.page === 'news' && getUnreadNewsCount() > 0 && (
                   <div style={{
                     position: 'absolute',
                     top: '-2px',
-                    right: '-8px',
+                    right: '-2px',
                     background: 'var(--color-error)',
                     color: 'white',
-                    'border-radius': '10px',
-                    'min-width': '18px',
-                    height: '18px',
+                    'border-radius': '50%',
+                    'min-width': '16px',
+                    height: '16px',
+                    'font-size': '10px',
                     display: 'flex',
                     'align-items': 'center',
                     'justify-content': 'center',
-                    'font-size': '10px',
-                    'font-weight': '600',
-                    'box-shadow': '0 2px 4px rgba(0,0,0,0.2)',
-                    border: '2px solid var(--color-background)'
+                    'font-weight': 'bold'
                   }}>
-                    {getUnreadNewsCount() > 99 ? '99+' : getUnreadNewsCount()}
+                    {getUnreadNewsCount() > 9 ? '9+' : getUnreadNewsCount()}
                   </div>
                 )}
               </div>
-              <div style={labelStyle(isActive())}>{item.label}</div>
+              <span style={labelStyle}>{item.label}</span>
             </button>
           );
         }}
