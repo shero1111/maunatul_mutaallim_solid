@@ -15,6 +15,9 @@ export function MutunPage() {
     'المستوى الرابع': false
   });
 
+  // Lokaler State für Notizen (für Live-Editing)
+  const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
+
   // Filter user's mutun
   const userMutun = createMemo(() => 
     app.mutun().filter(m => m.user_id === app.currentUser()?.id)
@@ -36,6 +39,16 @@ export function MutunPage() {
   });
 
   const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
+
+  // Initialize note texts from existing descriptions
+  const initializeNoteText = (matn: Matn) => {
+    if (!noteTexts()[matn.id]) {
+      setNoteTexts(prev => ({
+        ...prev,
+        [matn.id]: matn.description || ''
+      }));
+    }
+  };
 
   const toggleSection = (section: string) => {
     setCollapsedSections(prev => ({
@@ -136,29 +149,56 @@ export function MutunPage() {
       'font-family': 'inherit'
     };
 
+    const saveNote = (value: string) => {
+      const updatedMatn = {
+        ...props.matn,
+        description: value
+      };
+      app.updateMatn(updatedMatn);
+      setNoteTexts(prev => ({
+        ...prev,
+        [props.matn.id]: value
+      }));
+    };
+
     return (
-      <textarea
-        value={props.value}
-        onInput={(e) => props.onInput(e.currentTarget.value)}
-        placeholder={props.placeholder}
-        style={inputStyle}
-        rows={2}
-        onFocus={(e) => {
-          e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.1), 0 0 0 3px var(--color-primary)20';
-          e.currentTarget.style.background = 'var(--color-background)';
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.06)';
-          e.currentTarget.style.background = 'linear-gradient(135deg, var(--color-background), var(--color-surface))';
-          
-          // Save note
-          const updatedMatn = {
-            ...props.matn,
-            description: e.currentTarget.value
-          };
-          app.updateMatn(updatedMatn);
-        }}
-      />
+      <div>
+        <textarea
+          value={props.value}
+          onInput={(e) => {
+            const value = e.currentTarget.value;
+            props.onInput(value);
+          }}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              saveNote(e.currentTarget.value);
+            }
+          }}
+          placeholder={props.placeholder}
+          style={inputStyle}
+          rows={2}
+          onFocus={(e) => {
+            e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.1), 0 0 0 3px var(--color-primary)20';
+            e.currentTarget.style.background = 'var(--color-background)';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = 'inset 0 2px 8px rgba(0,0,0,0.06)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, var(--color-background), var(--color-surface))';
+            
+            // Auto-Save on blur
+            saveNote(e.currentTarget.value);
+          }}
+        />
+        <div style={{
+          'margin-top': '8px',
+          'text-align': 'right',
+          'font-size': '12px',
+          color: 'var(--color-text-secondary)'
+        }}>
+          💡 Enter zum Speichern • Auto-Save beim Verlassen
+        </div>
+      </div>
     );
   }
 
@@ -399,212 +439,222 @@ export function MutunPage() {
                   animation: 'fadeInUp 0.5s ease-out'
                 }}>
                   <For each={mutun}>
-                    {(matn) => (
-                      <div style={{ 
-                        background: 'linear-gradient(135deg, var(--color-surface), var(--color-background))', 
-                        'border-radius': '20px', 
-                        padding: '24px', 
-                        border: `3px solid ${getMatnColor(matn.status)}20`, 
-                        'box-shadow': '0 8px 32px rgba(0,0,0,0.08)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-4px)';
-                        e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)';
-                      }}
-                      >
-                        {/* Status indicator stripe */}
-                        <div style={{
-                          position: 'absolute',
-                          top: '0',
-                          left: '0',
-                          width: '5px',
-                          height: '100%',
-                          background: `linear-gradient(180deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}80)`
-                        }}></div>
+                    {(matn) => {
+                      // Initialize note text
+                      initializeNoteText(matn);
+                      
+                      return (
+                        <div style={{ 
+                          background: 'linear-gradient(135deg, var(--color-surface), var(--color-background))', 
+                          'border-radius': '20px', 
+                          padding: '24px', 
+                          border: `3px solid ${getMatnColor(matn.status)}20`, 
+                          'box-shadow': '0 8px 32px rgba(0,0,0,0.08)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-4px)';
+                          e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)';
+                        }}
+                        >
+                          {/* Status indicator stripe */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '5px',
+                            height: '100%',
+                            background: `linear-gradient(180deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}80)`
+                          }}></div>
 
-                        {/* Header with Premium Status Badge */}
-                        <div style={{ 
-                          display: 'flex', 
-                          'justify-content': 'space-between', 
-                          'align-items': 'center', 
-                          'margin-bottom': '20px' 
-                        }}>
-                          <h3 style={{ 
-                            color: 'var(--color-text)', 
-                            'font-size': '1.2rem', 
-                            margin: '0', 
-                            flex: '1', 
-                            'font-weight': '700'
+                          {/* Header with Premium Status Badge */}
+                          <div style={{ 
+                            display: 'flex', 
+                            'justify-content': 'space-between', 
+                            'align-items': 'center', 
+                            'margin-bottom': '20px' 
                           }}>
-                            {matn.name}
-                          </h3>
-                          <button 
-                            onClick={() => changeMatnStatus(matn.id)} 
-                            style={{ 
-                              background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
-                              color: 'white', 
-                              padding: '10px 16px', 
-                              'border-radius': '16px', 
-                              'font-size': '0.8rem', 
-                              'font-weight': '700',
-                              border: 'none',
-                              cursor: 'pointer',
-                              'min-width': '140px',
-                              'text-align': 'center',
-                              transition: 'all 0.3s ease',
-                              'box-shadow': '0 4px 16px rgba(0,0,0,0.15)'
-                            }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.transform = 'scale(1.05)';
-                              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.transform = 'scale(1)';
-                              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
-                            }}
-                          >
-                            {getMatnStatusText(matn.status)}
-                          </button>
-                        </div>
-                        
-                        {/* Premium Note Field */}
-                        <div style={{ 'margin-bottom': '20px' }}>
-                          <label style={{
-                            display: 'block',
-                            'margin-bottom': '8px',
-                            'font-weight': '600',
-                            color: 'var(--color-text)',
-                            'font-size': '0.9rem'
-                          }}>
-                            📝 الملاحظات:
-                          </label>
-                          <MobileTextInput
-                            value={matn.description}
-                            onInput={(value) => {}}
-                            placeholder="اكتب ملاحظاتك هنا..."
-                            matn={matn}
-                          />
-                        </div>
-                        
-                        {/* Premium Action Buttons */}
-                        <div style={{ 
-                          display: 'flex', 
-                          gap: '12px', 
-                          'flex-wrap': 'wrap',
-                          'margin-bottom': '16px'
-                        }}>
-                          <Show when={matn.memorization_pdf_link}>
+                            <h3 style={{ 
+                              color: 'var(--color-text)', 
+                              'font-size': '1.2rem', 
+                              margin: '0', 
+                              flex: '1', 
+                              'font-weight': '700'
+                            }}>
+                              {matn.name}
+                            </h3>
                             <button 
-                              onClick={() => window.open(matn.memorization_pdf_link, '_blank')} 
+                              onClick={() => changeMatnStatus(matn.id)} 
                               style={{ 
-                                padding: '10px 16px', 
-                                background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))', 
+                                background: `linear-gradient(135deg, ${getMatnColor(matn.status)}, ${getMatnColor(matn.status)}CC)`, 
                                 color: 'white', 
-                                border: 'none', 
-                                'border-radius': '12px', 
-                                cursor: 'pointer', 
-                                'font-size': '13px',
-                                'font-weight': '600',
-                                'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                transition: 'all 0.3s ease'
+                                padding: '10px 16px', 
+                                'border-radius': '16px', 
+                                'font-size': '0.8rem', 
+                                'font-weight': '700',
+                                border: 'none',
+                                cursor: 'pointer',
+                                'min-width': '140px',
+                                'text-align': 'center',
+                                transition: 'all 0.3s ease',
+                                'box-shadow': '0 4px 16px rgba(0,0,0,0.15)'
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
                               }}
                             >
-                              📄 نص التحفيظ
+                              {getMatnStatusText(matn.status)}
                             </button>
-                          </Show>
+                          </div>
                           
-                          <Show when={matn.explanation_pdf_link}>
-                            <button 
-                              onClick={() => window.open(matn.explanation_pdf_link, '_blank')} 
-                              style={{ 
-                                padding: '10px 16px', 
-                                background: 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))', 
-                                color: 'white', 
-                                border: 'none', 
-                                'border-radius': '12px', 
-                                cursor: 'pointer', 
-                                'font-size': '13px',
-                                'font-weight': '600',
-                                'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                transition: 'all 0.3s ease'
+                          {/* Premium Note Field */}
+                          <div style={{ 'margin-bottom': '20px' }}>
+                            <label style={{
+                              display: 'block',
+                              'margin-bottom': '8px',
+                              'font-weight': '600',
+                              color: 'var(--color-text)',
+                              'font-size': '0.9rem'
+                            }}>
+                              📝 الملاحظات:
+                            </label>
+                            <MobileTextInput
+                              value={noteTexts()[matn.id] || ''}
+                              onInput={(value) => {
+                                setNoteTexts(prev => ({
+                                  ...prev,
+                                  [matn.id]: value
+                                }));
                               }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                              }}
-                            >
-                              📖 نص الشرح
-                            </button>
-                          </Show>
+                              placeholder="اكتب ملاحظاتك هنا..."
+                              matn={matn}
+                            />
+                          </div>
                           
-                          <Show when={matn.memorization_audio_link}>
-                            <button 
-                              onClick={() => {
-                                app.playAudio(matn.id, matn.name, matn.memorization_audio_link);
-                              }} 
-                              style={{ 
-                                padding: '10px 16px', 
-                                background: 'linear-gradient(135deg, var(--color-success), #059669)', 
-                                color: 'white', 
-                                border: 'none', 
-                                'border-radius': '12px', 
-                                cursor: 'pointer', 
-                                'font-size': '13px',
-                                'font-weight': '600',
-                                'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-                                transition: 'all 0.3s ease'
-                              }}
-                              onMouseOver={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-                              }}
-                              onMouseOut={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-                              }}
-                            >
-                              🎧 الصوتيات
-                            </button>
-                          </Show>
-                        </div>
-                        
-                        {/* Premium Days Counter */}
-                        <div style={{ 
-                          'text-align': 'center', 
-                          padding: '12px',
-                          background: 'linear-gradient(135deg, var(--color-background), var(--color-surface))',
-                          'border-radius': '12px',
-                          border: '1px solid var(--color-border)'
-                        }}>
-                          <span style={{ 
-                            color: 'var(--color-text-secondary)', 
-                            'font-size': '0.85rem',
-                            'font-weight': '500'
+                          {/* Premium Action Buttons */}
+                          <div style={{ 
+                            display: 'flex', 
+                            gap: '12px', 
+                            'flex-wrap': 'wrap',
+                            'margin-bottom': '16px'
                           }}>
-                            ⏰ آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
-                          </span>
+                            <Show when={matn.memorization_pdf_link}>
+                              <button 
+                                onClick={() => window.open(matn.memorization_pdf_link, '_blank')} 
+                                style={{ 
+                                  padding: '10px 16px', 
+                                  background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))', 
+                                  color: 'white', 
+                                  border: 'none', 
+                                  'border-radius': '12px', 
+                                  cursor: 'pointer', 
+                                  'font-size': '13px',
+                                  'font-weight': '600',
+                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
+                                  transition: 'all 0.3s ease'
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(-2px)';
+                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                }}
+                              >
+                                📄 نص التحفيظ
+                              </button>
+                            </Show>
+                            
+                            <Show when={matn.explanation_pdf_link}>
+                              <button 
+                                onClick={() => window.open(matn.explanation_pdf_link, '_blank')} 
+                                style={{ 
+                                  padding: '10px 16px', 
+                                  background: 'linear-gradient(135deg, var(--color-secondary), var(--color-primary))', 
+                                  color: 'white', 
+                                  border: 'none', 
+                                  'border-radius': '12px', 
+                                  cursor: 'pointer', 
+                                  'font-size': '13px',
+                                  'font-weight': '600',
+                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
+                                  transition: 'all 0.3s ease'
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(-2px)';
+                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                }}
+                              >
+                                📖 نص الشرح
+                              </button>
+                            </Show>
+                            
+                            <Show when={matn.memorization_audio_link}>
+                              <button 
+                                onClick={() => {
+                                  app.playAudio(matn.id, matn.name, matn.memorization_audio_link);
+                                }} 
+                                style={{ 
+                                  padding: '10px 16px', 
+                                  background: 'linear-gradient(135deg, var(--color-success), #059669)', 
+                                  color: 'white', 
+                                  border: 'none', 
+                                  'border-radius': '12px', 
+                                  cursor: 'pointer', 
+                                  'font-size': '13px',
+                                  'font-weight': '600',
+                                  'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
+                                  transition: 'all 0.3s ease'
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(-2px)';
+                                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                                }}
+                              >
+                                🎧 الصوتيات
+                              </button>
+                            </Show>
+                          </div>
+                          
+                          {/* Premium Days Counter */}
+                          <div style={{ 
+                            'text-align': 'center', 
+                            padding: '12px',
+                            background: 'linear-gradient(135deg, var(--color-background), var(--color-surface))',
+                            'border-radius': '12px',
+                            border: '1px solid var(--color-border)'
+                          }}>
+                            <span style={{ 
+                              color: 'var(--color-text-secondary)', 
+                              'font-size': '0.85rem',
+                              'font-weight': '500'
+                            }}>
+                              ⏰ آخر ختمة قبل: {matn.lastChange_date ? calculateDaysSinceLastGreen(matn.lastChange_date) : 0} يوم
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    }}
                   </For>
                 </div>
               </Show>

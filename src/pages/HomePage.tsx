@@ -29,7 +29,9 @@ export function HomePage() {
   });
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ 
+      padding: '20px 20px 100px 20px' // Extra 100px bottom padding für BottomBar
+    }}>
       {/* App Header with Logo - EXACT COPY FROM REACT */}
       <div style={{ 'text-align': 'center', 'margin-bottom': '20px' }}>
         <div style={{ 
