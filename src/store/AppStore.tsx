@@ -83,6 +83,9 @@ export function AppProvider(props: { children: JSX.Element }) {
     matnId: ''
   });
   
+  // Current audio type tracking
+  let currentAudioType: 'memorization' | 'explanation' | null = null;
+  
   // Audio Progress State
   const [audioProgress, setAudioProgress] = createSignal<AudioProgress>({});
   
@@ -290,8 +293,12 @@ export function AppProvider(props: { children: JSX.Element }) {
       audioElement.pause();
     }
     
+    // Store current audio type
+    currentAudioType = audioType;
+    
     // Get saved progress for this audio
     const savedProgress = audioProgress()[matnId]?.[audioType] || 0;
+    console.log(`🎵 Loading audio: ${title}, Progress: ${savedProgress}s`);
     
     audioElement = new Audio(audioUrl);
     
@@ -304,10 +311,15 @@ export function AppProvider(props: { children: JSX.Element }) {
       matnId
     });
     
+    // Critical: Set progress AFTER canplay event to ensure audio is ready
+    audioElement.addEventListener('canplay', () => {
+      if (savedProgress > 0 && audioElement && audioElement.duration > savedProgress) {
+        audioElement.currentTime = savedProgress;
+        console.log(`⏭️ Resumed at: ${savedProgress}s`);
+      }
+    }, { once: true });
+    
     audioElement.addEventListener('loadedmetadata', () => {
-      // Set to saved progress when metadata loads
-      audioElement!.currentTime = savedProgress;
-      
       setAudioPlayer(prev => ({
         ...prev,
         duration: audioElement?.duration || 0,
@@ -324,21 +336,23 @@ export function AppProvider(props: { children: JSX.Element }) {
         currentTime
       }));
       
-      // Save progress every second
-      setAudioProgress(prev => {
-        const newProgress = {
-          ...prev,
-          [matnId]: {
-            ...prev[matnId],
-            [audioType]: currentTime
-          }
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('audioProgress', JSON.stringify(newProgress));
-        
-        return newProgress;
-      });
+      // Save progress every second (only if we have a valid audio type)
+      if (currentAudioType && currentTime > 0) {
+        setAudioProgress(prev => {
+          const newProgress = {
+            ...prev,
+            [matnId]: {
+              ...prev[matnId],
+              [currentAudioType]: currentTime
+            }
+          };
+          
+          // Save to localStorage
+          localStorage.setItem('audioProgress', JSON.stringify(newProgress));
+          
+          return newProgress;
+        });
+      }
     });
     
     audioElement.addEventListener('ended', () => {
@@ -347,19 +361,21 @@ export function AppProvider(props: { children: JSX.Element }) {
         isPlaying: false
       }));
       
-      // Reset progress when audio ends
-      setAudioProgress(prev => {
-        const newProgress = {
-          ...prev,
-          [matnId]: {
-            ...prev[matnId],
-            [audioType]: 0
-          }
-        };
-        
-        localStorage.setItem('audioProgress', JSON.stringify(newProgress));
-        return newProgress;
-      });
+      // Reset progress when audio ends (only if we have a valid audio type)
+      if (currentAudioType) {
+        setAudioProgress(prev => {
+          const newProgress = {
+            ...prev,
+            [matnId]: {
+              ...prev[matnId],
+              [currentAudioType]: 0
+            }
+          };
+          
+          localStorage.setItem('audioProgress', JSON.stringify(newProgress));
+          return newProgress;
+        });
+      }
     });
     
     audioElement.play().then(() => {
@@ -387,6 +403,7 @@ export function AppProvider(props: { children: JSX.Element }) {
       audioElement.pause();
       audioElement.currentTime = 0;
     }
+    currentAudioType = null; // Reset current audio type
     setAudioPlayer({
       title: '',
       isPlaying: false,
@@ -395,7 +412,6 @@ export function AppProvider(props: { children: JSX.Element }) {
       isLoading: false,
       matnId: ''
     });
-    setAudioProgress({}); // Reset progress for all audios
   };
 
   const skipBackward = () => {
