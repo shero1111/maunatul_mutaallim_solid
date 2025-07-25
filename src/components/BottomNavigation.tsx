@@ -40,6 +40,7 @@ export function BottomNavigation() {
     transition: 'all 0.2s ease',
     'text-decoration': 'none',
     border: 'none',
+    outline: 'none',
     '-webkit-tap-highlight-color': 'transparent',
     position: 'relative' as const
   });
