@@ -24,6 +24,13 @@ export function Login() {
       
       if (loginSuccess) {
         console.log('🆕 SUCCESS! Current user:', app.currentUser()?.name);
+        
+        // FORCE APP UPDATE AFTER LOGIN
+        setTimeout(() => {
+          console.log('🔄 FORCING APP REFRESH...');
+          window.location.reload();
+        }, 500);
+        
       } else {
         setError('Login fehlgeschlagen - Username oder Password falsch');
       }
