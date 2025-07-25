@@ -326,25 +326,16 @@ function StudentDashboard(props: any) {
              {statusInfo().text}
            </div>
           
-          {lastChanged() && (
-            <p style={{ 
-              color: 'var(--color-text-secondary)', 
-              'font-size': '0.85rem',
-              'margin-bottom': '24px',
-              'font-style': 'italic'
-            }}>
-              آخر تحديث: {lastChanged()}
-            </p>
-          )}
           
-          {/* Elegant Divider */}
-          <div style={{
-            width: '60px',
-            height: '2px',
-            background: 'linear-gradient(90deg, transparent, var(--color-border), transparent)',
-            margin: '24px auto',
-            'border-radius': '1px'
-          }} />
+          
+                     {/* Elegant Divider */}
+           <div style={{
+             width: '60px',
+             height: '2px',
+             background: 'linear-gradient(90deg, transparent, var(--color-border), transparent)',
+             margin: '20px auto',
+             'border-radius': '1px'
+           }} />
           
           <h4 style={{ 
             color: 'var(--color-text)', 
