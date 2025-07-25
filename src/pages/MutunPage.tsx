@@ -277,7 +277,7 @@ export function MutunPage() {
                                   style={{ 
                     background: 'var(--color-surface)', 
                     'border-radius': '12px', 
-                    padding: '10px 16px', 
+                    padding: '8px 12px', 
                     border: '2px solid var(--color-primary)', 
                     cursor: 'pointer',
                     'margin-bottom': isCollapsed() ? '0' : '15px',
@@ -356,7 +356,7 @@ export function MutunPage() {
                             'font-size': '1.1rem', 
                             margin: '0 0 12px 0',
                             'text-align': 'center',
-                            'font-weight': '600'
+                            'font-weight': '700'
                           }}>
                             {matn.name}
                           </h3>
@@ -364,8 +364,8 @@ export function MutunPage() {
                           {/* Status Button and Settings - Below Title */}
                           <div style={{ 
                             display: 'flex', 
-                            'justify-content': 'space-between', 
                             'align-items': 'center', 
+                            gap: '10px',
                             'margin-bottom': '15px' 
                           }}>
                             <button 
@@ -382,7 +382,7 @@ export function MutunPage() {
                                 'font-weight': '600',
                                 border: 'none',
                                 cursor: 'pointer',
-                                'min-width': '120px'
+                                flex: '1'
                               }}
                             >
                               {getMatnStatusText(matn.status)}
