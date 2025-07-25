@@ -232,14 +232,24 @@ function StudentDashboard(props: any) {
     console.log('⭐ Student: Toggle favorite clicked for:', userId);
     const current = favorites();
     console.log('⭐ Student: Current favorites:', current);
+    console.log('⭐ Student: Current user:', student());
     
     if (current.includes(userId)) {
       console.log('⭐ Student: Removing from favorites');
-      setFavorites(current.filter(id => id !== userId));
+      const newFavorites = current.filter(id => id !== userId);
+      console.log('⭐ Student: New favorites after removal:', newFavorites);
+      setFavorites(newFavorites);
     } else {
       console.log('⭐ Student: Adding to favorites');
-      setFavorites([...current, userId]);
+      const newFavorites = [...current, userId];
+      console.log('⭐ Student: New favorites after addition:', newFavorites);
+      setFavorites(newFavorites);
     }
+    
+    // Force a small delay to check if it updated
+    setTimeout(() => {
+      console.log('⭐ Student: Favorites after timeout:', favorites());
+    }, 100);
   };
   
   const getFilteredStudents = (halaqaId: string) => {
@@ -555,7 +565,7 @@ function StudentDashboard(props: any) {
                     const otherStatusInfo = getStatusInfo(otherStudent.status);
                     const otherLastChanged = otherStudent.status_changed_at ? 
                       new Date(otherStudent.status_changed_at).toLocaleDateString('ar') : '';
-                    const isFavorite = favorites().includes(otherStudent.id);
+                    const isFavorite = createMemo(() => favorites().includes(otherStudent.id));
                     
                     return (
                       <div style={{ 
@@ -590,7 +600,7 @@ function StudentDashboard(props: any) {
                                 'font-size': '1.2rem'
                               }}
                             >
-                              {isFavorite ? '⭐' : '☆'}
+                              {isFavorite() ? '⭐' : '☆'}
                             </button>
                           </div>
                           {otherLastChanged && (
@@ -653,11 +663,20 @@ function TeacherDashboard(props: any) {
     
     if (current.includes(userId)) {
       console.log('⭐ Teacher: Removing from favorites');
-      setFavorites(current.filter(id => id !== userId));
+      const newFavorites = current.filter(id => id !== userId);
+      console.log('⭐ Teacher: New favorites after removal:', newFavorites);
+      setFavorites(newFavorites);
     } else {
       console.log('⭐ Teacher: Adding to favorites');
-      setFavorites([...current, userId]);
+      const newFavorites = [...current, userId];
+      console.log('⭐ Teacher: New favorites after addition:', newFavorites);
+      setFavorites(newFavorites);
     }
+    
+    // Force a small delay to check if it updated
+    setTimeout(() => {
+      console.log('⭐ Teacher: Favorites after timeout:', favorites());
+    }, 100);
   };
   
   const getFilteredStudents = (halaqaId: string) => {
@@ -767,7 +786,7 @@ function TeacherDashboard(props: any) {
                     const statusInfo = getStatusInfo(student.status);
                     const lastChanged = student.status_changed_at ? 
                       new Date(student.status_changed_at).toLocaleDateString('ar') : '';
-                    const isFavorite = favorites().includes(student.id);
+                    const isFavorite = createMemo(() => favorites().includes(student.id));
                     
                     return (
                       <div style={{ 
@@ -802,7 +821,7 @@ function TeacherDashboard(props: any) {
                                 'font-size': '1.2rem'
                               }}
                             >
-                              {isFavorite ? '⭐' : '☆'}
+                              {isFavorite() ? '⭐' : '☆'}
                             </button>
                           </div>
                           {lastChanged && (
