@@ -6,33 +6,61 @@ import { getStatusColor } from '../styles/themes';
 export function HomePage() {
   const app = useApp();
   
-  // Computed statistics
-  const stats = createMemo(() => {
-    const users = app.users();
-    const halaqat = app.halaqat();
-    const students = users.filter(u => u.role === 'student') as Student[];
-    const teachers = users.filter(u => u.role === 'lehrer');
+  // Role-based computed data
+  const dashboardData = createMemo(() => {
+    const currentUser = app.currentUser();
+    if (!currentUser) return null;
     
-    const statusCounts = {
-      not_available: students.filter(s => s.status === 'not_available').length,
-      revising: students.filter(s => s.status === 'revising').length,
-      khatamat: students.filter(s => s.status === 'khatamat').length
-    };
-    
-    return {
-      totalUsers: users.length,
-      totalStudents: students.length,
-      totalTeachers: teachers.length,
-      totalHalaqat: halaqat.length,
-      statusCounts
-    };
+    if (currentUser.role === 'student') {
+      // Student Dashboard Data
+      const studentData = currentUser as Student;
+      const userHalaqat = app.halaqat().filter(h => h.student_ids.includes(currentUser.id));
+      const mutunData = app.mutun();
+      const recentNews = app.news().slice(0, 3); // Last 3 news items
+      
+      return {
+        type: 'student',
+        personalStatus: studentData.status,
+        halaqatCount: userHalaqat.length,
+        activeHalaqat: userHalaqat.filter(h => h.status === 'active').length,
+        totalMutun: mutunData.length,
+        completedMutun: mutunData.filter(m => m.status === 'completed').length,
+        inProgressMutun: mutunData.filter(m => m.status === 'in_progress').length,
+        recentNews,
+        userHalaqat
+      };
+    } else {
+      // Admin/Teacher Dashboard Data
+      const users = app.users();
+      const halaqat = app.halaqat();
+      const students = users.filter(u => u.role === 'student') as Student[];
+      const teachers = users.filter(u => u.role === 'lehrer');
+      
+      const statusCounts = {
+        not_available: students.filter(s => s.status === 'not_available').length,
+        revising: students.filter(s => s.status === 'revising').length,
+        khatamat: students.filter(s => s.status === 'khatamat').length
+      };
+      
+      return {
+        type: 'admin',
+        totalUsers: users.length,
+        totalStudents: students.length,
+        totalTeachers: teachers.length,
+        totalHalaqat: halaqat.length,
+        statusCounts
+      };
+    }
   });
+
+  const data = dashboardData();
+  if (!data) return <div>Loading...</div>;
 
   return (
     <div style={{ 
       padding: '20px 20px 100px 20px' // Extra 100px bottom padding für BottomBar
     }}>
-      {/* App Header with Logo - EXACT COPY FROM REACT */}
+      {/* App Header with Logo */}
       <div style={{ 'text-align': 'center', 'margin-bottom': '20px' }}>
         <div style={{ 
           display: 'flex', 
@@ -83,11 +111,291 @@ export function HomePage() {
             color: 'var(--color-text-secondary)', 
             'font-size': '1rem' 
           }}>
-            لوحة التحكم الرئيسية
+            {data.type === 'student' ? 'لوحة الطالب' : 'لوحة التحكم الرئيسية'}
           </p>
         </div>
       </div>
 
+      {/* Role-based Dashboard Content */}
+      <Show when={data.type === 'student'}>
+        {/* STUDENT DASHBOARD */}
+        <StudentDashboard data={data} app={app} />
+      </Show>
+
+      <Show when={data.type === 'admin'}>
+        {/* ADMIN/TEACHER DASHBOARD */}
+        <AdminDashboard data={data} />
+      </Show>
+    </div>
+  );
+}
+
+// Student Dashboard Component
+function StudentDashboard(props: { data: any; app: any }) {
+  const { data, app } = props;
+  
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case 'not_available':
+        return { color: 'var(--color-error)', icon: '🔴', text: 'غير متاح' };
+      case 'revising':
+        return { color: 'var(--color-warning)', icon: '🟡', text: 'يراجع' };
+      case 'khatamat':
+        return { color: 'var(--color-success)', icon: '🟢', text: 'ختمات' };
+      default:
+        return { color: 'var(--color-text)', icon: '⚪', text: 'غير محدد' };
+    }
+  };
+  
+  const statusInfo = getStatusInfo(data.personalStatus);
+  
+  return (
+    <>
+      {/* Personal Status Card */}
+      <div style={{ 
+        background: 'var(--color-surface)', 
+        'border-radius': '15px', 
+        padding: '20px', 
+        'margin-bottom': '20px',
+        border: `2px solid ${statusInfo.color}`,
+        'text-align': 'center'
+      }}>
+        <div style={{ 'font-size': '3rem', 'margin-bottom': '10px' }}>{statusInfo.icon}</div>
+        <h3 style={{ 
+          color: statusInfo.color, 
+          'margin-bottom': '5px',
+          'font-size': '1.5rem',
+          'font-weight': 'bold'
+        }}>
+          حالتك الحالية
+        </h3>
+        <p style={{ 
+          color: statusInfo.color, 
+          'font-size': '1.2rem',
+          'font-weight': '600'
+        }}>
+          {statusInfo.text}
+        </p>
+      </div>
+
+      {/* Student Statistics Cards */}
+      <div style={{ 
+        display: 'grid', 
+        'grid-template-columns': 'repeat(auto-fit, minmax(140px, 1fr))', 
+        gap: '15px', 
+        'margin-bottom': '20px' 
+      }}>
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          padding: '15px', 
+          'border-radius': '12px', 
+          'text-align': 'center', 
+          border: '1px solid var(--color-border)' 
+        }}>
+          <div style={{ 'font-size': '1.8rem', 'margin-bottom': '5px' }}>🔵</div>
+          <div style={{ 
+            'font-size': '1.3rem', 
+            'font-weight': 'bold', 
+            color: 'var(--color-primary)' 
+          }}>
+            {data.halaqatCount}
+          </div>
+          <div style={{ 
+            color: 'var(--color-text-secondary)', 
+            'font-size': '0.85rem' 
+          }}>
+            حلقاتي
+          </div>
+        </div>
+
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          padding: '15px', 
+          'border-radius': '12px', 
+          'text-align': 'center', 
+          border: '1px solid var(--color-border)' 
+        }}>
+          <div style={{ 'font-size': '1.8rem', 'margin-bottom': '5px' }}>✅</div>
+          <div style={{ 
+            'font-size': '1.3rem', 
+            'font-weight': 'bold', 
+            color: 'var(--color-success)' 
+          }}>
+            {data.activeHalaqat}
+          </div>
+          <div style={{ 
+            color: 'var(--color-text-secondary)', 
+            'font-size': '0.85rem' 
+          }}>
+            نشطة
+          </div>
+        </div>
+
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          padding: '15px', 
+          'border-radius': '12px', 
+          'text-align': 'center', 
+          border: '1px solid var(--color-border)' 
+        }}>
+          <div style={{ 'font-size': '1.8rem', 'margin-bottom': '5px' }}>📚</div>
+          <div style={{ 
+            'font-size': '1.3rem', 
+            'font-weight': 'bold', 
+            color: 'var(--color-secondary)' 
+          }}>
+            {data.completedMutun}
+          </div>
+          <div style={{ 
+            color: 'var(--color-text-secondary)', 
+            'font-size': '0.85rem' 
+          }}>
+            مكتملة
+          </div>
+        </div>
+
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          padding: '15px', 
+          'border-radius': '12px', 
+          'text-align': 'center', 
+          border: '1px solid var(--color-border)' 
+        }}>
+          <div style={{ 'font-size': '1.8rem', 'margin-bottom': '5px' }}>📖</div>
+          <div style={{ 
+            'font-size': '1.3rem', 
+            'font-weight': 'bold', 
+            color: 'var(--color-warning)' 
+          }}>
+            {data.inProgressMutun}
+          </div>
+          <div style={{ 
+            color: 'var(--color-text-secondary)', 
+            'font-size': '0.85rem' 
+          }}>
+            قيد الدراسة
+          </div>
+        </div>
+      </div>
+
+      {/* My Halaqat */}
+      <Show when={data.userHalaqat.length > 0}>
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          'border-radius': '15px', 
+          padding: '20px', 
+          'margin-bottom': '20px',
+          border: '1px solid var(--color-border)' 
+        }}>
+          <h3 style={{ 
+            color: 'var(--color-text)', 
+            'margin-bottom': '15px', 
+            display: 'flex', 
+            'align-items': 'center', 
+            gap: '10px' 
+          }}>
+            <span style={{ 'font-size': '1.5rem' }}>🔵</span>
+            حلقاتي
+          </h3>
+          <For each={data.userHalaqat.slice(0, 3)}>
+            {(halaqa) => (
+              <div style={{ 
+                background: 'var(--color-background)', 
+                'border-radius': '10px', 
+                padding: '12px', 
+                'margin-bottom': '10px',
+                border: '1px solid var(--color-border)',
+                display: 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center'
+              }}>
+                <div>
+                  <div style={{ 
+                    'font-weight': 'bold', 
+                    color: 'var(--color-text)',
+                    'margin-bottom': '4px'
+                  }}>
+                    {halaqa.name}
+                  </div>
+                  <div style={{ 
+                    color: 'var(--color-text-secondary)', 
+                    'font-size': '0.85rem' 
+                  }}>
+                    {halaqa.type} • {app.users().find(u => u.id === halaqa.teacher_id)?.name}
+                  </div>
+                </div>
+                <div style={{ 
+                  padding: '4px 8px', 
+                  'border-radius': '6px',
+                  background: halaqa.status === 'active' ? 'var(--color-success)' : 'var(--color-error)',
+                  color: 'white',
+                  'font-size': '0.75rem',
+                  'font-weight': 'bold'
+                }}>
+                  {halaqa.status === 'active' ? 'نشط' : 'غير نشط'}
+                </div>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+
+      {/* Recent News */}
+      <Show when={data.recentNews.length > 0}>
+        <div style={{ 
+          background: 'var(--color-surface)', 
+          'border-radius': '15px', 
+          padding: '20px', 
+          border: '1px solid var(--color-border)' 
+        }}>
+          <h3 style={{ 
+            color: 'var(--color-text)', 
+            'margin-bottom': '15px', 
+            display: 'flex', 
+            'align-items': 'center', 
+            gap: '10px' 
+          }}>
+            <span style={{ 'font-size': '1.5rem' }}>📰</span>
+            آخر الأخبار
+          </h3>
+          <For each={data.recentNews}>
+            {(news) => (
+              <div style={{ 
+                background: 'var(--color-background)', 
+                'border-radius': '10px', 
+                padding: '12px', 
+                'margin-bottom': '10px',
+                border: '1px solid var(--color-border)'
+              }}>
+                <div style={{ 
+                  'font-weight': 'bold', 
+                  color: 'var(--color-text)',
+                  'margin-bottom': '5px'
+                }}>
+                  {news.title}
+                </div>
+                <div style={{ 
+                  color: 'var(--color-text-secondary)', 
+                  'font-size': '0.85rem',
+                  'line-height': '1.4'
+                }}>
+                  {news.content.substring(0, 100)}...
+                </div>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+    </>
+  );
+}
+
+// Admin Dashboard Component
+function AdminDashboard(props: { data: any }) {
+  const { data } = props;
+  
+  return (
+    <>
       {/* Statistics Cards */}
       <div style={{ 
         display: 'grid', 
@@ -108,7 +416,7 @@ export function HomePage() {
             'font-weight': 'bold', 
             color: 'var(--color-primary)' 
           }}>
-            {stats().totalUsers}
+            {data.totalUsers}
           </div>
           <div style={{ 
             color: 'var(--color-text-secondary)', 
@@ -131,7 +439,7 @@ export function HomePage() {
             'font-weight': 'bold', 
             color: 'var(--color-secondary)' 
           }}>
-            {stats().totalTeachers}
+            {data.totalTeachers}
           </div>
           <div style={{ 
             color: 'var(--color-text-secondary)', 
@@ -154,7 +462,7 @@ export function HomePage() {
             'font-weight': 'bold', 
             color: 'var(--color-primary)' 
           }}>
-            {stats().totalHalaqat}
+            {data.totalHalaqat}
           </div>
           <div style={{ 
             color: 'var(--color-text-secondary)', 
@@ -200,7 +508,7 @@ export function HomePage() {
               'font-weight': 'bold', 
               color: 'var(--color-error)' 
             }}>
-              {stats().statusCounts.not_available}
+              {data.statusCounts.not_available}
             </div>
             <div style={{ 
               color: 'var(--color-text-secondary)', 
@@ -223,7 +531,7 @@ export function HomePage() {
               'font-weight': 'bold', 
               color: 'var(--color-warning)' 
             }}>
-              {stats().statusCounts.revising}
+              {data.statusCounts.revising}
             </div>
             <div style={{ 
               color: 'var(--color-text-secondary)', 
@@ -246,7 +554,7 @@ export function HomePage() {
               'font-weight': 'bold', 
               color: 'var(--color-success)' 
             }}>
-              {stats().statusCounts.khatamat}
+              {data.statusCounts.khatamat}
             </div>
             <div style={{ 
               color: 'var(--color-text-secondary)', 
@@ -257,6 +565,6 @@ export function HomePage() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
