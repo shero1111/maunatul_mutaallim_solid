@@ -7,7 +7,7 @@ export function MutunPage() {
   const app = useApp();
   const [levelFilter, setLevelFilter] = createSignal<string>('all');
   
-  // Einfaches State für collapsed sections
+  // State für collapsed sections - alle Sektionen sind initial aufgeklappt
   const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
 
   // Filter user's mutun
@@ -32,12 +32,17 @@ export function MutunPage() {
 
   const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
 
-  // Einfache Toggle-Funktion
+  // Toggle-Funktion für Sektionen
   const toggleSection = (section: string) => {
-    setCollapsedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    console.log('🔄 Toggling section:', section);
+    setCollapsedSections(prev => {
+      const newState = {
+        ...prev,
+        [section]: !prev[section]
+      };
+      console.log('📂 New collapsed state:', newState);
+      return newState;
+    });
   };
 
   // Level Filter Handler
@@ -242,18 +247,40 @@ export function MutunPage() {
           
           return (
             <div style={{ 'margin-bottom': '25px' }}>
-              {/* Section Header */}
+              {/* Section Header - CLICKABLE */}
               <div 
-                onClick={() => toggleSection(section)} 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleSection(section);
+                }} 
                 style={{ 
-                  background: 'var(--color-surface)', 
+                  background: isCollapsed 
+                    ? 'var(--color-border)' 
+                    : 'var(--color-surface)', 
                   'border-radius': '12px', 
                   padding: '15px 20px', 
-                  border: '1px solid var(--color-border)', 
+                  border: `2px solid ${isCollapsed ? 'var(--color-border)' : 'var(--color-primary)'}`, 
                   cursor: 'pointer',
                   'margin-bottom': isCollapsed ? '0' : '15px',
                   transition: 'all 0.3s ease',
-                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
+                  'box-shadow': isCollapsed 
+                    ? '0 2px 4px rgba(0,0,0,0.05)' 
+                    : '0 4px 12px rgba(0,0,0,0.15)',
+                  'user-select': 'none',
+                  '-webkit-user-select': 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = isCollapsed 
+                    ? '0 4px 8px rgba(0,0,0,0.1)' 
+                    : '0 6px 20px rgba(0,0,0,0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0px)';
+                  e.currentTarget.style.boxShadow = isCollapsed 
+                    ? '0 2px 4px rgba(0,0,0,0.05)' 
+                    : '0 4px 12px rgba(0,0,0,0.15)';
                 }}
               >
                 <div style={{ 
@@ -262,32 +289,53 @@ export function MutunPage() {
                   'align-items': 'center' 
                 }}>
                   <h2 style={{ 
-                    color: 'var(--color-primary)', 
+                    color: isCollapsed ? 'var(--color-text-secondary)' : 'var(--color-primary)', 
                     'font-size': '1.3rem', 
                     margin: '0', 
                     display: 'flex', 
                     'align-items': 'center', 
-                    gap: '10px'
+                    gap: '10px',
+                    transition: 'color 0.3s ease'
                   }}>
-                    <span style={{ 'font-size': '1.5rem' }}>
+                    <span style={{ 
+                      'font-size': '1.5rem',
+                      transition: 'transform 0.3s ease'
+                    }}>
                       {isCollapsed ? '📁' : '📂'}
                     </span>
                     {section}
+                    <span style={{
+                      'font-size': '12px',
+                      background: isCollapsed ? 'var(--color-text-secondary)' : 'var(--color-primary)',
+                      color: 'white',
+                      padding: '2px 8px',
+                      'border-radius': '10px',
+                      'font-weight': '600'
+                    }}>
+                      {mutun.length}
+                    </span>
                   </h2>
                   <span style={{ 
-                    color: 'var(--color-primary)', 
-                    'font-size': '1.5rem', 
-                    transition: 'transform 0.3s ease', 
-                    transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'
+                    color: isCollapsed ? 'var(--color-text-secondary)' : 'var(--color-primary)', 
+                    'font-size': '1.8rem', 
+                    transition: 'transform 0.3s ease, color 0.3s ease', 
+                    transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'
                   }}>
                     ▼
                   </span>
                 </div>
               </div>
               
-              {/* Section Content */}
+              {/* Section Content with Animation */}
               <Show when={!isCollapsed}>
-                <div style={{ display: 'grid', gap: '15px' }}>
+                <div style={{ 
+                  display: 'grid', 
+                  gap: '15px',
+                  opacity: isCollapsed ? '0' : '1',
+                  'max-height': isCollapsed ? '0' : 'none',
+                  overflow: isCollapsed ? 'hidden' : 'visible',
+                  transition: 'opacity 0.3s ease, max-height 0.3s ease'
+                }}>
                   <For each={mutun}>
                     {(matn) => {
                       initializeNoteText(matn);
