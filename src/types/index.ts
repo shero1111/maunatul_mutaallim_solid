@@ -9,6 +9,7 @@ export interface User {
   isActive: boolean;
   created_at: string;
   lastPage?: string;
+  lastNewsRead?: string; // Timestamp of last news read
 }
 
 export interface Student extends User {

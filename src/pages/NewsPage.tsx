@@ -57,7 +57,7 @@ export function NewsPage() {
   
   const newsMetaStyle = {
     display: 'flex',
-    'justify-content': 'space-between',
+    'justify-content': 'flex-end',
     'align-items': 'center',
     'font-size': '12px',
     color: 'var(--color-text-secondary)'
@@ -84,10 +84,7 @@ export function NewsPage() {
     }
   };
   
-  const getAuthorName = (authorId: string): string => {
-    const author = app.users().find(u => u.id === authorId);
-    return author?.name || 'Unknown';
-  };
+
   
   return (
     <div style={containerStyle}>
@@ -109,7 +106,6 @@ export function NewsPage() {
             </p>
             
             <div style={newsMetaStyle}>
-              <span>By {getAuthorName(newsItem.author_id)}</span>
               <span>{formatDate(newsItem.created_at)}</span>
             </div>
           </article>

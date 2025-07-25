@@ -82,7 +82,28 @@ export function BottomNavigation() {
   };
   
   const handleNavigation = (page: Page) => {
+    // Mark news as read when navigating to news page
+    if (page === 'news') {
+      const currentUser = app.currentUser();
+      if (currentUser) {
+        const updatedUser = {
+          ...currentUser,
+          lastNewsRead: new Date().toISOString()
+        };
+        app.updateUser(updatedUser);
+      }
+    }
     app.setCurrentPage(page);
+  };
+  
+  // Calculate unread news count
+  const getUnreadNewsCount = () => {
+    const currentUser = app.currentUser();
+    if (!currentUser) return 0;
+    
+    const lastRead = currentUser.lastNewsRead ? new Date(currentUser.lastNewsRead) : new Date(0);
+    const unreadNews = app.news().filter(news => new Date(news.created_at) > lastRead);
+    return unreadNews.length;
   };
   
   const visibleItems = getVisibleItems();
@@ -113,7 +134,31 @@ export function BottomNavigation() {
                 transition: 'all 0.2s ease'
               }} />
               
-              <div style={iconStyle(isActive())}>{item.icon}</div>
+              <div style={{ position: 'relative' }}>
+                <div style={iconStyle(isActive())}>{item.icon}</div>
+                {/* News Badge */}
+                {item.page === 'news' && getUnreadNewsCount() > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    right: '-8px',
+                    background: 'var(--color-error)',
+                    color: 'white',
+                    'border-radius': '10px',
+                    'min-width': '18px',
+                    height: '18px',
+                    display: 'flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                    'font-size': '10px',
+                    'font-weight': '600',
+                    'box-shadow': '0 2px 4px rgba(0,0,0,0.2)',
+                    border: '2px solid var(--color-background)'
+                  }}>
+                    {getUnreadNewsCount() > 99 ? '99+' : getUnreadNewsCount()}
+                  </div>
+                )}
+              </div>
               <div style={labelStyle(isActive())}>{item.label}</div>
             </button>
           );
