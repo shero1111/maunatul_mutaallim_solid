@@ -506,7 +506,7 @@ function StudentDashboard(props: any) {
         }}>
           <input
             type="text"
-            placeholder="🔍 البحث عن طالب..."
+            placeholder="البحث عن طالب..."
             value={searchTerm()}
             onInput={(e) => setSearchTerm(e.currentTarget.value)}
             style={{
@@ -819,7 +819,7 @@ function TeacherDashboard(props: any) {
         }}>
           <input
             type="text"
-            placeholder="🔍 البحث عن طالب..."
+            placeholder="البحث عن طالب..."
             value={searchTerm()}
             onInput={(e) => setSearchTerm(e.currentTarget.value)}
             style={{
