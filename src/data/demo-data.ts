@@ -136,6 +136,20 @@ export const demoUsers: (Student | Teacher | User)[] = [
     halaqat_ids: ['halaqa1', 'halaqa2'], 
     favorites: [], 
     lastPage: 'home' 
+  } as Student,
+  { 
+    id: 'student3', 
+    username: 'student3', 
+    password: 'test', 
+    role: 'student', 
+    name: 'Yusuf Al-Faruq', 
+    isActive: true, 
+    created_at: '2024-01-01', 
+    status: 'not_available', 
+    status_changed_at: '2024-01-13T16:45:00Z', 
+    halaqat_ids: ['halaqa1'], 
+    favorites: ['student1'], 
+    lastPage: 'home' 
   } as Student
 ];
 
@@ -146,7 +160,7 @@ export const demoHalaqat: Halaqa[] = [
     name: 'حلقة الحفظ المتقدمة',
     type: 'memorizing',
     teacher_id: 'lehrer',
-    student_ids: ['student1', 'student2'],
+    student_ids: ['student1', 'student2', 'student3'],
     internal_number: 1,
     isActive: true
   },
