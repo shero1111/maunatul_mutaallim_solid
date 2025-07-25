@@ -491,44 +491,147 @@ function StudentDashboard(props: any) {
         </div>
       </div>
 
-      {/* Search and Filter */}
+      {/* Enhanced Search and Filter */}
       <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '12px', 
-        padding: '15px', 
-        'margin-bottom': '20px',
-        border: '1px solid var(--color-border)'
+        background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)', 
+        'border-radius': '16px', 
+        padding: '20px', 
+        'margin-bottom': '24px',
+        border: '1px solid var(--color-border)',
+        'box-shadow': '0 4px 16px rgba(0, 0, 0, 0.08)'
       }}>
-        <input
-          type="text"
-          placeholder="البحث عن طالب..."
-          value={searchTerm()}
-          onInput={(e) => setSearchTerm(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            'border-radius': '8px',
-            border: '1px solid var(--color-border)',
-            'margin-bottom': '10px',
-            'font-size': '16px'
-          }}
-        />
-        <select
-          value={statusFilter()}
-          onChange={(e) => setStatusFilter(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            'border-radius': '8px',
-            border: '1px solid var(--color-border)',
-            'font-size': '16px'
-          }}
-        >
-          <option value="all">جميع الحالات</option>
-          <option value="not_available">غير متاح</option>
-          <option value="revising">مراجعة</option>
-          <option value="khatamat">ختمات</option>
-        </select>
+        {/* Search Bar */}
+        <div style={{
+          position: 'relative',
+          'margin-bottom': '16px'
+        }}>
+          <input
+            type="text"
+            placeholder={statusFilter() === 'all' ? "🔍 البحث في جميع الطلاب..." : `🔍 البحث في الطلاب ${getStatusText(statusFilter())}...`}
+            value={searchTerm()}
+            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '14px 48px 14px 16px',
+              'border-radius': '12px',
+              border: '2px solid var(--color-border)',
+              'font-size': '16px',
+              background: 'var(--color-background)',
+              color: 'var(--color-text)',
+              transition: 'all 0.2s ease',
+              'outline': 'none'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-primary)20';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            right: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--color-text-secondary)',
+            'font-size': '20px',
+            'pointer-events': 'none'
+          }}>
+            🔍
+          </div>
+        </div>
+        
+        {/* Status Filter */}
+        <div style={{
+          'margin-bottom': '16px'
+        }}>
+          <label style={{
+            display: 'block',
+            'margin-bottom': '8px',
+            'font-weight': '600',
+            color: 'var(--color-text)',
+            'font-size': '14px'
+          }}>
+            📊 تصفية حسب الحالة:
+          </label>
+          <select
+            value={statusFilter()}
+            onChange={(e) => setStatusFilter(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              'border-radius': '12px',
+              border: '2px solid var(--color-border)',
+              'font-size': '16px',
+              background: 'var(--color-background)',
+              color: 'var(--color-text)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <option value="all">🔍 جميع الحالات</option>
+            <option value="not_available">🔴 غير متاح</option>
+            <option value="revising">🟡 مراجعة</option>
+            <option value="khatamat">🟢 ختمات</option>
+          </select>
+        </div>
+        
+        {/* Active Filter Info */}
+        {(searchTerm() || statusFilter() !== 'all') && (
+          <div style={{
+            padding: '12px 16px',
+            background: 'var(--color-primary)10',
+            'border-radius': '10px',
+            'margin-bottom': '8px',
+            border: '1px solid var(--color-primary)30',
+            'font-size': '14px',
+            color: 'var(--color-primary)',
+            display: 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'center'
+          }}>
+            <span>
+              {searchTerm() && statusFilter() !== 'all' && (
+                <>🔍 البحث عن "{searchTerm()}" في الطلاب {getStatusText(statusFilter())}</>
+              )}
+              {searchTerm() && statusFilter() === 'all' && (
+                <>🔍 البحث عن "{searchTerm()}" في جميع الطلاب</>
+              )}
+              {!searchTerm() && statusFilter() !== 'all' && (
+                <>📊 عرض الطلاب {getStatusText(statusFilter())} فقط</>
+              )}
+            </span>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('all');
+              }}
+              style={{
+                background: 'var(--color-primary)20',
+                border: 'none',
+                color: 'var(--color-primary)',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                'border-radius': '6px',
+                'font-size': '12px',
+                'font-weight': '600',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'var(--color-primary)';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'var(--color-primary)20';
+                e.currentTarget.style.color = 'var(--color-primary)';
+              }}
+            >
+              ✕ مسح
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Halaqat Lists */}
@@ -638,6 +741,16 @@ function StudentDashboard(props: any) {
   );
 }
 
+// Helper function for status text
+function getStatusText(status: string): string {
+  switch (status) {
+    case 'not_available': return 'غير المتاحين';
+    case 'revising': return 'المراجعين';
+    case 'khatamat': return 'أصحاب الختمات';
+    default: return 'جميع الحالات';
+  }
+}
+
 // Teacher Dashboard Component  
 function TeacherDashboard(props: any) {
   const { data, app, searchTerm, setSearchTerm, statusFilter, setStatusFilter, favorites, setFavorites } = props;
@@ -712,44 +825,147 @@ function TeacherDashboard(props: any) {
   
   return (
     <>
-      {/* Search and Filter */}
+      {/* Enhanced Search and Filter */}
       <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '12px', 
-        padding: '15px', 
-        'margin-bottom': '20px',
-        border: '1px solid var(--color-border)'
+        background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)', 
+        'border-radius': '16px', 
+        padding: '20px', 
+        'margin-bottom': '24px',
+        border: '1px solid var(--color-border)',
+        'box-shadow': '0 4px 16px rgba(0, 0, 0, 0.08)'
       }}>
-        <input
-          type="text"
-          placeholder="البحث عن طالب..."
-          value={searchTerm()}
-          onInput={(e) => setSearchTerm(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            'border-radius': '8px',
-            border: '1px solid var(--color-border)',
-            'margin-bottom': '10px',
-            'font-size': '16px'
-          }}
-        />
-        <select
-          value={statusFilter()}
-          onChange={(e) => setStatusFilter(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            'border-radius': '8px',
-            border: '1px solid var(--color-border)',
-            'font-size': '16px'
-          }}
-        >
-          <option value="all">جميع الحالات</option>
-          <option value="not_available">غير متاح</option>
-          <option value="revising">مراجعة</option>
-          <option value="khatamat">ختمات</option>
-        </select>
+        {/* Search Bar */}
+        <div style={{
+          position: 'relative',
+          'margin-bottom': '16px'
+        }}>
+          <input
+            type="text"
+            placeholder={statusFilter() === 'all' ? "🔍 البحث في جميع الطلاب..." : `🔍 البحث في الطلاب ${getStatusText(statusFilter())}...`}
+            value={searchTerm()}
+            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '14px 48px 14px 16px',
+              'border-radius': '12px',
+              border: '2px solid var(--color-border)',
+              'font-size': '16px',
+              background: 'var(--color-background)',
+              color: 'var(--color-text)',
+              transition: 'all 0.2s ease',
+              'outline': 'none'
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px var(--color-primary)20';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            right: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--color-text-secondary)',
+            'font-size': '20px',
+            'pointer-events': 'none'
+          }}>
+            🔍
+          </div>
+        </div>
+        
+        {/* Status Filter */}
+        <div style={{
+          'margin-bottom': '16px'
+        }}>
+          <label style={{
+            display: 'block',
+            'margin-bottom': '8px',
+            'font-weight': '600',
+            color: 'var(--color-text)',
+            'font-size': '14px'
+          }}>
+            📊 تصفية حسب الحالة:
+          </label>
+          <select
+            value={statusFilter()}
+            onChange={(e) => setStatusFilter(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              'border-radius': '12px',
+              border: '2px solid var(--color-border)',
+              'font-size': '16px',
+              background: 'var(--color-background)',
+              color: 'var(--color-text)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <option value="all">🔍 جميع الحالات</option>
+            <option value="not_available">🔴 غير متاح</option>
+            <option value="revising">🟡 مراجعة</option>
+            <option value="khatamat">🟢 ختمات</option>
+          </select>
+        </div>
+        
+        {/* Active Filter Info */}
+        {(searchTerm() || statusFilter() !== 'all') && (
+          <div style={{
+            padding: '12px 16px',
+            background: 'var(--color-primary)10',
+            'border-radius': '10px',
+            'margin-bottom': '8px',
+            border: '1px solid var(--color-primary)30',
+            'font-size': '14px',
+            color: 'var(--color-primary)',
+            display: 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'center'
+          }}>
+            <span>
+              {searchTerm() && statusFilter() !== 'all' && (
+                <>🔍 البحث عن "{searchTerm()}" في الطلاب {getStatusText(statusFilter())}</>
+              )}
+              {searchTerm() && statusFilter() === 'all' && (
+                <>🔍 البحث عن "{searchTerm()}" في جميع الطلاب</>
+              )}
+              {!searchTerm() && statusFilter() !== 'all' && (
+                <>📊 عرض الطلاب {getStatusText(statusFilter())} فقط</>
+              )}
+            </span>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter('all');
+              }}
+              style={{
+                background: 'var(--color-primary)20',
+                border: 'none',
+                color: 'var(--color-primary)',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                'border-radius': '6px',
+                'font-size': '12px',
+                'font-weight': '600',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'var(--color-primary)';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'var(--color-primary)20';
+                e.currentTarget.style.color = 'var(--color-primary)';
+              }}
+            >
+              ✕ مسح
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Halaqat Lists */}
