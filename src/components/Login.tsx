@@ -2,165 +2,231 @@ import { createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
 
 export function Login() {
-  const [username, setUsername] = createSignal('student1');
-  const [password, setPassword] = createSignal('test');
+  const [username, setUsername] = createSignal('');
+  const [password, setPassword] = createSignal('');
   const [error, setError] = createSignal('');
   const app = useApp();
 
-  const doLogin = () => {
-    console.log('🔄 SIMPLE LOGIN START');
+  // FRESH LOGIN FUNCTION
+  const performLogin = () => {
+    console.log('🆕 FRESH LOGIN ATTEMPT:', username(), password());
+    
+    if (!username() || !password()) {
+      setError('Bitte Username und Password eingeben');
+      return;
+    }
+    
     setError('');
     
     try {
-      const success = app.login(username(), password());
-      console.log('📝 Login result:', success);
+      const loginSuccess = app.login(username(), password());
+      console.log('🆕 FRESH LOGIN RESULT:', loginSuccess);
       
-      if (!success) {
-        setError('Login fehlgeschlagen');
+      if (loginSuccess) {
+        console.log('🆕 SUCCESS! Current user:', app.currentUser()?.name);
+      } else {
+        setError('Login fehlgeschlagen - Username oder Password falsch');
       }
-    } catch (error) {
-      console.error('💥 Login error:', error);
+    } catch (err) {
+      console.error('🆕 LOGIN ERROR:', err);
       setError('Fehler beim Login');
     }
   };
 
-  const fastLogin = (user: string, pass: string) => {
-    console.log('🚀 Fast login:', user);
+  // INSTANT LOGIN BUTTONS
+  const instantLogin = (user: string, pass: string) => {
+    console.log('🆕 INSTANT LOGIN:', user);
     setUsername(user);
     setPassword(pass);
-    setTimeout(doLogin, 50);
+    
+    // Wait a bit for state to update then login
+    setTimeout(() => {
+      performLogin();
+    }, 100);
   };
 
   return (
     <div style={{
-      'min-height': '100vh',
-      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+      width: '100vw',
+      height: '100vh',
+      background: 'linear-gradient(135deg, #2563eb, #1e40af)',
       display: 'flex',
       'align-items': 'center',
       'justify-content': 'center',
       padding: '20px'
     }}>
+      
+      {/* LOGIN CARD */}
       <div style={{
         background: 'white',
-        'border-radius': '20px',
         padding: '40px',
-        'max-width': '400px',
+        'border-radius': '16px',
         width: '100%',
-        'box-shadow': '0 20px 40px rgba(0,0,0,0.1)'
+        'max-width': '400px',
+        'box-shadow': '0 25px 50px rgba(0, 0, 0, 0.25)'
       }}>
-        {/* Header */}
-        <div style={{ 'text-align': 'center', 'margin-bottom': '30px' }}>
-          <h1 style={{ color: '#1f2937', 'font-size': '1.8rem', 'margin-bottom': '10px' }}>
-            معونة المتعلم
-          </h1>
-          <p style={{ color: '#6b7280', 'font-size': '14px' }}>
-            نظام إدارة حلقات عَلٌمْنِي
-          </p>
-        </div>
-
-        {/* Form */}
-        <div style={{ 'margin-bottom': '20px' }}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username()}
-            onInput={(e) => setUsername(e.currentTarget.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              'border-radius': '8px',
-              'font-size': '16px',
-              'margin-bottom': '15px',
-              'box-sizing': 'border-box'
-            }}
-          />
-          
-          <input
-            type="password"
-            placeholder="Password"
-            value={password()}
-            onInput={(e) => setPassword(e.currentTarget.value)}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '1px solid #d1d5db',
-              'border-radius': '8px',
-              'font-size': '16px',
-              'margin-bottom': '15px',
-              'box-sizing': 'border-box'
-            }}
-          />
-          
-          <button
-            onClick={doLogin}
-            style={{
-              width: '100%',
-              padding: '12px',
-              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-              color: 'white',
-              border: 'none',
-              'border-radius': '8px',
-              'font-size': '16px',
-              'font-weight': 'bold',
-              cursor: 'pointer'
-            }}
-          >
-            Login
-          </button>
-        </div>
-
-        {/* Error */}
+        
+        {/* TITLE */}
+        <h1 style={{
+          'text-align': 'center',
+          'margin-bottom': '30px',
+          color: '#1f2937',
+          'font-size': '24px'
+        }}>
+          معونة المتعلم
+        </h1>
+        
+        {/* USERNAME INPUT */}
+        <input
+          type="text"
+          placeholder="Username"
+          value={username()}
+          onInput={(e) => setUsername(e.currentTarget.value)}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #e5e7eb',
+            'border-radius': '8px',
+            'font-size': '16px',
+            'margin-bottom': '15px',
+            'box-sizing': 'border-box',
+            outline: 'none'
+          }}
+        />
+        
+        {/* PASSWORD INPUT */}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password()}
+          onInput={(e) => setPassword(e.currentTarget.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              performLogin();
+            }
+          }}
+          style={{
+            width: '100%',
+            padding: '15px',
+            border: '2px solid #e5e7eb',
+            'border-radius': '8px',
+            'font-size': '16px',
+            'margin-bottom': '20px',
+            'box-sizing': 'border-box',
+            outline: 'none'
+          }}
+        />
+        
+        {/* ERROR MESSAGE */}
         {error() && (
           <div style={{
-            color: '#ef4444',
-            'text-align': 'center',
+            background: '#fee2e2',
+            color: '#dc2626',
+            padding: '12px',
+            'border-radius': '8px',
             'margin-bottom': '20px',
-            padding: '10px',
-            background: '#fef2f2',
-            'border-radius': '8px'
+            'text-align': 'center',
+            border: '1px solid #fecaca'
           }}>
             {error()}
           </div>
         )}
-
-        {/* Quick Login */}
+        
+        {/* LOGIN BUTTON */}
+        <button
+          onClick={performLogin}
+          style={{
+            width: '100%',
+            padding: '15px',
+            background: 'linear-gradient(135deg, #2563eb, #1e40af)',
+            color: 'white',
+            border: 'none',
+            'border-radius': '8px',
+            'font-size': '16px',
+            'font-weight': 'bold',
+            cursor: 'pointer',
+            'margin-bottom': '30px'
+          }}
+        >
+          Login
+        </button>
+        
+        {/* QUICK LOGIN SECTION */}
         <div style={{
-          'text-align': 'center',
-          'font-size': '12px',
-          color: '#6b7280',
-          padding: '15px',
-          background: '#f9fafb',
-          'border-radius': '8px'
+          'border-top': '1px solid #e5e7eb',
+          'padding-top': '20px'
         }}>
-          <p style={{ margin: '0 0 10px' }}>Quick Login:</p>
+          <p style={{
+            'text-align': 'center',
+            'margin-bottom': '15px',
+            color: '#6b7280',
+            'font-size': '14px'
+          }}>
+            Quick Login:
+          </p>
           
-          <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '8px' }}>
-            <button onClick={() => fastLogin('admin', 'test')} style={{
-              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
-              border: 'none', 'border-radius': '6px', cursor: 'pointer'
-            }}>
+          <div style={{
+            display: 'grid',
+            'grid-template-columns': '1fr 1fr',
+            gap: '10px'
+          }}>
+            <button
+              onClick={() => instantLogin('admin', 'test')}
+              style={{
+                padding: '10px',
+                background: '#10b981',
+                color: 'white',
+                border: 'none',
+                'border-radius': '6px',
+                'font-size': '12px',
+                cursor: 'pointer'
+              }}
+            >
               👑 Admin
             </button>
             
-            <button onClick={() => fastLogin('leiter', 'test')} style={{
-              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
-              border: 'none', 'border-radius': '6px', cursor: 'pointer'
-            }}>
+            <button
+              onClick={() => instantLogin('leiter', 'test')}
+              style={{
+                padding: '10px',
+                background: '#8b5cf6',
+                color: 'white',
+                border: 'none',
+                'border-radius': '6px',
+                'font-size': '12px',
+                cursor: 'pointer'
+              }}
+            >
               🏛️ Leiter
             </button>
             
-            <button onClick={() => fastLogin('lehrer', 'test')} style={{
-              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
-              border: 'none', 'border-radius': '6px', cursor: 'pointer'
-            }}>
+            <button
+              onClick={() => instantLogin('lehrer', 'test')}
+              style={{
+                padding: '10px',
+                background: '#f59e0b',
+                color: 'white',
+                border: 'none',
+                'border-radius': '6px',
+                'font-size': '12px',
+                cursor: 'pointer'
+              }}
+            >
               👨‍🏫 Lehrer
             </button>
             
-            <button onClick={() => fastLogin('student1', 'test')} style={{
-              padding: '8px', 'font-size': '10px', background: '#3b82f6', color: 'white',
-              border: 'none', 'border-radius': '6px', cursor: 'pointer'
-            }}>
+            <button
+              onClick={() => instantLogin('student1', 'test')}
+              style={{
+                padding: '10px',
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                'border-radius': '6px',
+                'font-size': '12px',
+                cursor: 'pointer'
+              }}
+            >
               👨‍🎓 Student
             </button>
           </div>
