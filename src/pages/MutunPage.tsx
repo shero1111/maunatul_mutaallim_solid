@@ -440,8 +440,9 @@ export function MutunPage() {
                           <div style={{ 'margin-bottom': '15px' }}>
                             <div style={{ 
                               display: 'flex', 
-                              gap: '15px', 
-                              'align-items': 'center' 
+                              gap: '10px', 
+                              'align-items': 'stretch',
+                              width: '100%'
                             }}>
                               <input
                                 type="text"
@@ -471,9 +472,10 @@ export function MutunPage() {
                                     e.currentTarget.blur();
                                   }
                                 }}
-                                placeholder="أضف ملاحظاتك هنا..."
+                                placeholder={app.translate('writeNote')}
                                 style={{
                                   flex: '1',
+                                  'min-width': '0',
                                   padding: '12px',
                                   'font-size': '14px',
                                   border: '1px solid var(--color-border)',
@@ -493,18 +495,19 @@ export function MutunPage() {
                                     setFocusedNoteId(null);
                                   }}
                                   style={{
-                                    padding: '12px 20px',
+                                    padding: '12px 16px',
                                     background: 'var(--color-primary)',
                                     color: 'white',
                                     border: 'none',
                                     'border-radius': '8px',
                                     cursor: 'pointer',
                                     'font-size': '13px',
-                                    'white-space': 'nowrap',
-                                    'font-weight': '600'
+                                    'font-weight': '600',
+                                    'flex-shrink': '0',
+                                    'min-width': 'auto'
                                   }}
                                 >
-                                  💾 حفظ
+                                  💾 {app.translate('save')}
                                 </button>
                               </Show>
                             </div>
@@ -512,9 +515,10 @@ export function MutunPage() {
                               <div style={{
                                 'margin-top': '5px',
                                 'font-size': '11px',
-                                color: 'var(--color-text-secondary)'
+                                color: 'var(--color-text-secondary)',
+                                'text-align': 'center'
                               }}>
-                                💡 Enter zum Speichern oder Button klicken
+                                💡 {app.language() === 'ar' ? 'اضغط Enter للحفظ أو انقر على الزر' : 'Press Enter to save or click button'}
                               </div>
                             </Show>
                           </div>
