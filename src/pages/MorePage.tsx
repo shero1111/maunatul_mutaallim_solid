@@ -74,27 +74,34 @@ export function MorePage() {
     color: 'var(--color-text-secondary)'
   };
   
-  const toggleButtonStyle = (isActive: boolean) => ({
-    width: '50px',
-    height: '30px',
-    'border-radius': '15px',
-    'background-color': isActive ? 'var(--color-primary)' : 'var(--color-border)',
-    border: 'none',
-    position: 'relative' as const,
+  const toggleContainerStyle = {
+    display: 'flex',
+    'align-items': 'center',
+    gap: '8px'
+  };
+
+  const toggleWrapperStyle = {
+    display: 'flex',
+    'align-items': 'center',
+    background: 'var(--color-surface)',
+    'border-radius': '20px',
+    padding: '4px',
+    border: '1px solid var(--color-border)',
+    position: 'relative' as const
+  };
+
+  const toggleOptionStyle = (isActive: boolean) => ({
+    padding: '6px 12px',
+    'border-radius': '16px',
+    'font-size': '12px',
+    'font-weight': '500',
     cursor: 'pointer',
-    transition: 'background-color 0.2s'
-  });
-  
-  const toggleKnobStyle = (isActive: boolean) => ({
-    width: '26px',
-    height: '26px',
-    'border-radius': '50%',
-    'background-color': 'white',
-    position: 'absolute' as const,
-    top: '2px',
-    left: isActive ? '22px' : '2px',
-    transition: 'left 0.2s',
-    'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.2)'
+    transition: 'all 0.2s ease',
+    background: isActive ? 'var(--color-primary)' : 'transparent',
+    color: isActive ? 'white' : 'var(--color-text-secondary)',
+    'min-width': '50px',
+    'text-align': 'center' as const,
+    'white-space': 'nowrap' as const
   });
   
   const userInfoStyle = {
@@ -128,14 +135,18 @@ export function MorePage() {
       text: app.translate('theme'),
       type: 'toggle' as const,
       value: app.theme() === 'dark',
-      action: () => app.setTheme(app.theme() === 'light' ? 'dark' : 'light')
+      action: () => app.setTheme(app.theme() === 'light' ? 'dark' : 'light'),
+      leftLabel: 'فاتح',
+      rightLabel: 'داكن'
     },
     {
       icon: '🌐',
       text: app.translate('language'),
       type: 'toggle' as const,
       value: app.language() === 'en',
-      action: () => app.setLanguage(app.language() === 'ar' ? 'en' : 'ar')
+      action: () => app.setLanguage(app.language() === 'ar' ? 'en' : 'ar'),
+      leftLabel: 'عربي',
+      rightLabel: 'English'
     }
   ];
   
@@ -221,8 +232,27 @@ export function MorePage() {
                 <div style={menuItemIconStyle}>{item.icon}</div>
                 <div style={menuItemTextStyle}>{item.text}</div>
               </div>
-              <div style={toggleButtonStyle(item.value)}>
-                <div style={toggleKnobStyle(item.value)} />
+              <div style={toggleContainerStyle}>
+                <div style={toggleWrapperStyle}>
+                  <div 
+                    style={toggleOptionStyle(!item.value)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (item.value) item.action();
+                    }}
+                  >
+                    {item.leftLabel}
+                  </div>
+                  <div 
+                    style={toggleOptionStyle(item.value)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!item.value) item.action();
+                    }}
+                  >
+                    {item.rightLabel}
+                  </div>
+                </div>
               </div>
             </div>
           )}
