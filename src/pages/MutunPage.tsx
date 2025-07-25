@@ -1,4 +1,4 @@
-import { createSignal, createMemo, For, Show } from 'solid-js';
+import { createSignal, createMemo, For, Show, onMount } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { Matn } from '../types';
 import { getStatusColor } from '../styles/themes';
@@ -7,21 +7,10 @@ export function MutunPage() {
   const app = useApp();
   const [levelFilter, setLevelFilter] = createSignal<string>('all');
   
-  // Initialisiere alle Sections als aufgeklappt (false = aufgeklappt)
+  const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
+
+  // Initialize collapsed sections (empty = all expanded by default)
   const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
-  
-  // Initialize collapsed sections on first render
-  const initializeCollapsedSections = () => {
-    const current = collapsedSections();
-    if (Object.keys(current).length === 0) {
-      const initialState: Record<string, boolean> = {};
-      allLevels.forEach(level => {
-        initialState[level] = false; // false = aufgeklappt
-      });
-      console.log('🚀 Initialize Collapsed Sections:', initialState);
-      setCollapsedSections(initialState);
-    }
-  };
 
   // Lokaler State für Notizen (für Live-Editing)
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
@@ -49,8 +38,6 @@ export function MutunPage() {
     });
     return grouped;
   });
-
-  const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
 
   // Initialize note texts from existing descriptions
   const initializeNoteText = (matn: Matn) => {
@@ -97,21 +84,25 @@ export function MutunPage() {
   };
 
   const toggleSection = (section: string) => {
-    console.log('🔄 Toggle Section:', section);
+    console.log('🔄 Toggle Section:', section, 'Current state:', collapsedSections()[section]);
     setCollapsedSections(prev => {
+      const currentValue = prev[section];
+      const newValue = !currentValue; // undefined -> true, false -> true, true -> false
       const newState = {
         ...prev,
-        [section]: !prev[section]
+        [section]: newValue
       };
-      console.log('📋 Collapsed Sections:', newState);
+      console.log('📋 New Collapsed Sections:', newState);
       return newState;
     });
   };
 
   const shouldExpandSection = (section: string) => {
-    // undefined = aufgeklappt, false = aufgeklappt, true = zugeklappt
+    // Always respect the manual toggle state - undefined means expanded
     const collapsed = collapsedSections()[section];
-    return collapsed === undefined || collapsed === false;
+    const result = !collapsed; // undefined or false = expanded, true = collapsed
+    console.log(`🔍 shouldExpandSection("${section}"):`, collapsed, '→', result);
+    return result;
   };
 
   const handleLevelFilterChange = (newFilter: string) => {
@@ -401,9 +392,6 @@ export function MutunPage() {
       {/* Premium Collapsible Sections */}
       <For each={Object.entries(groupedMutun())}>
         {([section, mutun]) => {
-          // Initialize collapsed sections if needed
-          initializeCollapsedSections();
-          
           const isCollapsed = !shouldExpandSection(section);
           console.log(`📁 Section "${section}" collapsed:`, isCollapsed, 'state:', collapsedSections()[section]);
           
@@ -411,79 +399,43 @@ export function MutunPage() {
             <div style={{ 'margin-bottom': '32px' }}>
               {/* Premium Section Header */}
               <div 
-                onClick={() => toggleSection(section)} 
+                onClick={() => {
+                  console.log('🖱️ Simple Click on section:', section);
+                  toggleSection(section);
+                }} 
                 style={{ 
-                  background: 'linear-gradient(135deg, var(--color-surface), var(--color-background))', 
-                  'border-radius': '20px', 
-                  padding: '20px 24px', 
-                  border: '2px solid var(--color-border)', 
+                  background: 'var(--color-surface)', 
+                  'border-radius': '12px', 
+                  padding: '15px 20px', 
+                  border: '1px solid var(--color-border)', 
                   cursor: 'pointer',
-                  'margin-bottom': isCollapsed ? '0' : '20px',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  'box-shadow': '0 4px 20px rgba(0,0,0,0.08)',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  'margin-bottom': isCollapsed ? '0' : '15px',
+                  transition: 'all 0.3s ease',
+                  'box-shadow': '0 2px 4px rgba(0,0,0,0.1)'
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.12)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
-                }}
-              >
-                {/* Subtle gradient overlay */}
-                <div style={{
-                  position: 'absolute',
-                  top: '0',
-                  left: '0',
-                  right: '0',
-                  bottom: '0',
-                  background: isCollapsed 
-                    ? 'linear-gradient(45deg, transparent 0%, rgba(37, 99, 235, 0.03) 100%)'
-                    : 'linear-gradient(45deg, transparent 0%, rgba(16, 185, 129, 0.03) 100%)',
-                  'pointer-events': 'none'
-                }}></div>
-                
+                              >
                 <div style={{ 
                   display: 'flex', 
                   'justify-content': 'space-between', 
-                  'align-items': 'center',
-                  position: 'relative',
-                  'z-index': '1'
+                  'align-items': 'center'
                 }}>
                   <h2 style={{ 
                     color: 'var(--color-primary)', 
-                    'font-size': '1.4rem', 
+                    'font-size': '1.3rem', 
                     margin: '0', 
                     display: 'flex', 
                     'align-items': 'center', 
-                    gap: '12px',
-                    'font-weight': '700'
+                    gap: '10px'
                   }}>
-                    <span style={{ 
-                      'font-size': '1.8rem',
-                      transition: 'transform 0.3s ease'
-                    }}>
+                    <span style={{ 'font-size': '1.5rem' }}>
                       {isCollapsed ? '📁' : '📂'}
                     </span>
                     {section}
-                    <span style={{
-                      background: 'var(--color-primary)',
-                      color: 'white',
-                      padding: '4px 12px',
-                      'border-radius': '12px',
-                      'font-size': '0.8rem',
-                      'font-weight': '600'
-                    }}>
-                      {mutun.length}
-                    </span>
                   </h2>
                   <span style={{ 
                     color: 'var(--color-primary)', 
                     'font-size': '1.5rem', 
-                    transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)', 
+                    transition: 'transform 0.3s ease', 
                     transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)'
                   }}>
                     ▼
