@@ -7,7 +7,7 @@ export function Login() {
   const [error, setError] = createSignal('');
   const app = useApp();
 
-  const handleLogin = (e?: Event) => {
+  const handleLogin = (e?: SubmitEvent) => {
     e?.preventDefault();
     console.log('🔄 handleLogin called with:', { username: username(), password: password() });
     
