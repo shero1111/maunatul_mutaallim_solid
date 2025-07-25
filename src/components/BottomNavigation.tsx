@@ -67,7 +67,7 @@ export function BottomNavigation() {
     switch (user.role) {
       case 'student':
         return navigationItems.filter(item => 
-          ['home', 'mutuun', 'halaqat', 'news', 'more'].includes(item.page)
+          ['home', 'mutuun', 'news', 'more'].includes(item.page)
         );
       case 'lehrer':
         return navigationItems.filter(item => 
