@@ -1,4 +1,4 @@
-import { createMemo, For, Show, createSignal } from 'solid-js';
+import { createMemo, For, Show, createSignal, onMount, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { Student, User } from '../types';
 import { getStatusColor } from '../styles/themes';
@@ -6,173 +6,223 @@ import { getStatusColor } from '../styles/themes';
 export function HomePage() {
   const app = useApp();
   
-  // Make currentUser reactive
-  const currentUser = createMemo(() => app.currentUser());
+  // Make currentUser reactive and safe
+  const currentUser = createMemo(() => {
+    try {
+      const user = app.currentUser();
+      console.log('🏠 HomePage currentUser:', user?.name || 'null');
+      return user;
+    } catch (error) {
+      console.error('💥 Error getting currentUser:', error);
+      return null;
+    }
+  });
+  
+  // Add mount/unmount logging
+  onMount(() => {
+    console.log('🏠 HomePage mounted');
+  });
+  
+  onCleanup(() => {
+    console.log('🏠 HomePage cleanup');
+  });
   
   return (
-    <Show when={currentUser()} fallback={<div>Not logged in</div>}>
-      <HomePageContent currentUser={currentUser()} />
+    <Show 
+      when={currentUser()} 
+      fallback={
+        <div style={{
+          padding: '20px',
+          'text-align': 'center',
+          color: 'var(--color-text)'
+        }}>
+          Loading user data...
+        </div>
+      }
+    >
+      <HomePageContent user={currentUser()!} />
     </Show>
   );
 }
 
-function HomePageContent(props: { currentUser: User }) {
+function HomePageContent(props: { user: User }) {
   const app = useApp();
-  const { currentUser } = props;
+  const { user } = props;
+  
+  // Add safety check
+  if (!user) {
+    console.warn('⚠️ HomePageContent: No user provided');
+    return <div>No user data available</div>;
+  }
+  
+  console.log('🏠 HomePageContent rendering for user:', user.name, 'role:', user.role);
   
   // Student-specific signals for search and filter
   const [searchTerm, setSearchTerm] = createSignal('');
   const [statusFilter, setStatusFilter] = createSignal<string>('all');
   
-  // Get favorites from current user data
+  // Get favorites from current user data - make it reactive
   const favorites = createMemo(() => {
-    const user = currentUser;
-    return user?.favorites || [];
+    try {
+      return user?.favorites || [];
+    } catch (error) {
+      console.error('💥 Error getting favorites:', error);
+      return [];
+    }
   });
   
   const setFavorites = (newFavorites: string[] | ((prev: string[]) => string[])) => {
-    if (!currentUser) return;
-    
-    const finalFavorites = typeof newFavorites === 'function' 
-      ? newFavorites(favorites()) 
-      : newFavorites;
-    
-    const updatedUser = {
-      ...currentUser,
-      favorites: finalFavorites
-    };
-    
-    console.log('⭐ Updating user favorites:', finalFavorites);
-    app.updateUser(updatedUser);
+    try {
+      if (!user) return;
+      
+      const finalFavorites = typeof newFavorites === 'function' 
+        ? newFavorites(favorites()) 
+        : newFavorites;
+      
+      const updatedUser = {
+        ...user,
+        favorites: finalFavorites
+      };
+      
+      console.log('⭐ Updating user favorites:', finalFavorites);
+      app.updateUser(updatedUser);
+    } catch (error) {
+      console.error('💥 Error setting favorites:', error);
+    }
   };
   
-  // Role-based dashboard data
+  // Role-based dashboard data - make it safer
   const dashboardData = createMemo(() => {
-    const users = app.users();
-    const halaqat = app.halaqat();
-    
-    switch (currentUser.role) {
-      case 'student':
-        const studentData = currentUser as Student;
-        const userHalaqat = halaqat.filter(h => h.student_ids?.includes(currentUser.id));
-        return {
-          type: 'student',
-          data: { student: studentData, halaqat: userHalaqat, allUsers: users }
-        };
-        
-      case 'lehrer':
-        const teacherHalaqat = halaqat.filter(h => h.teacher_id === currentUser.id);
-        return {
-          type: 'teacher',
-          data: { halaqat: teacherHalaqat, allUsers: users }
-        };
-        
-      case 'leitung':
-      case 'superuser':
-        const students = users.filter(u => u.role === 'student') as Student[];
-        const teachers = users.filter(u => u.role === 'lehrer');
-        const onlineUsers = users.filter(u => u.isOnline || false); // TODO: implement online status
-        
-        const statusCounts = {
-          not_available: students.filter(s => s.status === 'not_available').length,
-          revising: students.filter(s => s.status === 'revising').length,
-          khatamat: students.filter(s => s.status === 'khatamat').length
-        };
-        
-        return {
-          type: currentUser.role,
-          data: {
-            totalUsers: users.length,
-            totalStudents: students.length,
-            totalTeachers: teachers.length,
-            totalHalaqat: halaqat.length,
-            onlineUsers: onlineUsers.length,
-            statusCounts
-          }
-        };
-        
-      default:
-        return { type: 'unknown', data: {} };
+    try {
+      const users = app.users() || [];
+      const halaqat = app.halaqat() || [];
+      
+      console.log('📊 Computing dashboard data for role:', user.role);
+      
+      switch (user.role) {
+        case 'student':
+          const studentData = user as Student;
+          const userHalaqat = halaqat.filter(h => h.student_ids?.includes(user.id));
+          return {
+            type: 'student',
+            data: { student: studentData, halaqat: userHalaqat, allUsers: users }
+          };
+          
+        case 'lehrer':
+          const teacherHalaqat = halaqat.filter(h => h.teacher_id === user.id);
+          return {
+            type: 'teacher',
+            data: { teacher: user, halaqat: teacherHalaqat, allUsers: users }
+          };
+          
+        case 'leitung':
+        case 'superuser':
+          const totalUsers = users.length;
+          const totalTeachers = users.filter(u => u.role === 'lehrer').length;
+          const totalHalaqat = halaqat.length;
+          const studentsWithStatus = users.filter(u => u.role === 'student') as Student[];
+          
+          const statusCounts = {
+            not_available: studentsWithStatus.filter(s => s.status === 'not_available').length,
+            revising: studentsWithStatus.filter(s => s.status === 'revising').length,
+            khatamat: studentsWithStatus.filter(s => s.status === 'khatamat').length
+          };
+          
+          return {
+            type: 'leadership',
+            data: { totalUsers, totalTeachers, totalHalaqat, statusCounts }
+          };
+          
+        default:
+          console.warn('⚠️ Unknown user role:', user.role);
+          return {
+            type: 'student',
+            data: { student: user, halaqat: [], allUsers: users }
+          };
+      }
+    } catch (error) {
+      console.error('💥 Error computing dashboard data:', error);
+      return {
+        type: 'error',
+        data: { error: 'Failed to load dashboard data' }
+      };
     }
   });
 
-  const data = dashboardData();
-  
+  const renderContent = () => {
+    try {
+      const data = dashboardData();
+      
+      if (data.type === 'error') {
+        return (
+          <div style={{
+            padding: '20px',
+            'text-align': 'center',
+            color: 'var(--color-error)'
+          }}>
+            Error loading dashboard. Please refresh the page.
+          </div>
+        );
+      }
+      
+      switch (data.type) {
+        case 'student':
+          return <StudentDashboard data={data.data} />;
+        case 'teacher':
+          return <TeacherDashboard data={data.data} />;
+        case 'leadership':
+          return <LeadershipDashboard data={data.data} />;
+        default:
+          return <div>Unknown dashboard type</div>;
+      }
+    } catch (error) {
+      console.error('💥 Error rendering content:', error);
+      return (
+        <div style={{
+          padding: '20px',
+          'text-align': 'center',
+          color: 'var(--color-error)'
+        }}>
+          Error rendering dashboard. Please refresh the page.
+        </div>
+      );
+    }
+  };
+
   return (
     <div style={{ 
-      padding: '20px 20px 100px 20px' // Extra 100px bottom padding für BottomBar
+      padding: '20px 16px 80px 16px', 
+      'background-color': 'var(--color-background)',
+      'min-height': '100vh'
     }}>
-      {/* App Header with Logo */}
-      <div style={{ 'text-align': 'center', 'margin-bottom': '20px' }}>
+      {/* Header */}
+      <div style={{ 
+        'text-align': 'center', 
+        'margin-bottom': '24px' 
+      }}>
         <div style={{ 
-          display: 'flex', 
-          'align-items': 'center', 
-          'justify-content': 'center', 
-          gap: '15px', 
-          'margin-bottom': '20px' 
+          'margin-bottom': '16px' 
         }}>
-          <img 
-            src="/logo.jpg" 
-            alt="معونة المتعلم"
-            style={{ 
-              width: '60px', 
-              height: '60px', 
-              'border-radius': '16px',
-              'object-fit': 'cover',
-              'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
-              border: '2px solid var(--color-primary)20'
-            }} 
-          />
-          <div>
-            <h1 style={{ 
-              color: 'var(--color-primary)', 
-              'font-size': '1.8rem', 
-              margin: '0 0 4px 0', 
-              'font-weight': '700' 
-            }}>
-              معونة المتعلم
-            </h1>
-            <p style={{ 
-              color: 'var(--color-text-secondary)', 
-              'font-size': '0.9rem', 
-              margin: '0' 
-            }}>
-              نظام إدارة حلقات عَلٌمْنِي
-            </p>
-          </div>
+          <h1 style={{ 
+            color: 'var(--color-primary)', 
+            'font-size': '2rem', 
+            margin: '0 0 8px 0', 
+            'font-weight': '700' 
+          }}>
+            معونة المتعلم
+          </h1>
+          <p style={{ 
+            color: 'var(--color-text-secondary)', 
+            'font-size': '0.9rem', 
+            margin: '0' 
+          }}>
+            نظام إدارة حلقات عَلٌمْنِي
+          </p>
         </div>
       </div>
 
       {/* Role-based Dashboard Content */}
-      <Show when={data.type === 'student'}>
-        <StudentDashboard 
-          data={data.data} 
-          app={app}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          favorites={favorites}
-          setFavorites={setFavorites}
-        />
-      </Show>
-
-      <Show when={data.type === 'lehrer'}>
-        <TeacherDashboard 
-          data={data.data} 
-          app={app}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          favorites={favorites}
-          setFavorites={setFavorites}
-        />
-      </Show>
-
-      <Show when={data.type === 'leitung' || data.type === 'superuser'}>
-        <LeadershipDashboard data={data.data} app={app} role={data.type} />
-      </Show>
+      {renderContent()}
     </div>
   );
 }

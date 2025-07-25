@@ -5,13 +5,22 @@ export function Login() {
   const [username, setUsername] = createSignal('student1');
   const [password, setPassword] = createSignal('test');
   const [error, setError] = createSignal('');
+  const [isLogging, setIsLogging] = createSignal(false);
   const app = useApp();
 
-  const handleLogin = (e?: SubmitEvent) => {
+  const handleLogin = async (e?: SubmitEvent) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
+    
+    if (isLogging()) {
+      console.log('⏳ Login already in progress...');
+      return;
+    }
+    
+    setIsLogging(true);
+    setError('');
     
     console.log('🔄 LOGIN ATTEMPT:', { 
       username: username(), 
@@ -19,14 +28,25 @@ export function Login() {
       usersCount: app.users().length
     });
     
-    setError('');
-    
     try {
+      // Force a small delay to ensure UI updates
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const success = app.login(username(), password());
       console.log('📝 Login result:', success);
       
       if (success) {
         console.log('✅ Login successful - user logged in:', app.currentUser()?.name);
+        
+        // Force page to home after successful login
+        app.setCurrentPage('home');
+        
+        // Small delay to ensure state is updated, then force a re-render
+        setTimeout(() => {
+          // Force re-render by triggering a state change
+          window.dispatchEvent(new Event('resize'));
+        }, 50);
+        
       } else {
         const errorMsg = app.translate('invalidCredentials');
         setError(errorMsg);
@@ -35,18 +55,19 @@ export function Login() {
     } catch (error) {
       console.error('💥 Login error:', error);
       setError('Ein Fehler ist aufgetreten');
+    } finally {
+      setIsLogging(false);
     }
   };
 
-  const quickLogin = (user: string, pass: string) => {
+  const quickLogin = async (user: string, pass: string) => {
     console.log('🚀 Quick login attempt:', user);
     setUsername(user);
     setPassword(pass);
     
     // Small delay to ensure state is updated, then login
-    setTimeout(() => {
-      handleLogin();
-    }, 50);
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await handleLogin();
   };
 
   return (
@@ -101,6 +122,7 @@ export function Login() {
                 type="text"
                 value={username()}
                 onInput={(e) => setUsername(e.currentTarget.value)}
+                disabled={isLogging()}
                 style={{
                   width: '100%',
                   padding: '12px 40px 12px 12px',
@@ -112,12 +134,13 @@ export function Login() {
                   direction: 'ltr',
                   outline: 'none',
                   transition: 'border-color 0.2s',
-                  'box-sizing': 'border-box'
+                  'box-sizing': 'border-box',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
                 onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
                 onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
               />
-              {username() && (
+              {username() && !isLogging() && (
                 <button
                   type="button"
                   onClick={() => setUsername('')}
@@ -154,6 +177,7 @@ export function Login() {
                 type="password"
                 value={password()}
                 onInput={(e) => setPassword(e.currentTarget.value)}
+                disabled={isLogging()}
                 style={{
                   width: '100%',
                   padding: '12px 40px 12px 12px',
@@ -165,18 +189,19 @@ export function Login() {
                   direction: 'ltr',
                   outline: 'none',
                   transition: 'border-color 0.2s',
-                  'box-sizing': 'border-box'
+                  'box-sizing': 'border-box',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
                 onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
                 onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && !isLogging()) {
                     e.preventDefault();
                     handleLogin();
                   }
                 }}
               />
-              {password() && (
+              {password() && !isLogging() && (
                 <button
                   type="button"
                   onClick={() => setPassword('')}
@@ -215,24 +240,28 @@ export function Login() {
 
           <button
             type="submit"
+            disabled={isLogging()}
             style={{
               width: '100%',
               padding: '12px',
-              background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
+              background: isLogging() 
+                ? 'var(--color-text-secondary)' 
+                : `linear-gradient(135deg, var(--color-primary), var(--color-secondary))`,
               color: 'white',
               border: 'none',
               'border-radius': '8px',
               'font-size': '16px',
               'font-weight': 'bold',
-              cursor: 'pointer',
+              cursor: isLogging() ? 'not-allowed' : 'pointer',
               transition: 'transform 0.2s',
-              'margin-bottom': '20px'
+              'margin-bottom': '20px',
+              opacity: isLogging() ? '0.6' : '1'
             }}
-            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            onMouseDown={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(0.98)')}
+            onMouseUp={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(1)')}
+            onMouseLeave={(e) => !isLogging() && (e.currentTarget.style.transform = 'scale(1)')}
           >
-            {app.translate('login')}
+            {isLogging() ? '⏳ Logging in...' : app.translate('login')}
           </button>
         </form>
 
@@ -279,80 +308,88 @@ export function Login() {
             }}>
               <button
                 type="button"
-                onMouseDown={(e) => {
-                  // Prevent double-click issue by handling on mousedown
+                disabled={isLogging()}
+                onMouseDown={async (e) => {
+                  if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  quickLogin('admin', 'test');
+                  await quickLogin('admin', 'test');
                 }}
                 style={{
                   padding: '8px',
                   'font-size': '10px',
-                  background: 'var(--color-primary)',
+                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  cursor: 'pointer'
+                  cursor: isLogging() ? 'not-allowed' : 'pointer',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
               >
                 👑 Admin
               </button>
               <button
                 type="button"
-                onMouseDown={(e) => {
-                  // Prevent double-click issue by handling on mousedown
+                disabled={isLogging()}
+                onMouseDown={async (e) => {
+                  if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  quickLogin('leiter', 'test');
+                  await quickLogin('leiter', 'test');
                 }}
                 style={{
                   padding: '8px',
                   'font-size': '10px',
-                  background: 'var(--color-primary)',
+                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  cursor: 'pointer'
+                  cursor: isLogging() ? 'not-allowed' : 'pointer',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
               >
                 🏛️ Leiter
               </button>
               <button
                 type="button"
-                onMouseDown={(e) => {
-                  // Prevent double-click issue by handling on mousedown
+                disabled={isLogging()}
+                onMouseDown={async (e) => {
+                  if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  quickLogin('lehrer', 'test');
+                  await quickLogin('lehrer', 'test');
                 }}
                 style={{
                   padding: '8px',
                   'font-size': '10px',
-                  background: 'var(--color-primary)',
+                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  cursor: 'pointer'
+                  cursor: isLogging() ? 'not-allowed' : 'pointer',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
               >
                 👨‍🏫 Lehrer
               </button>
               <button
                 type="button"
-                onMouseDown={(e) => {
-                  // Prevent double-click issue by handling on mousedown
+                disabled={isLogging()}
+                onMouseDown={async (e) => {
+                  if (isLogging()) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  quickLogin('student1', 'test');
+                  await quickLogin('student1', 'test');
                 }}
                 style={{
                   padding: '8px',
                   'font-size': '10px',
-                  background: 'var(--color-primary)',
+                  background: isLogging() ? 'var(--color-text-secondary)' : 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  cursor: 'pointer'
+                  cursor: isLogging() ? 'not-allowed' : 'pointer',
+                  opacity: isLogging() ? '0.6' : '1'
                 }}
               >
                 👨‍🎓 Student1
