@@ -6,7 +6,14 @@ import { getStatusColor } from '../styles/themes';
 export function MutunPage() {
   const app = useApp();
   const [levelFilter, setLevelFilter] = createSignal<string>('all');
-  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({});
+  
+  // Initialisiere alle Sections als aufgeklappt (false = aufgeklappt)
+  const [collapsedSections, setCollapsedSections] = createSignal<Record<string, boolean>>({
+    'المستوى الأول': false,
+    'المستوى الثاني': false,
+    'المستوى الثالث': false,
+    'المستوى الرابع': false
+  });
 
   // Filter user's mutun
   const userMutun = createMemo(() => 
@@ -38,22 +45,24 @@ export function MutunPage() {
   };
 
   const shouldExpandSection = (section: string) => {
-    return !collapsedSections()[section];
+    return !collapsedSections()[section]; // undefined oder false = aufgeklappt (true), true = zugeklappt (false)
   };
 
   const handleLevelFilterChange = (newFilter: string) => {
     setLevelFilter(newFilter);
     
     if (newFilter === 'all') {
+      // Alle Sections aufklappen
       const newCollapsed: Record<string, boolean> = {};
       allLevels.forEach(level => {
-        newCollapsed[level] = false;
+        newCollapsed[level] = false; // false = aufgeklappt
       });
       setCollapsedSections(newCollapsed);
     } else {
+      // Alle Sections zuklappen, außer dem ausgewählten Level
       const newCollapsed: Record<string, boolean> = {};
       allLevels.forEach(level => {
-        newCollapsed[level] = level !== newFilter;
+        newCollapsed[level] = level !== newFilter; // true = zugeklappt, false = aufgeklappt
       });
       setCollapsedSections(newCollapsed);
     }
