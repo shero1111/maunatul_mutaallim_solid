@@ -165,25 +165,73 @@ function HomePageContent(props: { user: User }) {
         );
       }
       
-      switch (data.type) {
-        case 'student':
-          return <StudentDashboard data={data.data} />;
-        case 'teacher':
-          return <TeacherDashboard data={data.data} />;
-        case 'leadership':
-          return <LeadershipDashboard data={data.data} />;
-        default:
-          return <div>Unknown dashboard type</div>;
+      // Return the appropriate dashboard based on type
+      if (data.type === 'student') {
+        return (
+          <StudentDashboard 
+            data={data.data} 
+            app={app}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            favorites={favorites}
+            setFavorites={setFavorites}
+          />
+        );
       }
+      
+      if (data.type === 'teacher') {
+        return (
+          <TeacherDashboard 
+            data={data.data} 
+            app={app}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            favorites={favorites}
+            setFavorites={setFavorites}
+          />
+        );
+      }
+      
+      if (data.type === 'leadership') {
+        return <LeadershipDashboard data={data.data} app={app} role={data.type} />;
+      }
+      
+      return <div>Unknown dashboard type: {data.type}</div>;
+      
     } catch (error) {
       console.error('💥 Error rendering content:', error);
       return (
         <div style={{
           padding: '20px',
           'text-align': 'center',
-          color: 'var(--color-error)'
+          color: 'var(--color-error)',
+          'background-color': 'var(--color-surface)',
+          'border-radius': '12px',
+          border: '1px solid var(--color-error)'
         }}>
-          Error rendering dashboard. Please refresh the page.
+          <h3>Dashboard Error</h3>
+          <p>Something went wrong loading the dashboard.</p>
+          <p style={{ 'font-size': '12px', color: 'var(--color-text-secondary)' }}>
+            Error: {error.message || 'Unknown error'}
+          </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{
+              padding: '8px 16px',
+              background: 'var(--color-primary)',
+              color: 'white',
+              border: 'none',
+              'border-radius': '6px',
+              cursor: 'pointer',
+              'margin-top': '10px'
+            }}
+          >
+            Reload Page
+          </button>
         </div>
       );
     }
