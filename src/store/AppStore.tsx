@@ -216,8 +216,12 @@ export function AppProvider(props: { children: JSX.Element }) {
   
   // Actions
   const login = (username: string, password: string): boolean => {
+    console.log('🔑 AppStore.login called with:', { username, password });
+    
     // Ensure users are loaded
     const currentUsers = users();
+    console.log('👥 Available users:', currentUsers.map(u => ({ username: u.username, role: u.role })));
+    
     if (currentUsers.length === 0) {
       console.warn('⚠️ No users loaded, initializing...');
       setUsers(demoUsers);
@@ -226,9 +230,21 @@ export function AppProvider(props: { children: JSX.Element }) {
       setNews(demoNews);
     }
     
-    const user = users().find(u => u.username.trim() === username.trim() && u.password.trim() === password.trim());
+    const trimmedUsername = username.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+    
+    console.log('🔍 Looking for user with:', { trimmedUsername, trimmedPassword });
+    
+    const user = users().find(u => {
+      const userMatch = u.username.trim().toLowerCase() === trimmedUsername && u.password.trim() === trimmedPassword;
+      console.log(`🎯 Checking user ${u.username}: ${userMatch ? '✅ MATCH' : '❌ NO MATCH'}`);
+      return userMatch;
+    });
+    
+    console.log('🎯 Found user:', user ? user.name : 'NONE');
     
     if (user) {
+      console.log('✅ Setting current user:', user.name);
       setCurrentUser(user);
       
       // Generate personal mutun for all users (not just students)
@@ -242,8 +258,11 @@ export function AppProvider(props: { children: JSX.Element }) {
       localStorage.setItem('usersData', JSON.stringify(users()));
       localStorage.setItem('newsData', JSON.stringify(news()));
       
+      console.log('💾 User saved to localStorage');
       return true;
     }
+    
+    console.log('❌ Login failed - no matching user');
     return false;
   };
   

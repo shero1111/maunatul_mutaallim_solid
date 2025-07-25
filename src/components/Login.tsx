@@ -8,20 +8,46 @@ export function Login() {
   const app = useApp();
 
   const handleLogin = (e?: SubmitEvent) => {
-    e?.preventDefault();
-    console.log('🔄 handleLogin called with:', { username: username(), password: password() });
-    
-    const success = app.login(username(), password());
-    console.log('📝 Login result:', success);
-    
-    if (success) {
-      setError('');
-      console.log('✅ Login successful - error cleared');
-    } else {
-      const errorMsg = app.translate('invalidCredentials');
-      setError(errorMsg);
-      console.log('❌ Login failed - error set:', errorMsg);
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+    
+    console.log('🔄 LOGIN ATTEMPT:', { 
+      username: username(), 
+      password: password(),
+      usersCount: app.users().length
+    });
+    
+    // Clear any previous errors
+    setError('');
+    
+    try {
+      const success = app.login(username(), password());
+      console.log('📝 Login result:', success);
+      
+      if (success) {
+        console.log('✅ Login successful - user logged in:', app.currentUser()?.name);
+      } else {
+        const errorMsg = app.translate('invalidCredentials');
+        setError(errorMsg);
+        console.log('❌ Login failed - error set:', errorMsg);
+      }
+    } catch (error) {
+      console.error('💥 Login error:', error);
+      setError('Ein Fehler ist aufgetreten');
+    }
+  };
+
+  const quickLogin = (user: string, pass: string) => {
+    console.log('🚀 Quick login attempt:', user);
+    setUsername(user);
+    setPassword(pass);
+    
+    // Small delay to ensure state is updated
+    setTimeout(() => {
+      handleLogin();
+    }, 50);
   };
 
   return (
@@ -57,7 +83,7 @@ export function Login() {
             color: 'var(--color-text-secondary)',
             'font-size': '14px'
           }}>
-            نظام إدارة التعلم الإسلامي
+            نظام إدارة حلقات عَلٌمْنِي
           </p>
         </div>
 
@@ -144,7 +170,12 @@ export function Login() {
                 }}
                 onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
                 onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleLogin();
+                  }
+                }}
               />
               {password() && (
                 <button
@@ -185,6 +216,10 @@ export function Login() {
 
           <button
             type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              handleLogin(e);
+            }}
             style={{
               width: '100%',
               padding: '12px',
@@ -249,114 +284,63 @@ export function Login() {
             }}>
               <button
                 type="button"
-                onClick={() => {
-                  setUsername('admin');
-                  setPassword('test');
-                }}
+                onClick={() => quickLogin('admin', 'test')}
                 style={{
-                  padding: '8px 12px',
-                  'background-color': 'var(--color-primary)',
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  'font-size': '11px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
+                  cursor: 'pointer'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
               >
                 👑 Admin
               </button>
-              
               <button
                 type="button"
-                onClick={() => {
-                  console.log('🚀 Direct login test with admin/test');
-                  const success = app.login('admin', 'test');
-                  console.log('🎯 Direct login result:', success);
-                  if (!success) {
-                    setError('Direct login failed!');
-                  }
-                }}
+                onClick={() => quickLogin('leiter', 'test')}
                 style={{
-                  padding: '8px 12px',
-                  'background-color': 'var(--color-warning)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
+                  padding: '8px',
                   'font-size': '10px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
-                }}
-              >
-                🧪 TEST
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setUsername('lehrer');
-                  setPassword('test');
-                }}
-                style={{
-                  padding: '8px 12px',
-                  'background-color': 'var(--color-primary)',
+                  background: 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  'font-size': '11px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
+                  cursor: 'pointer'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
-              >
-                👨‍🏫 Lehrer
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setUsername('leiter');
-                  setPassword('test');
-                }}
-                style={{
-                  padding: '8px 12px',
-                  'background-color': 'var(--color-primary)',
-                  color: 'white',
-                  border: 'none',
-                  'border-radius': '6px',
-                  'font-size': '11px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
               >
                 🏛️ Leiter
               </button>
-
               <button
                 type="button"
-                onClick={() => {
-                  setUsername('student1');
-                  setPassword('test');
-                }}
+                onClick={() => quickLogin('lehrer', 'test')}
                 style={{
-                  padding: '8px 12px',
-                  'background-color': 'var(--color-primary)',
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
                   color: 'white',
                   border: 'none',
                   'border-radius': '6px',
-                  'font-size': '11px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
+                  cursor: 'pointer'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
               >
-                👨‍🎓 Student
+                👨‍🏫 Lehrer
+              </button>
+              <button
+                type="button"
+                onClick={() => quickLogin('student1', 'test')}
+                style={{
+                  padding: '8px',
+                  'font-size': '10px',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                👨‍🎓 Student1
               </button>
             </div>
           </div>
