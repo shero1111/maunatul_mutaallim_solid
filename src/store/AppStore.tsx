@@ -40,6 +40,8 @@ export interface AppState {
   playAudio: (matnId: string, title: string, audioUrl: string) => void;
   pauseAudio: () => void;
   stopAudio: () => void;
+  skipBackward: () => void;
+  skipForward: () => void;
   startTimer: (minutes: number) => void;
   stopTimer: () => void;
   resetTimer: () => void;
@@ -331,6 +333,18 @@ export function AppProvider(props: { children: JSX.Element }) {
       matnId: ''
     });
   };
+
+  const skipBackward = () => {
+    if (audioElement) {
+      audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
+    }
+  };
+
+  const skipForward = () => {
+    if (audioElement) {
+      audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
+    }
+  };
   
   const startTimer = (minutes: number) => {
     const targetTime = minutes * 60;
@@ -410,6 +424,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     playAudio,
     pauseAudio,
     stopAudio,
+    skipBackward,
+    skipForward,
     startTimer,
     stopTimer,
     resetTimer,

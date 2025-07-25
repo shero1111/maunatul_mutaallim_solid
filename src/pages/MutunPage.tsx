@@ -83,6 +83,15 @@ export function MutunPage() {
     }
   };
 
+  // Calculate days since last change
+  const calculateDaysSinceLastChange = (lastChange: string) => {
+    if (!lastChange) return 0;
+    const now = new Date();
+    const lastChangeDate = new Date(lastChange);
+    const diffTime = Math.abs(now.getTime() - lastChangeDate.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   // Note State
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
 
@@ -397,62 +406,102 @@ export function MutunPage() {
                             </Show>
                           </div>
                           
-                          {/* Note Field */}
-                          <div>
-                            <label style={{
-                              display: 'block',
-                              'margin-bottom': '5px',
-                              'font-weight': '600',
-                              color: 'var(--color-text)'
-                            }}>
-                              الملاحظات:
-                            </label>
-                            <textarea
-                              value={noteTexts()[matn.id] || ''}
-                              onInput={(e) => {
-                                const value = e.currentTarget.value;
-                                setNoteTexts(prev => ({
-                                  ...prev,
-                                  [matn.id]: value
-                                }));
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              onKeyPress={(e) => {
-                                e.stopPropagation();
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  saveNote(matn, e.currentTarget.value);
-                                }
-                              }}
-                              onBlur={(e) => {
-                                e.stopPropagation();
-                                saveNote(matn, e.currentTarget.value);
-                              }}
-                              placeholder="أضف ملاحظاتك هنا..."
-                              style={{
-                                width: '100%',
-                                padding: '10px',
-                                'font-size': '14px',
-                                border: '1px solid var(--color-border)',
-                                'border-radius': '8px',
-                                'background': 'var(--color-background)',
-                                color: 'var(--color-text)',
-                                outline: 'none',
-                                'box-sizing': 'border-box',
-                                resize: 'vertical',
-                                'min-height': '80px',
-                                'font-family': 'inherit'
-                              }}
-                              rows={3}
-                            />
-                            <div style={{
-                              'margin-top': '5px',
-                              'font-size': '11px',
-                              color: 'var(--color-text-secondary)'
-                            }}>
-                              💡 Enter zum Speichern
-                            </div>
-                          </div>
+                                                     {/* Days Counter */}
+                           <div style={{ 
+                             'text-align': 'center', 
+                             padding: '8px',
+                             background: 'var(--color-background)',
+                             'border-radius': '8px',
+                             border: '1px solid var(--color-border)',
+                             'margin-bottom': '15px'
+                           }}>
+                             <span style={{ 
+                               color: 'var(--color-text-secondary)', 
+                               'font-size': '12px'
+                             }}>
+                               آخر تغيير قبل: {calculateDaysSinceLastChange(matn.lastChange_date || '')} يوم
+                             </span>
+                           </div>
+
+                           {/* Note Field */}
+                           <div>
+                             <label style={{
+                               display: 'block',
+                               'margin-bottom': '5px',
+                               'font-weight': '600',
+                               color: 'var(--color-text)'
+                             }}>
+                               الملاحظات:
+                             </label>
+                             <div style={{ position: 'relative' }}>
+                               <textarea
+                                 value={noteTexts()[matn.id] || ''}
+                                 onInput={(e) => {
+                                   const value = e.currentTarget.value;
+                                   setNoteTexts(prev => ({
+                                     ...prev,
+                                     [matn.id]: value
+                                   }));
+                                 }}
+                                 onClick={(e) => e.stopPropagation()}
+                                 onKeyPress={(e) => {
+                                   e.stopPropagation();
+                                   if (e.key === 'Enter' && !e.shiftKey) {
+                                     e.preventDefault();
+                                     saveNote(matn, e.currentTarget.value);
+                                   }
+                                 }}
+                                 onBlur={(e) => {
+                                   e.stopPropagation();
+                                   saveNote(matn, e.currentTarget.value);
+                                 }}
+                                 placeholder="أضف ملاحظاتك هنا..."
+                                 style={{
+                                   width: '100%',
+                                   padding: '10px',
+                                   'font-size': '14px',
+                                   border: '1px solid var(--color-border)',
+                                   'border-radius': '8px',
+                                   'background': 'var(--color-background)',
+                                   color: 'var(--color-text)',
+                                   outline: 'none',
+                                   'box-sizing': 'border-box',
+                                   resize: 'vertical',
+                                   'min-height': '80px',
+                                   'font-family': 'inherit',
+                                   'padding-bottom': '40px'
+                                 }}
+                                 rows={3}
+                               />
+                               <button
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   saveNote(matn, noteTexts()[matn.id] || '');
+                                 }}
+                                 style={{
+                                   position: 'absolute',
+                                   bottom: '8px',
+                                   right: '8px',
+                                   padding: '4px 8px',
+                                   background: 'var(--color-primary)',
+                                   color: 'white',
+                                   border: 'none',
+                                   'border-radius': '4px',
+                                   cursor: 'pointer',
+                                   'font-size': '11px'
+                                 }}
+                               >
+                                 💾 حفظ
+                               </button>
+                             </div>
+                             <div style={{
+                               'margin-top': '5px',
+                               'font-size': '11px',
+                               color: 'var(--color-text-secondary)'
+                             }}>
+                               💡 Enter zum Speichern oder Button klicken
+                             </div>
+                           </div>
                         </div>
                       );
                     }}

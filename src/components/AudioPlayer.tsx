@@ -62,6 +62,22 @@ export function AudioPlayer() {
     transition: 'background-color 0.2s',
     '-webkit-tap-highlight-color': 'transparent'
   };
+
+  const skipButtonStyle = {
+    width: '32px',
+    height: '32px',
+    'border-radius': '50%',
+    border: 'none',
+    'background-color': 'var(--color-secondary)',
+    color: 'white',
+    'font-size': '12px',
+    cursor: 'pointer',
+    display: 'flex',
+    'align-items': 'center',
+    'justify-content': 'center',
+    transition: 'background-color 0.2s',
+    '-webkit-tap-highlight-color': 'transparent'
+  };
   
   const closeButtonStyle = {
     width: '32px',
@@ -130,12 +146,32 @@ export function AudioPlayer() {
             
             <Show when={!player().isLoading}>
               <button
+                style={skipButtonStyle}
+                onClick={app.skipBackward}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                title="-5 Sekunden"
+              >
+                ⏪
+              </button>
+              
+              <button
                 style={buttonStyle}
                 onClick={app.pauseAudio}
                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
               >
                 {player().isPlaying ? '⏸️' : '▶️'}
+              </button>
+              
+              <button
+                style={skipButtonStyle}
+                onClick={app.skipForward}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-secondary)'}
+                title="+5 Sekunden"
+              >
+                ⏩
               </button>
             </Show>
             
