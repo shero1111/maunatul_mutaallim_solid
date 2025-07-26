@@ -23,7 +23,7 @@ export const translations = {
     logout: 'تسجيل الخروج',
     language: 'اللغة',
     theme: 'المظهر',
-    aboutUs: 'من نحن',
+    aboutUs: 'معلومات عنا',
     guide: 'دليل الاستخدام',
     version: 'الإصدار',
     materials: 'المواد',
@@ -91,45 +91,24 @@ export const translations = {
     general: 'عام',
     userGuide: 'دليل المستخدم',
     appVersion: 'إصدار التطبيق',
-    aboutUs: 'معلومات عنا',
     changePassword: 'تغيير كلمة المرور',
     account: 'الحساب',
-    
-    // Status translations
     needsRevision: 'يحتاج مراجعة',
-    nearCompletion: 'قريب الانتهاء', 
+    nearCompletion: 'قريب الانتهاء',
     completed: 'تم الختمة',
-    
-    // Level translations
     level1: 'المستوى الأول',
     level2: 'المستوى الثاني',
     level3: 'المستوى الثالث',
     level4: 'المستوى الرابع',
-    
-    // Page titles
     mutunPageTitle: 'متون',
-    
-    // Search and filter
     searchStudent: 'البحث عن طالب بالاسم...',
     allStudents: 'الجميع',
-    
-    // Days counter
     lastChangeBefore: 'آخر تغيير قبل',
     daysAgo: 'يوم',
     lastFullRevision: 'آخر ختمة كاملة قبل',
-    days: 'أيام',
-    day: 'يوم',
-    
-    // Empty states
     noMutunFound: 'لا توجد متون',
     noMutunFoundDesc: 'لم يتم العثور على متون للمستوى المحدد',
-    
-    // Save/Edit
     saveNote: 'حفظ',
-    writeNote: 'اكتب ملاحظة',
-    materials: 'المواد',
-    
-    // Header
     appTitle: 'معونة المتعلم',
     appSubtitle: 'نظام إدارة حلقات عَلٌمْنِي'
   },
@@ -181,7 +160,7 @@ export const translations = {
     seconds: 'Seconds',
     days: 'days',
     day: 'day',
-    lastFullRevising: 'Last full revising was before',
+    lastFullRevising: 'Last full revision before',
     writeNote: 'Write a note',
     save: 'Save',
     settings: 'Settings',
@@ -225,45 +204,24 @@ export const translations = {
     general: 'General',
     userGuide: 'User Guide',
     appVersion: 'App Version',
-    aboutUs: 'About Us',
     changePassword: 'Change Password',
     account: 'Account',
-    
-    // Status translations
     needsRevision: 'Needs Revision',
     nearCompletion: 'Currently Revising',
     completed: 'Full Revision Completed',
-    
-    // Level translations
     level1: 'Level 1',
-    level2: 'Level 2', 
+    level2: 'Level 2',
     level3: 'Level 3',
     level4: 'Level 4',
-    
-    // Page titles
     mutunPageTitle: 'Mutun',
-    
-    // Search and filter
     searchStudent: 'Search student by name...',
     allStudents: 'All',
-    
-    // Days counter
     lastChangeBefore: 'Last change before',
     daysAgo: 'days ago',
     lastFullRevision: 'Last full revision before',
-    days: 'days',
-    day: 'day'
-    
-    // Empty states
     noMutunFound: 'No Mutun Found',
     noMutunFoundDesc: 'No mutun found for the selected level',
-    
-    // Save/Edit
     saveNote: 'Save',
-    writeNote: 'Write a note',
-    materials: 'Materials',
-    
-    // Header
     appTitle: 'Maunatul Mutaallim',
     appSubtitle: 'Allemni Learning Management System'
   }
