@@ -432,10 +432,11 @@ export function MutunPage() {
                           {/* Title - Centered at Top */}
                           <h3 style={{ 
                             color: 'var(--color-text)', 
-                            'font-size': '1.1rem', 
-                            margin: '0 0 12px 0',
+                            'font-size': '1.3rem', 
+                            margin: '0 0 16px 0',
                             'text-align': 'center',
-                            'font-weight': '700'
+                            'font-weight': '700',
+                            'line-height': '1.4'
                           }}>
                             {matn.name}
                           </h3>
