@@ -116,6 +116,9 @@ export const translations = {
     // Days counter
     lastChangeBefore: 'آخر تغيير قبل',
     daysAgo: 'يوم',
+    lastFullRevision: 'آخر ختمة كاملة قبل',
+    days: 'أيام',
+    day: 'يوم'
     
     // Empty states
     noMutunFound: 'لا توجد متون',
@@ -247,6 +250,9 @@ export const translations = {
     // Days counter
     lastChangeBefore: 'Last change before',
     daysAgo: 'days ago',
+    lastFullRevision: 'Last full revision before',
+    days: 'days',
+    day: 'day'
     
     // Empty states
     noMutunFound: 'No Mutun Found',

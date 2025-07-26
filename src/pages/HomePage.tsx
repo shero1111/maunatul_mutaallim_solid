@@ -119,7 +119,12 @@ function StudentDashboard(props: { user: Student }) {
   
   // Filter and search students
   const getFilteredStudents = (students: Student[]) => {
+    console.log('🔍 getFilteredStudents called with:', students.length, 'students');
+    console.log('🔍 Current statusFilter:', statusFilter());
+    console.log('🔍 Current searchTerm:', searchTerm());
+    
     let filtered = students;
+    console.log('🔍 Students before filtering:', filtered.map(s => ({ name: s.name, status: s.status })));
     
     // Apply search filter first
     if (searchTerm().trim()) {
@@ -132,8 +137,14 @@ function StudentDashboard(props: { user: Student }) {
     
     // Apply status filter
     if (statusFilter() !== 'all') {
-      filtered = filtered.filter(s => s.status === statusFilter());
-      console.log('🎯 Status filtered students:', filtered.length, 'with status:', statusFilter());
+      console.log('🎯 Applying status filter:', statusFilter());
+      const beforeFilter = filtered.length;
+      filtered = filtered.filter(s => {
+        const matches = s.status === statusFilter();
+        console.log(`🎯 Student ${s.name}: status="${s.status}", filter="${statusFilter()}", matches=${matches}`);
+        return matches;
+      });
+      console.log('🎯 Status filtered students:', filtered.length, 'from', beforeFilter, 'with status:', statusFilter());
     }
     
     // Sort: Favorites first (within filtered results), then by name
@@ -150,6 +161,7 @@ function StudentDashboard(props: { user: Student }) {
     });
     
     console.log('📋 Final filtered and sorted students:', filtered.length);
+    console.log('📋 Final students:', filtered.map(s => ({ name: s.name, status: s.status })));
     return filtered;
   };
   

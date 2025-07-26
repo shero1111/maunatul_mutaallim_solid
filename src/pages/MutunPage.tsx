@@ -651,7 +651,16 @@ export function MutunPage() {
                                 lastChange: currentMatn.lastChange_date
                               });
                               
-                                              return `${app.translate('lastChangeBefore')}: ${days} ${app.translate('daysAgo')}`;
+                              // Proper pluralization
+                              if (app.language() === 'ar') {
+                                // Arabic: 0-10 use أيام, otherwise يوم
+                                const dayWord = (days >= 0 && days <= 10) ? app.translate('days') : app.translate('day');
+                                return `${app.translate('lastFullRevision')}: ${days} ${dayWord}`;
+                              } else {
+                                // English: 1 = day, otherwise days
+                                const dayWord = days === 1 ? app.translate('day') : app.translate('days');
+                                return `${app.translate('lastFullRevision')}: ${days} ${dayWord}`;
+                              }
                             })()}
                           </div>
                         </div>
