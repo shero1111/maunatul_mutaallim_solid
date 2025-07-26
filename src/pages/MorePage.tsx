@@ -427,31 +427,31 @@ export function MorePage() {
         {/* Buttons */}
         <div style={{
           display: 'flex',
-          gap: '12px',
+          gap: '8px',
           'justify-content': 'center'
         }}>
           {/* Cancel Button */}
           <button
             onClick={() => setShowLogoutModal(false)}
             style={{
-              padding: '12px 24px',
-              'border-radius': '12px',
-              border: `2px solid var(--color-border)`,
+              padding: '8px 16px',
+              'border-radius': '8px',
+              border: `1px solid var(--color-border)`,
               background: 'var(--color-surface)',
-              color: 'var(--color-text)',
-              'font-size': '1rem',
-              'font-weight': '500',
+              color: 'var(--color-text-secondary)',
+              'font-size': '14px',
+              'font-weight': '400',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              'min-width': '120px'
+              transition: 'all 0.15s ease',
+              'min-width': '80px'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-primary)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.borderColor = 'var(--color-text-secondary)';
+              e.currentTarget.style.color = 'var(--color-text)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = 'var(--color-border)';
-              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.color = 'var(--color-text-secondary)';
             }}
           >
             {app.language() === 'ar' ? 'إلغاء' : 'Cancel'}
@@ -464,25 +464,24 @@ export function MorePage() {
               setShowLogoutModal(false);
             }}
             style={{
-              padding: '12px 24px',
-              'border-radius': '12px',
-              border: '2px solid #ef4444',
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+              padding: '8px 16px',
+              'border-radius': '8px',
+              border: '1px solid #dc2626',
+              background: '#dc2626',
               color: 'white',
-              'font-size': '1rem',
-              'font-weight': '600',
+              'font-size': '14px',
+              'font-weight': '500',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              'min-width': '120px',
-              'box-shadow': '0 4px 12px rgba(239, 68, 68, 0.3)'
+              transition: 'all 0.15s ease',
+              'min-width': '80px'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
+              e.currentTarget.style.background = '#b91c1c';
+              e.currentTarget.style.borderColor = '#b91c1c';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+              e.currentTarget.style.background = '#dc2626';
+              e.currentTarget.style.borderColor = '#dc2626';
             }}
           >
             {app.language() === 'ar' ? 'تسجيل الخروج' : 'Logout'}
