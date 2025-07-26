@@ -283,9 +283,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("not_available")}
             style={{
-              background: user().status === "not_available" ? "#fef2f2" : "var(--color-surface)",
+              background: user().status === "not_available" ? "var(--color-surface)" : "var(--color-surface)",
               color: user().status === "not_available" ? "#dc2626" : "var(--color-text-secondary)",
-              border: user().status === "not_available" ? "1px solid #fecaca" : "1px solid var(--color-border)",
+              border: user().status === "not_available" ? "1px solid var(--color-border)" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -301,9 +301,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("revising")}
             style={{
-              background: user().status === "revising" ? "#fffbeb" : "var(--color-surface)",
+              background: user().status === "revising" ? "var(--color-surface)" : "var(--color-surface)",
               color: user().status === "revising" ? "#d97706" : "var(--color-text-secondary)",
-              border: user().status === "revising" ? "1px solid #fed7aa" : "1px solid var(--color-border)",
+              border: user().status === "revising" ? "1px solid var(--color-border)" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -319,9 +319,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("khatamat")}
             style={{
-              background: user().status === "khatamat" ? "#f0fdf4" : "var(--color-surface)",
+              background: user().status === "khatamat" ? "var(--color-surface)" : "var(--color-surface)",
               color: user().status === "khatamat" ? "#059669" : "var(--color-text-secondary)",
-              border: user().status === "khatamat" ? "1px solid #bbf7d0" : "1px solid var(--color-border)",
+              border: user().status === "khatamat" ? "1px solid var(--color-border)" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -394,8 +394,8 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid var(--color-border)',
-              background: statusFilter() === 'all' ? '#eff6ff' : 'var(--color-surface)',
+              border: statusFilter() === 'all' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'all' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -414,8 +414,8 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid var(--color-border)',
-              background: statusFilter() === 'not_available' ? '#fef2f2' : 'var(--color-surface)',
+              border: statusFilter() === 'not_available' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'not_available' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -430,8 +430,8 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid var(--color-border)',
-              background: statusFilter() === 'revising' ? '#fffbeb' : 'var(--color-surface)',
+              border: statusFilter() === 'revising' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'revising' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -446,8 +446,8 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid var(--color-border)',
-              background: statusFilter() === 'khatamat' ? '#f0fdf4' : 'var(--color-surface)',
+              border: statusFilter() === 'khatamat' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'khatamat' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -517,7 +517,7 @@ function HalaqaSection(props: any) {
       {/* Halaqa Header */}
       <div 
         style={{
-          background: '#f8fafc',
+          background: 'var(--color-surface)',
           padding: '15px 20px',
           'border-bottom': '1px solid var(--color-border)',
           cursor: 'pointer',
@@ -573,7 +573,7 @@ function HalaqaSection(props: any) {
                 'border-radius': '8px',
                 padding: '12px',
                 'margin-bottom': '10px',
-                background: '#fafafa',
+                background: 'var(--color-surface)',
                 display: 'flex',
                 'justify-content': 'space-between',
                 'align-items': 'center'
@@ -629,7 +629,7 @@ function HalaqaSection(props: any) {
                     cursor: 'pointer',
                     'font-size': '1.2rem',
                     padding: '5px',
-                    color: userFavorites.includes(student.id) ? '#f59e0b' : '#d1d5db'
+                    color: userFavorites.includes(student.id) ? '#f59e0b' : 'var(--color-text-secondary)'
                   }}
                 >
                   ⭐
@@ -781,7 +781,7 @@ function TeacherDashboard(props: { user: Teacher }) {
             width: '100%',
             padding: '12px 16px',
             'border-radius': '8px',
-            border: '1px solid #d1d5db',
+            border: '1px solid var(--color-text-secondary)',
             'font-size': '16px',
             'margin-bottom': '15px',
             'box-sizing': 'border-box'
@@ -794,8 +794,8 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid var(--color-border)',
-              background: statusFilter() === 'all' ? '#eff6ff' : 'var(--color-surface)',
+              border: statusFilter() === 'all' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'all' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -810,8 +810,8 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid var(--color-border)',
-              background: statusFilter() === 'not_available' ? '#fef2f2' : 'var(--color-surface)',
+              border: statusFilter() === 'not_available' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'not_available' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -826,8 +826,8 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid var(--color-border)',
-              background: statusFilter() === 'revising' ? '#fffbeb' : 'var(--color-surface)',
+              border: statusFilter() === 'revising' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'revising' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -842,8 +842,8 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid var(--color-border)',
-              background: statusFilter() === 'khatamat' ? '#f0fdf4' : 'var(--color-surface)',
+              border: statusFilter() === 'khatamat' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
+              background: statusFilter() === 'khatamat' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
@@ -1046,15 +1046,16 @@ function LeadershipDashboard(props: { user: User }) {
           <div style={{ 
             'text-align': 'center', 
             padding: '15px', 
-            background: '#fef2f2', 
+            background: 'var(--color-surface)', 
             'border-radius': '12px', 
-            border: '2px solid #ef4444' 
+            border: '2px solid var(--color-error)',
+            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🔴</div>
             <div style={{ 
               'font-size': '1.5rem', 
               'font-weight': 'bold', 
-              color: '#ef4444',
+              color: 'var(--color-error)',
               'margin-bottom': '5px'
             }}>
               {statusCounts.not_available}
@@ -1067,15 +1068,16 @@ function LeadershipDashboard(props: { user: User }) {
           <div style={{ 
             'text-align': 'center', 
             padding: '15px', 
-            background: '#fffbeb', 
+            background: 'var(--color-surface)', 
             'border-radius': '12px', 
-            border: '2px solid #f59e0b' 
+            border: '2px solid var(--color-warning)',
+            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟡</div>
             <div style={{ 
               'font-size': '1.5rem', 
               'font-weight': 'bold', 
-              color: '#f59e0b',
+              color: 'var(--color-warning)',
               'margin-bottom': '5px'
             }}>
               {statusCounts.revising}
@@ -1088,15 +1090,16 @@ function LeadershipDashboard(props: { user: User }) {
           <div style={{ 
             'text-align': 'center', 
             padding: '15px', 
-            background: '#f0fdf4', 
+            background: 'var(--color-surface)', 
             'border-radius': '12px', 
-            border: '2px solid #10b981' 
+            border: '2px solid var(--color-success)',
+            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟢</div>
             <div style={{ 
               'font-size': '1.5rem', 
               'font-weight': 'bold', 
-              color: '#10b981',
+              color: 'var(--color-success)',
               'margin-bottom': '5px'
             }}>
               {statusCounts.khatamat}
