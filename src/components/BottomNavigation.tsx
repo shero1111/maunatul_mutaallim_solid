@@ -8,15 +8,15 @@ export function BottomNavigation() {
   // Make currentUser reactive and safe
   const currentUser = createMemo(() => app.currentUser());
   
-  // Make navigation items reactive to language changes
-  const navigationItems = createMemo(() => [
+  // Navigation items - simple array since we reload page for language changes
+  const navigationItems = [
     { page: 'home' as Page, icon: '🏠', label: app.translate('home') },
     { page: 'mutuun' as Page, icon: '📚', label: app.translate('mutuun') },
     { page: 'halaqat' as Page, icon: '👥', label: app.translate('halaqat') },
     { page: 'users' as Page, icon: '👤', label: app.translate('users') },
     { page: 'news' as Page, icon: '📰', label: app.translate('news') },
     { page: 'more' as Page, icon: '⚙️', label: app.translate('more') }
-  ]);
+  ];
   
   const containerStyle = (itemCount: number) => ({
     position: 'fixed' as const,
@@ -73,18 +73,18 @@ export function BottomNavigation() {
       switch (user.role) {
         case 'superuser':
         case 'leitung':
-          return navigationItems();
+          return navigationItems;
         case 'lehrer':
-          return navigationItems().filter(item => 
+          return navigationItems.filter(item => 
             ['home', 'mutuun', 'news', 'more'].includes(item.page)
           );
         case 'student':
-          return navigationItems().filter(item => 
+          return navigationItems.filter(item => 
             ['home', 'mutuun', 'news', 'more'].includes(item.page)
           );
         default:
           console.warn('⚠️ Unknown user role:', user.role);
-          return navigationItems().filter(item => 
+          return navigationItems.filter(item => 
             ['home', 'mutuun', 'news', 'more'].includes(item.page)
           );
       }
