@@ -138,13 +138,13 @@ function StudentDashboard(props: { user: Student }) {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'not_available':
-        return { color: '#ef4444', icon: '🔴', text: 'غير متاح' };
+        return { color: '#ef4444', icon: '🔴', text: app.translate('not_available') };
       case 'revising':
-        return { color: '#f59e0b', icon: '🟡', text: 'مراجعة' };
+        return { color: '#f59e0b', icon: '🟡', text: app.translate('revising') };
       case 'khatamat':
-        return { color: '#10b981', icon: '🟢', text: 'ختمات' };
+        return { color: '#10b981', icon: '🟢', text: app.translate('khatamat') };
       default:
-        return { color: '#6b7280', icon: '⚪', text: 'غير محدد' };
+        return { color: '#6b7280', icon: '⚪', text: app.translate('status') };
     }
   };
   
@@ -241,7 +241,7 @@ function StudentDashboard(props: { user: Student }) {
           'font-weight': '600',
           'margin-bottom': '15px'
         }}>
-          تغيير الحالة
+                      {app.translate('changeStatus')}
         </p>
         
         {/* Status Change Buttons */}
@@ -265,7 +265,7 @@ function StudentDashboard(props: { user: Student }) {
               flex: "1"
             }}
           >
-            🔴 غير متاح
+            🔴 {app.translate('not_available')}
           </button>
           
           <button
@@ -283,7 +283,7 @@ function StudentDashboard(props: { user: Student }) {
               flex: "1"
             }}
           >
-            🟡 مراجعة
+            🟡 {app.translate('revising')}
           </button>
           
           <button
@@ -301,7 +301,7 @@ function StudentDashboard(props: { user: Student }) {
               flex: "1"
             }}
           >
-            🟢 ختمات
+            🟢 {app.translate('khatamat')}
           </button>
         </div>
       </div>
@@ -318,7 +318,7 @@ function StudentDashboard(props: { user: Student }) {
         <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
           <input
             type="text"
-            placeholder="🔍 البحث عن طالب بالاسم..."
+            placeholder={`🔍 ${app.translate('searchStudent')}`}
             value={searchTerm()}
             onInput={(e) => setSearchTerm(e.currentTarget.value)}
             style={{
@@ -370,7 +370,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease'
             }}
           >
-            الجميع
+            {app.translate('allStudents')}
           </button>
           <button
             onClick={() => setStatusFilter('not_available')}
@@ -386,7 +386,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🔴 غير متاح
+            🔴 {app.translate('not_available')}
           </button>
           <button
             onClick={() => setStatusFilter('revising')}
@@ -402,7 +402,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🟡 مراجعة
+            🟡 {app.translate('revising')}
           </button>
           <button
             onClick={() => setStatusFilter('khatamat')}
@@ -418,7 +418,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🟢 ختمات
+            🟢 {app.translate('khatamat')}
           </button>
         </div>
       </div>
@@ -671,13 +671,13 @@ function TeacherDashboard(props: { user: Teacher }) {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'not_available':
-        return { color: '#ef4444', icon: '🔴', text: 'غير متاح' };
+        return { color: '#ef4444', icon: '🔴', text: app.translate('not_available') };
       case 'revising':
-        return { color: '#f59e0b', icon: '🟡', text: 'مراجعة' };
+        return { color: '#f59e0b', icon: '🟡', text: app.translate('revising') };
       case 'khatamat':
-        return { color: '#10b981', icon: '🟢', text: 'ختمات' };
+        return { color: '#10b981', icon: '🟢', text: app.translate('khatamat') };
       default:
-        return { color: '#6b7280', icon: '⚪', text: 'غير محدد' };
+        return { color: '#6b7280', icon: '⚪', text: app.translate('status') };
     }
   };
   
@@ -737,7 +737,7 @@ function TeacherDashboard(props: { user: Teacher }) {
       }}>
         <input
           type="text"
-          placeholder="البحث عن طالب..."
+          placeholder="{app.translate('searchStudent')}..."
           value={searchTerm()}
           onInput={(e) => setSearchTerm(e.currentTarget.value)}
           style={{
@@ -766,7 +766,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease'
             }}
           >
-            الجميع
+            {app.translate('allStudents')}
           </button>
           <button
             onClick={() => setStatusFilter('not_available')}
@@ -782,7 +782,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🔴 غير متاح
+            🔴 {app.translate('not_available')}
           </button>
           <button
             onClick={() => setStatusFilter('revising')}
@@ -798,7 +798,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🟡 مراجعة
+            🟡 {app.translate('revising')}
           </button>
           <button
             onClick={() => setStatusFilter('khatamat')}
@@ -814,7 +814,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease'
             }}
           >
-            🟢 ختمات
+            🟢 {app.translate('khatamat')}
           </button>
         </div>
       </div>
@@ -1023,7 +1023,7 @@ function LeadershipDashboard(props: { user: User }) {
               {statusCounts.not_available}
             </div>
             <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
-              غير متاح
+              {app.translate('not_available')}
             </div>
           </div>
 
@@ -1065,7 +1065,7 @@ function LeadershipDashboard(props: { user: User }) {
               {statusCounts.khatamat}
             </div>
             <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
-              ختمات
+              {app.translate('khatamat')}
             </div>
           </div>
         </div>

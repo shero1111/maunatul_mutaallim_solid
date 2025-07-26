@@ -250,7 +250,7 @@ export function MutunPage() {
           gap: '10px'
         }}>
           <span>📚</span>
-          المتون
+          {app.translate('mutunPageTitle')}
         </h1>
 
         {/* Level Filter Buttons */}
@@ -651,9 +651,7 @@ export function MutunPage() {
                                 lastChange: currentMatn.lastChange_date
                               });
                               
-                              return app.language() === 'ar' 
-                                ? `آخر تغيير قبل: ${days} يوم`
-                                : `Last change: ${days} days ago`;
+                                              return `${app.translate('lastChangeBefore')}: ${days} ${app.translate('daysAgo')}`;
                             })()}
                           </div>
                         </div>
@@ -675,8 +673,8 @@ export function MutunPage() {
           color: 'var(--color-text-secondary)'
         }}>
           <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>📚</div>
-          <h3 style={{ 'margin-bottom': '10px' }}>لا توجد متون</h3>
-          <p>لم يتم العثور على متون للمستوى المحدد</p>
+                          <h3 style={{ 'margin-bottom': '10px' }}>{app.translate('noMutunFound')}</h3>
+                <p>{app.translate('noMutunFoundDesc')}</p>
         </div>
       </Show>
 
@@ -1016,7 +1014,7 @@ export function MutunPage() {
                   'font-weight': '600'
                 }}
               >
-                حفظ
+                {app.translate('saveNote')}
               </button>
               <button 
                 onClick={closeThresholdModal}
