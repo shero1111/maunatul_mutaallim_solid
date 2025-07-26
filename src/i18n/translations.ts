@@ -90,7 +90,10 @@ export const translations = {
     newPassword: 'كلمة المرور الجديدة',
     general: 'عام',
     userGuide: 'دليل المستخدم',
-    appVersion: 'إصدار التطبيق'
+    appVersion: 'إصدار التطبيق',
+    aboutUs: 'معلومات عنا',
+    changePassword: 'تغيير كلمة المرور',
+    account: 'الحساب'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -183,6 +186,9 @@ export const translations = {
     newPassword: 'New Password',
     general: 'General',
     userGuide: 'User Guide',
-    appVersion: 'App Version'
+    appVersion: 'App Version',
+    aboutUs: 'About Us',
+    changePassword: 'Change Password',
+    account: 'Account'
   }
 };
