@@ -247,23 +247,22 @@ function StudentDashboard(props: { user: Student }) {
         {/* Status Change Buttons */}
         <div style={{ 
           display: 'flex', 
-          gap: '10px',
+          gap: '8px',
           'justify-content': 'center'
         }}>
           <button
             onClick={() => changeStatus("not_available")}
             style={{
-              background: user().status === "not_available" ? "#ef4444" : "#f3f4f6",
-              color: user().status === "not_available" ? "white" : "#ef4444",
-              border: user().status === "not_available" ? "2px solid #ef4444" : "2px solid #ef4444",
-              padding: "10px 16px",
-              "border-radius": "25px",
+              background: user().status === "not_available" ? "#fef2f2" : "#f9fafb",
+              color: user().status === "not_available" ? "#dc2626" : "#6b7280",
+              border: user().status === "not_available" ? "1px solid #fecaca" : "1px solid #e5e7eb",
+              padding: "8px 12px",
+              "border-radius": "8px",
               cursor: "pointer",
-              "font-size": "0.9rem",
-              "font-weight": "600",
+              "font-size": "0.85rem",
+              "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1",
-              "box-shadow": user().status === "not_available" ? "0 2px 8px rgba(239, 68, 68, 0.3)" : "none"
+              flex: "1"
             }}
           >
             🔴 غير متاح
@@ -272,17 +271,16 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("revising")}
             style={{
-              background: user().status === "revising" ? "#f59e0b" : "#f3f4f6",
-              color: user().status === "revising" ? "white" : "#f59e0b",
-              border: user().status === "revising" ? "2px solid #f59e0b" : "2px solid #f59e0b",
-              padding: "10px 16px",
-              "border-radius": "25px",
+              background: user().status === "revising" ? "#fffbeb" : "#f9fafb",
+              color: user().status === "revising" ? "#d97706" : "#6b7280",
+              border: user().status === "revising" ? "1px solid #fed7aa" : "1px solid #e5e7eb",
+              padding: "8px 12px",
+              "border-radius": "8px",
               cursor: "pointer",
-              "font-size": "0.9rem",
-              "font-weight": "600",
+              "font-size": "0.85rem",
+              "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1",
-              "box-shadow": user().status === "revising" ? "0 2px 8px rgba(245, 158, 11, 0.3)" : "none"
+              flex: "1"
             }}
           >
             🟡 مراجعة
@@ -291,17 +289,16 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("khatamat")}
             style={{
-              background: user().status === "khatamat" ? "#10b981" : "#f3f4f6",
-              color: user().status === "khatamat" ? "white" : "#10b981",
-              border: user().status === "khatamat" ? "2px solid #10b981" : "2px solid #10b981",
-              padding: "10px 16px",
-              "border-radius": "25px",
+              background: user().status === "khatamat" ? "#f0fdf4" : "#f9fafb",
+              color: user().status === "khatamat" ? "#059669" : "#6b7280",
+              border: user().status === "khatamat" ? "1px solid #bbf7d0" : "1px solid #e5e7eb",
+              padding: "8px 12px",
+              "border-radius": "8px",
               cursor: "pointer",
-              "font-size": "0.9rem",
-              "font-weight": "600",
+              "font-size": "0.85rem",
+              "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1",
-              "box-shadow": user().status === "khatamat" ? "0 2px 8px rgba(16, 185, 129, 0.3)" : "none"
+              flex: "1"
             }}
           >
             🟢 ختمات
