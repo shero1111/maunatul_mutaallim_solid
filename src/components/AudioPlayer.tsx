@@ -563,15 +563,12 @@ export function AudioPlayer() {
                   <button
                     className="audio-player-button"
                     style={{
-                      width: '36px',
-                      height: '36px',
+                      width: '40px',
+                      height: '40px',
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       color: 'white',
-                      fontSize: '16px',
+                      fontSize: '18px',
                       cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
                     }}
@@ -592,15 +589,13 @@ export function AudioPlayer() {
                   <button
                     className="audio-player-button"
                     style={{
-                      width: '30px',
-                      height: '30px',
+                      width: '34px',
+                      height: '34px',
                       background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
                       color: '#4a5568',
-                      fontSize: '12px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
                       cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                     }}
@@ -626,15 +621,13 @@ export function AudioPlayer() {
                   <button
                     className="audio-player-button"
                     style={{
-                      width: '30px',
-                      height: '30px',
+                      width: '34px',
+                      height: '34px',
                       background: 'linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%)',
                       color: '#c53030',
-                      fontSize: '14px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
                       cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                     }}
@@ -800,28 +793,36 @@ export function AudioPlayer() {
                           }
                         }
                         
-                        /* Force round buttons - override ALL browser defaults */
-                        .audio-player-button {
-                          border-radius: 50% !important;
-                          -webkit-border-radius: 50% !important;
-                          -moz-border-radius: 50% !important;
-                          border: none !important;
-                          outline: none !important;
-                          -webkit-appearance: none !important;
-                          -moz-appearance: none !important;
-                          appearance: none !important;
-                          box-sizing: border-box !important;
-                        }
-                        
-                        .audio-player-button:focus {
-                          outline: none !important;
-                          border: none !important;
-                        }
-                        
-                        .audio-player-button:active {
-                          outline: none !important;
-                          border: none !important;
-                        }
+                                                 /* Force round buttons - override ALL browser defaults */
+                         .audio-player-button {
+                           border-radius: 50% !important;
+                           -webkit-border-radius: 50% !important;
+                           -moz-border-radius: 50% !important;
+                           border: none !important;
+                           outline: none !important;
+                           -webkit-appearance: none !important;
+                           -moz-appearance: none !important;
+                           appearance: none !important;
+                           box-sizing: border-box !important;
+                           display: flex !important;
+                           align-items: center !important;
+                           justify-content: center !important;
+                           text-align: center !important;
+                           vertical-align: middle !important;
+                           line-height: 1 !important;
+                           padding: 0 !important;
+                           margin: 0 !important;
+                         }
+                         
+                         .audio-player-button:focus {
+                           outline: none !important;
+                           border: none !important;
+                         }
+                         
+                         .audio-player-button:active {
+                           outline: none !important;
+                           border: none !important;
+                         }
                       `}
                     </style>
       </div>
