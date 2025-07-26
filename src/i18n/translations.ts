@@ -231,8 +231,8 @@ export const translations = {
     
     // Status translations
     needsRevision: 'Needs Revision',
-    nearCompletion: 'Near Completion',
-    completed: 'Completed',
+    nearCompletion: 'Currently Revising',
+    completed: 'Full Revision Completed',
     
     // Level translations
     level1: 'Level 1',
