@@ -1,46 +1,172 @@
 import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 
-// ORIGINAL Mutuun Template from React App with exact working audio links
+// UPDATED Mutuun Template with Archive.org Audio Links
 const mutunTemplate = [
   {
     title: 'المستوى الأول',
     items: [
-      { name: 'ثلاثة الأصول وأدلتها', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/1-1-usul-althalatha.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://raw.githubusercontent.com/shero1111/maunatul_mutaallim_resources/main/1-1-usul-althalatha.mp3' },
-      { name: 'المفتاح في الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3' },
-      { name: 'معاني الفاتحة وقصار المفصل', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3' },
-      { name: 'الأربعين النووية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: 'https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav' },
-      { name: 'الزيادة الرجبية', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الآداب العشرة', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الخلاصة الحسناء', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الباقيات الصالحات', memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' }
+      { 
+        name: 'ثلاثة الأصول وأدلتها', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-1-usul-althalatha/1-1-usul-althalatha.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-1-usul-althalatha-explanation/1-1-usul-althalatha-explanation.mp3' 
+      },
+      { 
+        name: 'المفتاح في الفقه', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh/1-2-al-miftah-fi-al-fiqh.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation.mp3' 
+      },
+      { 
+        name: 'معاني الفاتحة وقصار المفصل', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation.mp3' 
+      },
+      { 
+        name: 'الأربعين النووية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3' 
+      },
+      { 
+        name: 'الزيادة الرجبية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah/1-5-az-ziyadah-ar-rajabiyyah.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation.mp3' 
+      },
+      { 
+        name: 'الآداب العشرة', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah/1-6-al-adab-al-asharah.mp3', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah-explanation/1-6-al-adab-al-asharah-explanation.mp3' 
+      },
+      { 
+        name: 'الخلاصة الحسناء', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'الباقيات الصالحات', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/15yoRycyZ0H7CfAEyc11bsS99ur18UYNq/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: '' 
+      }
     ]
   },
   {
     title: 'المستوى الثاني',
     items: [
-      { name: 'بهجة الطلب في آداب الطلب', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'فضل الإسلام', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'المقدمة الفقهية الصغرى', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'خلاصة تعظيم العلم', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'العقيدة الواسطية', memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', explanation_audio_link: '' }
+      { 
+        name: 'بهجة الطلب في آداب الطلب', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'فضل الإسلام', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'المقدمة الفقهية الصغرى', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'خلاصة تعظيم العلم', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'العقيدة الواسطية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1THoLVMho76M3UH4xDwe8arKfJxCzDFwo/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/185NOVYEzqXWoKH_BG-2Grwiv1s0A2FyU/view?usp=sharing', 
+        explanation_audio_link: '' 
+      }
     ]
   },
   {
     title: 'المستوى الثالث',
     items: [
-      { name: 'كتاب التوحيد', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'القواعد الأربع', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'كشف الشبهات', memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', explanation_audio_link: '' }
+      { 
+        name: 'كتاب التوحيد', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'القواعد الأربع', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'كشف الشبهات', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1NQ22itB7WinIPdMGGkEyHOCh6mhBDTJp/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1BiWtqilJXJ5Me_sytvjt7UX1VODX3gYh/view?usp=sharing', 
+        explanation_audio_link: '' 
+      }
     ]
   },
   {
     title: 'المستوى الرابع',
     items: [
-      { name: 'منظومة القواعد الفقهية', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'المقدمة الآجرومية', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'خلاصة مقدمة أصول التفسير', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'نخبة الفكر', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' },
-      { name: 'الورقات في أصول الفقه', memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', memorization_audio_link: '', explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', explanation_audio_link: '' }
+      { 
+        name: 'منظومة القواعد الفقهية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'المقدمة الآجرومية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'خلاصة مقدمة أصول التفسير', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'نخبة الفكر', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'الورقات في أصول الفقه', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1dRY2HvNfAGY9jfEvhT1qjmz7M1eu31fb/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1L-tzUlNUPL9uuwEgGjKIiDMQ7z8D7yvZ/view?usp=sharing', 
+        explanation_audio_link: '' 
+      }
     ]
   }
 ];
