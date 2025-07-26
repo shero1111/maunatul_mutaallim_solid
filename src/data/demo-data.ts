@@ -27,8 +27,8 @@ const mutunTemplate = [
         explanation_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation.mp3' 
       },
       { 
-        name: 'الأربعون النووية', 
-        memorization_pdf_link: '', 
+        name: 'الأربعين النووية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1WOiMH2FGIrLcN9LHiXYJwN2wbpYYaW3M/view?usp=sharing', 
         memorization_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3', 
         explanation_pdf_link: '', 
         explanation_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3' 
@@ -52,26 +52,107 @@ const mutunTemplate = [
   {
     title: 'المستوى الثاني',
     items: [
-      { name: 'القواعد الأربع', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'كشف الشبهات', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'بلوغ المرام', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'نواقض الإسلام', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' }
+      { 
+        name: 'القواعد الأربع', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1J4vG2gYfEsRKp8N9QaWpXt7uMcDhE3sL/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'كشف الشبهات', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'نواقض الإسلام', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'الحج', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'أصول الإيمان', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      }
     ]
   },
   {
     title: 'المستوى الثالث',
     items: [
-      { name: 'التدمرية', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'الحموية', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'الواسطية', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' }
+      { 
+        name: 'كتاب التوحيد', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1K3wF7zM9NbPcQ4eRtYuIoL6vXgB2hE8s/view?usp=sharing', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'آداب المشي إلى الصلاة', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'أصول الفقه', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'لمعة الاعتقاد', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      }
     ]
   },
   {
     title: 'المستوى الرابع',
     items: [
-      { name: 'الطحاوية', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'لمعة الاعتقاد', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' },
-      { name: 'الرحبية في المواريث', memorization_pdf_link: '', memorization_audio_link: '', explanation_pdf_link: '', explanation_audio_link: '' }
+      { 
+        name: 'العقيدة الواسطية', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'بلوغ المرام - كتاب الطهارة', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'بلوغ المرام - كتاب الصلاة', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'ألفية ابن مالك - مقدمة', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      }
     ]
   }
 ];
