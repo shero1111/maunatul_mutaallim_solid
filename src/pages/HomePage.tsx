@@ -61,7 +61,10 @@ function HomePageContent(props: { user: User }) {
 // Student Dashboard according to requirements
 function StudentDashboard(props: { user: Student }) {
   const app = useApp();
-  const { user } = props;
+  
+  // Use reactive current user instead of props to ensure UI updates
+  const currentUser = createMemo(() => app.currentUser() as Student);
+  const user = currentUser;
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = createSignal('');
@@ -69,12 +72,12 @@ function StudentDashboard(props: { user: Student }) {
   
   // Get user's halaqat
   const userHalaqat = createMemo(() => 
-    app.halaqat().filter(halaqa => user.halaqat_ids.includes(halaqa.id))
+    app.halaqat().filter(halaqa => user().halaqat_ids.includes(halaqa.id))
   );
   
   // Get all students
   const allStudents = createMemo(() => 
-    app.users().filter(u => u.role === 'student' && u.isActive && u.id !== user.id) as Student[]
+    app.users().filter(u => u.role === 'student' && u.isActive && u.id !== user().id) as Student[]
   );
   
   // Get students in same halaqat
@@ -108,8 +111,8 @@ function StudentDashboard(props: { user: Student }) {
     
     // Sort: Favorites first (within filtered results), then by name
     filtered.sort((a, b) => {
-      const aIsFavorite = user.favorites.includes(a.id);
-      const bIsFavorite = user.favorites.includes(b.id);
+      const aIsFavorite = user().favorites.includes(a.id);
+      const bIsFavorite = user().favorites.includes(b.id);
       
       // Favorites come first
       if (aIsFavorite && !bIsFavorite) return -1;
@@ -136,26 +139,32 @@ function StudentDashboard(props: { user: Student }) {
     }
   };
   
-  const statusInfo = createMemo(() => getStatusInfo(user.status));
+  const statusInfo = createMemo(() => getStatusInfo(user().status));
   
   const changeStatus = (newStatus: string) => {
-    console.log('🔄 Changing status from', user.status, 'to', newStatus);
+    console.log('🔄 Changing status from', user().status, 'to', newStatus);
     const updatedUser = {
-      ...user,
+      ...user(),
       status: newStatus as 'not_available' | 'revising' | 'khatamat',
       status_changed_at: new Date().toISOString()
     };
     app.updateUser(updatedUser);
-    console.log('✅ Status changed successfully');
+    console.log('✅ Status change initiated');
+    
+    // Force a small delay to ensure the update propagates
+    setTimeout(() => {
+      const currentUserAfterUpdate = app.currentUser();
+      console.log('🔍 User after update:', currentUserAfterUpdate?.name, 'Status:', (currentUserAfterUpdate as Student)?.status);
+    }, 100);
   };
   
   const toggleFavorite = (studentId: string) => {
     console.log('⭐ Toggling favorite for student:', studentId);
-    const newFavorites = user.favorites.includes(studentId)
-      ? user.favorites.filter(id => id !== studentId)
-      : [...user.favorites, studentId];
+    const newFavorites = user().favorites.includes(studentId)
+      ? user().favorites.filter(id => id !== studentId)
+      : [...user().favorites, studentId];
     
-    const updatedUser = { ...user, favorites: newFavorites };
+    const updatedUser = { ...user(), favorites: newFavorites };
     app.updateUser(updatedUser);
     console.log('✅ Favorites updated:', newFavorites);
   };
@@ -191,7 +200,7 @@ function StudentDashboard(props: { user: Student }) {
             'font-size': '1.3rem',
             'font-weight': '600'
           }}>
-            {user.name}
+            {user().name}
           </h3>
           
           <div style={{
@@ -213,7 +222,7 @@ function StudentDashboard(props: { user: Student }) {
             'font-size': '0.85rem',
             margin: '0'
           }}>
-            آخر تغيير: {formatDate(user.status_changed_at)}
+            آخر تغيير: {formatDate(user().status_changed_at)}
           </p>
         </div>
         
@@ -244,9 +253,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("not_available")}
             style={{
-              background: user.status === "not_available" ? "#ef4444" : "#f3f4f6",
-              color: user.status === "not_available" ? "white" : "#ef4444",
-              border: user.status === "not_available" ? "2px solid #ef4444" : "2px solid #ef4444",
+              background: user().status === "not_available" ? "#ef4444" : "#f3f4f6",
+              color: user().status === "not_available" ? "white" : "#ef4444",
+              border: user().status === "not_available" ? "2px solid #ef4444" : "2px solid #ef4444",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
@@ -254,7 +263,7 @@ function StudentDashboard(props: { user: Student }) {
               "font-weight": "600",
               transition: "all 0.2s ease",
               flex: "1",
-              "box-shadow": user.status === "not_available" ? "0 2px 8px rgba(239, 68, 68, 0.3)" : "none"
+              "box-shadow": user().status === "not_available" ? "0 2px 8px rgba(239, 68, 68, 0.3)" : "none"
             }}
           >
             🔴 غير متاح
@@ -263,9 +272,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("revising")}
             style={{
-              background: user.status === "revising" ? "#f59e0b" : "#f3f4f6",
-              color: user.status === "revising" ? "white" : "#f59e0b",
-              border: user.status === "revising" ? "2px solid #f59e0b" : "2px solid #f59e0b",
+              background: user().status === "revising" ? "#f59e0b" : "#f3f4f6",
+              color: user().status === "revising" ? "white" : "#f59e0b",
+              border: user().status === "revising" ? "2px solid #f59e0b" : "2px solid #f59e0b",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
@@ -273,7 +282,7 @@ function StudentDashboard(props: { user: Student }) {
               "font-weight": "600",
               transition: "all 0.2s ease",
               flex: "1",
-              "box-shadow": user.status === "revising" ? "0 2px 8px rgba(245, 158, 11, 0.3)" : "none"
+              "box-shadow": user().status === "revising" ? "0 2px 8px rgba(245, 158, 11, 0.3)" : "none"
             }}
           >
             🟡 مراجعة
@@ -282,9 +291,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("khatamat")}
             style={{
-              background: user.status === "khatamat" ? "#10b981" : "#f3f4f6",
-              color: user.status === "khatamat" ? "white" : "#10b981",
-              border: user.status === "khatamat" ? "2px solid #10b981" : "2px solid #10b981",
+              background: user().status === "khatamat" ? "#10b981" : "#f3f4f6",
+              color: user().status === "khatamat" ? "white" : "#10b981",
+              border: user().status === "khatamat" ? "2px solid #10b981" : "2px solid #10b981",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
@@ -292,7 +301,7 @@ function StudentDashboard(props: { user: Student }) {
               "font-weight": "600",
               transition: "all 0.2s ease",
               flex: "1",
-              "box-shadow": user.status === "khatamat" ? "0 2px 8px rgba(16, 185, 129, 0.3)" : "none"
+              "box-shadow": user().status === "khatamat" ? "0 2px 8px rgba(16, 185, 129, 0.3)" : "none"
             }}
           >
             🟢 ختمات
@@ -423,7 +432,7 @@ function StudentDashboard(props: { user: Student }) {
           <HalaqaSection 
             halaqa={halaqa}
             students={getFilteredStudents(getStudentsInHalaqa(halaqa.id))}
-            userFavorites={user.favorites}
+            userFavorites={user().favorites}
             onToggleFavorite={toggleFavorite}
             formatDate={formatDate}
             getStatusInfo={getStatusInfo}
