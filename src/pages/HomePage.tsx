@@ -174,7 +174,7 @@ function StudentDashboard(props: { user: Student }) {
       case 'khatamat':
         return { color: '#10b981', icon: '🟢', text: app.translate('khatamat') };
       default:
-        return { color: '#6b7280', icon: '⚪', text: app.translate('status') };
+        return { color: 'var(--color-text-secondary)', icon: '⚪', text: app.translate('status') };
     }
   };
   
@@ -225,16 +225,16 @@ function StudentDashboard(props: { user: Student }) {
     <div>
       {/* Student's Own Info Card */}
       <div style={{ 
-        background: 'white', 
+        background: 'var(--color-surface)', 
         'border-radius': '12px', 
         padding: '20px', 
         'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
-        border: '2px solid #2563eb'
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+        border: '2px solid var(--color-primary)'
       }}>
         <div style={{ 'text-align': 'center', 'margin-bottom': '15px' }}>
           <h3 style={{ 
-            color: '#1f2937', 
+            color: 'var(--color-text)', 
             'margin-bottom': '10px',
             'font-size': '1.3rem',
             'font-weight': '600'
@@ -260,14 +260,14 @@ function StudentDashboard(props: { user: Student }) {
         <hr style={{ 
           border: 'none', 
           height: '1px', 
-          background: '#e5e7eb', 
+          background: 'var(--color-border)', 
           margin: '20px 0 15px 0' 
         }} />
         
         {/* Change Status Text */}
         <p style={{ 
           'text-align': 'center', 
-          color: '#374151', 
+          color: 'var(--color-text)', 
           'font-weight': '600',
           'margin-bottom': '15px'
         }}>
@@ -283,9 +283,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("not_available")}
             style={{
-              background: user().status === "not_available" ? "#fef2f2" : "#f9fafb",
-              color: user().status === "not_available" ? "#dc2626" : "#6b7280",
-              border: user().status === "not_available" ? "1px solid #fecaca" : "1px solid #e5e7eb",
+              background: user().status === "not_available" ? "#fef2f2" : "var(--color-surface)",
+              color: user().status === "not_available" ? "#dc2626" : "var(--color-text-secondary)",
+              border: user().status === "not_available" ? "1px solid #fecaca" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -301,9 +301,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("revising")}
             style={{
-              background: user().status === "revising" ? "#fffbeb" : "#f9fafb",
-              color: user().status === "revising" ? "#d97706" : "#6b7280",
-              border: user().status === "revising" ? "1px solid #fed7aa" : "1px solid #e5e7eb",
+              background: user().status === "revising" ? "#fffbeb" : "var(--color-surface)",
+              color: user().status === "revising" ? "#d97706" : "var(--color-text-secondary)",
+              border: user().status === "revising" ? "1px solid #fed7aa" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -319,9 +319,9 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => changeStatus("khatamat")}
             style={{
-              background: user().status === "khatamat" ? "#f0fdf4" : "#f9fafb",
-              color: user().status === "khatamat" ? "#059669" : "#6b7280",
-              border: user().status === "khatamat" ? "1px solid #bbf7d0" : "1px solid #e5e7eb",
+              background: user().status === "khatamat" ? "#f0fdf4" : "var(--color-surface)",
+              color: user().status === "khatamat" ? "#059669" : "var(--color-text-secondary)",
+              border: user().status === "khatamat" ? "1px solid #bbf7d0" : "1px solid var(--color-border)",
               padding: "8px 12px",
               "border-radius": "8px",
               cursor: "pointer",
@@ -338,11 +338,12 @@ function StudentDashboard(props: { user: Student }) {
 
       {/* Search and Filter Section */}
       <div style={{
-        background: 'white',
+        background: 'var(--color-surface)',
         'border-radius': '12px',
         padding: '15px',
         'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+        border: '1px solid var(--color-border)'
       }}>
         {/* Search Input */}
         <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
@@ -355,14 +356,16 @@ function StudentDashboard(props: { user: Student }) {
               width: '100%',
               padding: '12px 16px',
               'border-radius': '8px',
-              border: '2px solid #e5e7eb',
+              border: '2px solid var(--color-border)',
+              'background-color': 'var(--color-background)',
+              color: 'var(--color-text)',
               'font-size': '16px',
               'box-sizing': 'border-box',
               outline: 'none',
               transition: 'border-color 0.2s ease'
             }}
-            onFocus={(e) => e.currentTarget.style.borderColor = '#2563eb'}
-            onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+            onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
           />
           {searchTerm() && (
             <button
@@ -376,7 +379,7 @@ function StudentDashboard(props: { user: Student }) {
                 border: 'none',
                 cursor: 'pointer',
                 'font-size': '18px',
-                color: '#6b7280'
+                color: 'var(--color-text-secondary)'
               }}
             >
               ✕
@@ -391,9 +394,9 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid #e5e7eb',
-              background: statusFilter() === 'all' ? '#eff6ff' : '#f9fafb',
-              color: statusFilter() === 'all' ? '#1d4ed8' : '#6b7280',
+              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid var(--color-border)',
+              background: statusFilter() === 'all' ? '#eff6ff' : 'var(--color-surface)',
+              color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -411,9 +414,9 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid #e5e7eb',
-              background: statusFilter() === 'not_available' ? '#fef2f2' : '#f9fafb',
-              color: statusFilter() === 'not_available' ? '#dc2626' : '#6b7280',
+              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid var(--color-border)',
+              background: statusFilter() === 'not_available' ? '#fef2f2' : 'var(--color-surface)',
+              color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -427,9 +430,9 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid #e5e7eb',
-              background: statusFilter() === 'revising' ? '#fffbeb' : '#f9fafb',
-              color: statusFilter() === 'revising' ? '#d97706' : '#6b7280',
+              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid var(--color-border)',
+              background: statusFilter() === 'revising' ? '#fffbeb' : 'var(--color-surface)',
+              color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -443,9 +446,9 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid #e5e7eb',
-              background: statusFilter() === 'khatamat' ? '#f0fdf4' : '#f9fafb',
-              color: statusFilter() === 'khatamat' ? '#059669' : '#6b7280',
+              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid var(--color-border)',
+              background: statusFilter() === 'khatamat' ? '#f0fdf4' : 'var(--color-surface)',
+              color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -473,12 +476,12 @@ function StudentDashboard(props: { user: Student }) {
       
       <Show when={userHalaqat().length === 0}>
         <div style={{
-          background: 'white',
+          background: 'var(--color-surface)',
           'border-radius': '12px',
           padding: '40px 20px',
           'text-align': 'center',
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
-          color: '#6b7280'
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+          color: 'var(--color-text-secondary)'
         }}>
           <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>📚</div>
           <p>لم يتم تخصيص أي حلقة لك بعد</p>
@@ -505,10 +508,10 @@ function HalaqaSection(props: any) {
   
   return (
     <div style={{
-      background: 'white',
+      background: 'var(--color-surface)',
       'border-radius': '12px',
       'margin-bottom': '20px',
-      'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+      'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
       overflow: 'hidden'
     }}>
       {/* Halaqa Header */}
@@ -516,7 +519,7 @@ function HalaqaSection(props: any) {
         style={{
           background: '#f8fafc',
           padding: '15px 20px',
-          'border-bottom': '1px solid #e5e7eb',
+          'border-bottom': '1px solid var(--color-border)',
           cursor: 'pointer',
           display: 'flex',
           'justify-content': 'space-between',
@@ -526,7 +529,7 @@ function HalaqaSection(props: any) {
       >
         <div>
           <h4 style={{
-            color: '#1f2937',
+            color: 'var(--color-text)',
             margin: '0 0 5px 0',
             'font-size': '1.1rem',
             'font-weight': '600'
@@ -534,7 +537,7 @@ function HalaqaSection(props: any) {
             {getHalaqaTypeText(halaqa.type)}
           </h4>
           <p style={{
-            color: '#6b7280',
+            color: 'var(--color-text-secondary)',
             margin: '0',
             'font-size': '0.85rem'
           }}>
@@ -557,7 +560,7 @@ function HalaqaSection(props: any) {
             <div style={{
               'text-align': 'center',
               padding: '20px',
-              color: '#6b7280'
+              color: 'var(--color-text-secondary)'
             }}>
               <p>لا يوجد طلاب في هذه الحلقة</p>
             </div>
@@ -566,7 +569,7 @@ function HalaqaSection(props: any) {
           <For each={students}>
             {(student) => (
               <div style={{
-                border: '1px solid #e5e7eb',
+                border: '1px solid var(--color-border)',
                 'border-radius': '8px',
                 padding: '12px',
                 'margin-bottom': '10px',
@@ -578,7 +581,7 @@ function HalaqaSection(props: any) {
                 <div style={{ flex: '1' }}>
                   <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
                     <h5 style={{
-                      color: '#1f2937',
+                      color: 'var(--color-text)',
                       margin: '0',
                       'font-size': '1rem',
                       'font-weight': '600'
@@ -610,7 +613,7 @@ function HalaqaSection(props: any) {
                     </div>
                     
                     <span style={{ 
-                      color: '#6b7280', 
+                      color: 'var(--color-text-secondary)', 
                       'font-size': '0.75rem' 
                     }}>
                       {formatDate(student.status_changed_at)}
@@ -711,7 +714,7 @@ function TeacherDashboard(props: { user: Teacher }) {
       case 'khatamat':
         return { color: '#10b981', icon: '🟢', text: app.translate('khatamat') };
       default:
-        return { color: '#6b7280', icon: '⚪', text: app.translate('status') };
+        return { color: 'var(--color-text-secondary)', icon: '⚪', text: app.translate('status') };
     }
   };
   
@@ -741,33 +744,33 @@ function TeacherDashboard(props: { user: Teacher }) {
     <div>
       {/* Teacher Info */}
       <div style={{
-        background: 'white',
+        background: 'var(--color-surface)',
         'border-radius': '12px',
         padding: '20px',
         'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
         'text-align': 'center'
       }}>
         <h3 style={{
-          color: '#1f2937',
+          color: 'var(--color-text)',
           margin: '0 0 10px 0',
           'font-size': '1.3rem',
           'font-weight': '600'
         }}>
           👨‍🏫 مرحباً {user.name}
         </h3>
-        <p style={{ color: '#6b7280', margin: '0' }}>
+        <p style={{ color: 'var(--color-text-secondary)', margin: '0' }}>
           {teacherHalaqat().length} حلقة مخصصة لك
         </p>
       </div>
 
       {/* Search and Filter Section (same as student) */}
       <div style={{
-        background: 'white',
+        background: 'var(--color-surface)',
         'border-radius': '12px',
         padding: '15px',
         'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)'
       }}>
         <input
           type="text"
@@ -791,9 +794,9 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid #e5e7eb',
-              background: statusFilter() === 'all' ? '#eff6ff' : '#f9fafb',
-              color: statusFilter() === 'all' ? '#1d4ed8' : '#6b7280',
+              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid var(--color-border)',
+              background: statusFilter() === 'all' ? '#eff6ff' : 'var(--color-surface)',
+              color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -807,9 +810,9 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid #e5e7eb',
-              background: statusFilter() === 'not_available' ? '#fef2f2' : '#f9fafb',
-              color: statusFilter() === 'not_available' ? '#dc2626' : '#6b7280',
+              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid var(--color-border)',
+              background: statusFilter() === 'not_available' ? '#fef2f2' : 'var(--color-surface)',
+              color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -823,9 +826,9 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid #e5e7eb',
-              background: statusFilter() === 'revising' ? '#fffbeb' : '#f9fafb',
-              color: statusFilter() === 'revising' ? '#d97706' : '#6b7280',
+              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid var(--color-border)',
+              background: statusFilter() === 'revising' ? '#fffbeb' : 'var(--color-surface)',
+              color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -839,9 +842,9 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid #e5e7eb',
-              background: statusFilter() === 'khatamat' ? '#f0fdf4' : '#f9fafb',
-              color: statusFilter() === 'khatamat' ? '#059669' : '#6b7280',
+              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid var(--color-border)',
+              background: statusFilter() === 'khatamat' ? '#f0fdf4' : 'var(--color-surface)',
+              color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.8rem',
               'font-weight': '500',
@@ -869,12 +872,12 @@ function TeacherDashboard(props: { user: Teacher }) {
       
       <Show when={teacherHalaqat().length === 0}>
         <div style={{
-          background: 'white',
+          background: 'var(--color-surface)',
           'border-radius': '12px',
           padding: '40px 20px',
           'text-align': 'center',
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
-          color: '#6b7280'
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+          color: 'var(--color-text-secondary)'
         }}>
           <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>👨‍🏫</div>
           <p>لم يتم تخصيص أي حلقة لك بعد</p>
@@ -907,22 +910,22 @@ function LeadershipDashboard(props: { user: User }) {
     <div>
       {/* Welcome Card */}
       <div style={{
-        background: 'white',
+        background: 'var(--color-surface)',
         'border-radius': '12px',
         padding: '20px',
         'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
         'text-align': 'center'
       }}>
         <h3 style={{
-          color: '#1f2937',
+          color: 'var(--color-text)',
           margin: '0 0 10px 0',
           'font-size': '1.3rem',
           'font-weight': '600'
         }}>
           {props.user.role === 'superuser' ? '👑' : '👥'} مرحباً {props.user.name}
         </h3>
-        <p style={{ color: '#6b7280', margin: '0' }}>
+        <p style={{ color: 'var(--color-text-secondary)', margin: '0' }}>
           {props.user.role === 'superuser' ? 'مطور النظام' : 'قائد الحلقات'}
         </p>
       </div>
@@ -935,33 +938,33 @@ function LeadershipDashboard(props: { user: User }) {
         'margin-bottom': '20px' 
       }}>
         <div style={{ 
-          background: 'white', 
+          background: 'var(--color-surface)', 
           padding: '20px', 
           'border-radius': '12px', 
           'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
         }}>
           <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👥</div>
           <div style={{ 
             'font-size': '1.8rem', 
             'font-weight': 'bold', 
-            color: '#2563eb',
+            color: 'var(--color-primary)',
             'margin-bottom': '5px'
           }}>
             {users.length}
           </div>
-          <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
             إجمالي المستخدمين
           </div>
         </div>
 
         <Show when={props.user.role === 'superuser'}>
           <div style={{ 
-            background: 'white', 
+            background: 'var(--color-surface)', 
             padding: '20px', 
             'border-radius': '12px', 
             'text-align': 'center', 
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
+            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
           }}>
             <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟢</div>
             <div style={{ 
@@ -972,18 +975,18 @@ function LeadershipDashboard(props: { user: User }) {
             }}>
               {onlineUsers}
             </div>
-            <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
               متصل الآن
             </div>
           </div>
         </Show>
 
         <div style={{ 
-          background: 'white', 
+          background: 'var(--color-surface)', 
           padding: '20px', 
           'border-radius': '12px', 
           'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
         }}>
           <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👨‍🏫</div>
           <div style={{ 
@@ -994,28 +997,28 @@ function LeadershipDashboard(props: { user: User }) {
           }}>
             {teachers.length}
           </div>
-          <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
             المعلمين
           </div>
         </div>
 
         <div style={{ 
-          background: 'white', 
+          background: 'var(--color-surface)', 
           padding: '20px', 
           'border-radius': '12px', 
           'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
         }}>
           <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🔵</div>
           <div style={{ 
             'font-size': '1.8rem', 
             'font-weight': 'bold', 
-            color: '#2563eb',
+            color: 'var(--color-primary)',
             'margin-bottom': '5px'
           }}>
             {halaqat.length}
           </div>
-          <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
             الحلقات
           </div>
         </div>
@@ -1023,13 +1026,13 @@ function LeadershipDashboard(props: { user: User }) {
 
       {/* Student Status Statistics */}
       <div style={{ 
-        background: 'white', 
+        background: 'var(--color-surface)', 
         'border-radius': '12px', 
         padding: '20px', 
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
       }}>
         <h3 style={{ 
-          color: '#1f2937', 
+          color: 'var(--color-text)', 
           'margin-bottom': '20px',
           'font-size': '1.2rem'
         }}>
@@ -1056,7 +1059,7 @@ function LeadershipDashboard(props: { user: User }) {
             }}>
               {statusCounts.not_available}
             </div>
-            <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
               {app.translate('not_available')}
             </div>
           </div>
@@ -1077,7 +1080,7 @@ function LeadershipDashboard(props: { user: User }) {
             }}>
               {statusCounts.revising}
             </div>
-            <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
               يراجع
             </div>
           </div>
@@ -1098,7 +1101,7 @@ function LeadershipDashboard(props: { user: User }) {
             }}>
               {statusCounts.khatamat}
             </div>
-            <div style={{ color: '#6b7280', 'font-size': '0.85rem' }}>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
               {app.translate('khatamat')}
             </div>
           </div>
