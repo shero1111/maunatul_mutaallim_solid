@@ -241,28 +241,33 @@ export function AppProvider(props: { children: JSX.Element }) {
     
     // Ensure users are loaded
     const currentUsers = users();
-    console.log('👥 Available users:', currentUsers.map(u => ({ username: u.username, role: u.role })));
+    console.log('👥 Available users:', currentUsers.map(u => ({ username: u.username, role: u.role, password: u.password })));
     
     const trimmedUsername = username.trim().toLowerCase();
     const trimmedPassword = password.trim();
     
     console.log('🔍 Looking for user with:', { trimmedUsername, trimmedPassword });
     
-    // SUPER DIRECT USER MATCHING
+    // SUPER DIRECT USER MATCHING WITH EXTRA DEBUG
     let foundUser = null;
-    for (const u of currentUsers) {
+    for (let i = 0; i < currentUsers.length; i++) {
+      const u = currentUsers[i];
       const usernameLower = u.username.trim().toLowerCase();
       const passwordTrimmed = u.password.trim();
-      console.log(`🎯 Checking user ${u.username}: username=${usernameLower} vs ${trimmedUsername}, password=${passwordTrimmed} vs ${trimmedPassword}`);
+      console.log(`🎯 [${i}] Checking user ${u.username}:`);
+      console.log(`    - Expected: username="${trimmedUsername}" password="${trimmedPassword}"`);
+      console.log(`    - Actual: username="${usernameLower}" password="${passwordTrimmed}"`);
+      console.log(`    - Username match: ${usernameLower === trimmedUsername}`);
+      console.log(`    - Password match: ${passwordTrimmed === trimmedPassword}`);
       
       if (usernameLower === trimmedUsername && passwordTrimmed === trimmedPassword) {
         foundUser = u;
-        console.log('✅ FOUND MATCHING USER:', u.name);
+        console.log('✅ FOUND MATCHING USER:', u.name, '(role:', u.role, ')');
         break;
       }
     }
     
-    console.log('🎯 Final found user:', foundUser ? foundUser.name : 'NONE');
+    console.log('🎯 Final found user:', foundUser ? `${foundUser.name} (${foundUser.role})` : 'NONE');
     
     if (foundUser) {
       console.log('✅ BEFORE setCurrentUser - current user:', currentUser()?.name || 'NULL');
@@ -296,6 +301,10 @@ export function AppProvider(props: { children: JSX.Element }) {
     }
     
     console.log('❌ Login failed - no matching user');
+    console.log('📋 All users for comparison:');
+    currentUsers.forEach((u, i) => {
+      console.log(`  [${i}] ${u.username} / ${u.password} (${u.role})`);
+    });
     return false;
   };
   
