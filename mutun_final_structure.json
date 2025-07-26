@@ -1,0 +1,178 @@
+{
+  "sections": [
+    {
+      "title": "المستوى الأول",
+      "level": 1,
+      "items": [
+        {
+          "id": "usul_althalatha",
+          "name": "ثلاثة الأصول وأدلتها",
+          "arabic_name": "ثلاثة الأصول وأدلتها",
+          "english_name": "The Three Fundamental Principles",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-1-usul-althalatha/1-1-usul-althalatha.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-1-usul-althalatha-explanation/1-1-usul-althalatha-explanation.mp3"
+        },
+        {
+          "id": "al_miftah_fi_al_fiqh",
+          "name": "المفتاح في الفقه",
+          "arabic_name": "المفتاح في الفقه",
+          "english_name": "The Key to Fiqh",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-2-al-miftah-fi-al-fiqh/1-2-al-miftah-fi-al-fiqh.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation.mp3"
+        },
+        {
+          "id": "maani_al_fatihah",
+          "name": "معاني الفاتحة وقصار المفصل",
+          "arabic_name": "معاني الفاتحة وقصار المفصل",
+          "english_name": "Meanings of Al-Fatihah and Short Surahs",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation.mp3"
+        },
+        {
+          "id": "al_arbaeen_an_nawawiyyah",
+          "name": "الأربعين النووية",
+          "arabic_name": "الأربعين النووية",
+          "english_name": "An-Nawawi's Forty Hadith",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3"
+        },
+        {
+          "id": "az_ziyadah_ar_rajabiyyah",
+          "name": "الزيادة الرجبية",
+          "arabic_name": "الزيادة الرجبية",
+          "english_name": "Az-Ziyadah Ar-Rajabiyyah",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah/1-5-az-ziyadah-ar-rajabiyyah.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation.mp3"
+        },
+        {
+          "id": "al_adab_al_asharah",
+          "name": "الآداب العشرة",
+          "arabic_name": "الآداب العشرة",
+          "english_name": "The Ten Etiquettes",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "https://archive.org/download/1-6-al-adab-al-asharah/1-6-al-adab-al-asharah.mp3",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": "https://archive.org/download/1-6-al-adab-al-asharah-explanation/1-6-al-adab-al-asharah-explanation.mp3"
+        }
+      ]
+    },
+    {
+      "title": "المستوى الثاني",
+      "level": 2,
+      "items": [
+        {
+          "id": "kashf_ash_shubuhat",
+          "name": "كشف الشبهات",
+          "arabic_name": "كشف الشبهات",
+          "english_name": "Removal of Doubts",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "kitab_at_tawheed",
+          "name": "كتاب التوحيد",
+          "arabic_name": "كتاب التوحيد",
+          "english_name": "Book of Tawheed",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "al_usul_as_sittah",
+          "name": "الأصول الستة",
+          "arabic_name": "الأصول الستة",
+          "english_name": "The Six Principles",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "al_qawaid_al_arba",
+          "name": "القواعد الأربع",
+          "arabic_name": "القواعد الأربع",
+          "english_name": "The Four Rules",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        }
+      ]
+    },
+    {
+      "title": "المستوى الثالث",
+      "level": 3,
+      "items": [
+        {
+          "id": "alfiyyah_ibn_malik",
+          "name": "ألفية ابن مالك",
+          "arabic_name": "ألفية ابن مالك",
+          "english_name": "Ibn Malik's Alfiyyah",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "al_rahbiyyah",
+          "name": "الرحبية",
+          "arabic_name": "الرحبية",
+          "english_name": "Ar-Rahbiyyah (Inheritance)",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "umdah_al_ahkam",
+          "name": "عمدة الأحكام",
+          "arabic_name": "عمدة الأحكام",
+          "english_name": "Pillar of Rulings",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        }
+      ]
+    },
+    {
+      "title": "المستوى الرابع",
+      "level": 4,
+      "items": [
+        {
+          "id": "sahih_al_bukhari",
+          "name": "صحيح البخاري (مختارات)",
+          "arabic_name": "صحيح البخاري (مختارات)",
+          "english_name": "Sahih Al-Bukhari (Selections)",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        },
+        {
+          "id": "bulugh_al_maram",
+          "name": "بلوغ المرام",
+          "arabic_name": "بلوغ المرام",
+          "english_name": "Bulugh Al-Maram",
+          "memorization_pdf_link": "",
+          "memorization_audio_link": "",
+          "explanation_pdf_link": "",
+          "explanation_audio_link": ""
+        }
+      ]
+    }
+  ]
+}
