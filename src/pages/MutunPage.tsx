@@ -98,41 +98,59 @@ export function MutunPage() {
 
   // Calculate days since last change and handle threshold logic
   const calculateDaysSinceLastChange = (matn: Matn) => {
-    if (!matn.lastChange_date) return 0;
+    if (!matn.lastChange_date) {
+      console.log('❌ No lastChange_date for', matn.name, '- returning 0');
+      return 0;
+    }
     
     const now = new Date();
-    const lastChangeDate = new Date(matn.lastChange_date);
+    // Handle both full ISO strings and date-only strings
+    let lastChangeDate: Date;
+    if (matn.lastChange_date.includes('T')) {
+      // Full ISO string (e.g., "2024-01-26T14:30:00.000Z")
+      lastChangeDate = new Date(matn.lastChange_date);
+    } else {
+      // Date-only string (e.g., "2024-01-26") - treat as start of day
+      lastChangeDate = new Date(matn.lastChange_date + 'T00:00:00.000Z');
+    }
+    
     const diffTime = now.getTime() - lastChangeDate.getTime();
-    const daysSince = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Use Math.floor instead of Math.ceil
+    const daysSince = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     console.log('📅 Days calculation for', matn.name, ':', {
       lastChange: matn.lastChange_date,
+      lastChangeParsed: lastChangeDate.toISOString(),
       now: now.toISOString(),
-      diffTime,
-      daysSince,
+      diffTime: diffTime,
+      diffHours: diffTime / (1000 * 60 * 60),
+      daysSince: daysSince,
       status: matn.status
     });
     
-    // If status is green and just changed (same day), return 0
+    // Special case: If status is green and it was just changed today (same day)
     if (matn.status === 'green' && daysSince === 0) {
       console.log('✅ Status is green and same day - returning 0 days');
       return 0;
     }
     
-    // Auto-change from green to red if threshold exceeded
-    if (matn.status === 'green' && daysSince >= (matn.threshold || 7)) {
+    // For all other cases, calculate normally
+    const finalDays = Math.max(0, daysSince);
+    console.log('📊 Final days for', matn.name, ':', finalDays, 'Status:', matn.status);
+    
+    // Auto-change from green to red if threshold exceeded (only for green status)
+    if (matn.status === 'green' && finalDays >= (matn.threshold || 7)) {
       console.log('⏰ Auto-changing matn', matn.name, 'from green to red (threshold exceeded)');
       const updatedMatn = {
         ...matn,
         status: 'red' as const,
         lastChange_date: new Date().toISOString(),
-        days_since_last_revision: daysSince
+        days_since_last_revision: finalDays
       };
       // Delayed update to avoid infinite loops
       setTimeout(() => app.updateMatn(updatedMatn), 100);
     }
     
-    return Math.max(0, daysSince); // Ensure never negative
+    return finalDays;
   };
 
   // Note State
