@@ -29,32 +29,41 @@ function HomePageContent(props: { user: User }) {
           display: 'flex', 
           'align-items': 'center', 
           'justify-content': 'center', 
-          gap: '12px',
-          'margin-bottom': '8px'
+          gap: '16px',
+          'margin-bottom': '8px',
+          'flex-wrap': 'nowrap'
         }}>
           <img 
             src="https://archive.org/download/logo-allemni/Logo_allemni.jpg" 
             alt="Logo" 
             style={{ 
-              width: '32px', 
-              height: '32px', 
-              'border-radius': '6px',
-              'object-fit': 'contain'
+              width: '48px', 
+              height: '48px', 
+              'border-radius': '8px',
+              'object-fit': 'contain',
+              'flex-shrink': '0'
             }} 
           />
           <h1 style={{ 
             color: 'var(--color-primary)', 
-            'font-size': '2rem', 
+            'font-size': 'clamp(1.5rem, 4vw, 2rem)', 
             margin: '0', 
-            'font-weight': '700' 
+            'font-weight': '700',
+            'white-space': 'nowrap',
+            'text-overflow': 'ellipsis',
+            overflow: 'hidden',
+            'min-width': '0'
           }}>
             {app.translate('appTitle')}
           </h1>
         </div>
         <p style={{ 
           color: 'var(--color-text-secondary)', 
-          'font-size': '0.9rem', 
-          margin: '0' 
+          'font-size': '0.85rem', 
+          margin: '0',
+          'white-space': 'nowrap',
+          overflow: 'hidden',
+          'text-overflow': 'ellipsis'
         }}>
           {app.translate('appSubtitle')}
         </p>
