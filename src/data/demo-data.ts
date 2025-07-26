@@ -1,6 +1,6 @@
 import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 
-// UPDATED Mutuun Template with Archive.org Audio Links
+// UPDATED Mutuun Template with correct Archive.org Audio Links
 const mutunTemplate = [
   {
     title: 'المستوى الأول',
@@ -8,44 +8,44 @@ const mutunTemplate = [
       { 
         name: 'ثلاثة الأصول وأدلتها', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-1-usul-althalatha/1-1-usul-althalatha.mp3', 
+        memorization_audio_link: '', // No memorization link for 1-1-usul-althalatha in the list
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-1-usul-althalatha-explanation/1-1-usul-althalatha-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-1-usul-althalatha-explanation' 
       },
       { 
         name: 'المفتاح في الفقه', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh/1-2-al-miftah-fi-al-fiqh.mp3', 
+        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-2-al-miftah-fi-al-fiqh', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation' 
       },
       { 
         name: 'معاني الفاتحة وقصار المفصل', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal.mp3', 
+        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation' 
       },
       { 
         name: 'الأربعون النووية', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3', 
+        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-4-al-arbaeen-an-nawawiyyah', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation' 
       },
       { 
         name: 'الزيادة الرجبية', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah/1-5-az-ziyadah-ar-rajabiyyah.mp3', 
+        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-5-az-ziyadah-ar-rajabiyyah', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation' 
       },
       { 
         name: 'الآداب العشرة', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah/1-6-al-adab-al-asharah.mp3', 
+        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-6-al-adab-al-asharah', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah-explanation/1-6-al-adab-al-asharah-explanation.mp3' 
+        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-6-al-adab-al-asharah-explanation' 
       }
     ]
   },
