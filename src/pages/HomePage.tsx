@@ -91,30 +91,35 @@ function StudentDashboard(props: { user: Student }) {
   const getFilteredStudents = (students: Student[]) => {
     let filtered = students;
     
-    // Apply status filter
-    if (statusFilter() !== 'all') {
-      filtered = filtered.filter(s => s.status === statusFilter());
-    }
-    
-    // Apply search
+    // Apply search filter first
     if (searchTerm().trim()) {
       const term = searchTerm().toLowerCase().trim();
       filtered = filtered.filter(s => 
         s.name.toLowerCase().includes(term)
       );
+      console.log('🔍 Search filtered students:', filtered.length, 'results for:', term);
     }
     
-    // Sort by favorites first, then by name
+    // Apply status filter
+    if (statusFilter() !== 'all') {
+      filtered = filtered.filter(s => s.status === statusFilter());
+      console.log('🎯 Status filtered students:', filtered.length, 'with status:', statusFilter());
+    }
+    
+    // Sort: Favorites first (within filtered results), then by name
     filtered.sort((a, b) => {
       const aIsFavorite = user.favorites.includes(a.id);
       const bIsFavorite = user.favorites.includes(b.id);
       
+      // Favorites come first
       if (aIsFavorite && !bIsFavorite) return -1;
       if (!aIsFavorite && bIsFavorite) return 1;
       
-      return a.name.localeCompare(b.name);
+      // Within same favorite status, sort by name
+      return a.name.localeCompare(b.name, 'ar');
     });
     
+    console.log('📋 Final filtered and sorted students:', filtered.length);
     return filtered;
   };
   
@@ -134,21 +139,25 @@ function StudentDashboard(props: { user: Student }) {
   const statusInfo = createMemo(() => getStatusInfo(user.status));
   
   const changeStatus = (newStatus: string) => {
+    console.log('🔄 Changing status from', user.status, 'to', newStatus);
     const updatedUser = {
       ...user,
-      status: newStatus,
+      status: newStatus as 'not_available' | 'revising' | 'khatamat',
       status_changed_at: new Date().toISOString()
     };
     app.updateUser(updatedUser);
+    console.log('✅ Status changed successfully');
   };
   
   const toggleFavorite = (studentId: string) => {
+    console.log('⭐ Toggling favorite for student:', studentId);
     const newFavorites = user.favorites.includes(studentId)
       ? user.favorites.filter(id => id !== studentId)
       : [...user.favorites, studentId];
     
     const updatedUser = { ...user, favorites: newFavorites };
     app.updateUser(updatedUser);
+    console.log('✅ Favorites updated:', newFavorites);
   };
   
   const formatDate = (dateString: string) => {
@@ -236,15 +245,16 @@ function StudentDashboard(props: { user: Student }) {
             onClick={() => changeStatus("not_available")}
             style={{
               background: user.status === "not_available" ? "#ef4444" : "#f3f4f6",
-              color: user.status === "not_available" ? "white" : "#6b7280",
-              border: "none",
+              color: user.status === "not_available" ? "white" : "#ef4444",
+              border: user.status === "not_available" ? "2px solid #ef4444" : "2px solid #ef4444",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
               "font-size": "0.9rem",
               "font-weight": "600",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "box-shadow": user.status === "not_available" ? "0 2px 8px rgba(239, 68, 68, 0.3)" : "none"
             }}
           >
             🔴 غير متاح
@@ -254,15 +264,16 @@ function StudentDashboard(props: { user: Student }) {
             onClick={() => changeStatus("revising")}
             style={{
               background: user.status === "revising" ? "#f59e0b" : "#f3f4f6",
-              color: user.status === "revising" ? "white" : "#6b7280",
-              border: "none",
+              color: user.status === "revising" ? "white" : "#f59e0b",
+              border: user.status === "revising" ? "2px solid #f59e0b" : "2px solid #f59e0b",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
               "font-size": "0.9rem",
               "font-weight": "600",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "box-shadow": user.status === "revising" ? "0 2px 8px rgba(245, 158, 11, 0.3)" : "none"
             }}
           >
             🟡 مراجعة
@@ -272,15 +283,16 @@ function StudentDashboard(props: { user: Student }) {
             onClick={() => changeStatus("khatamat")}
             style={{
               background: user.status === "khatamat" ? "#10b981" : "#f3f4f6",
-              color: user.status === "khatamat" ? "white" : "#6b7280",
-              border: "none",
+              color: user.status === "khatamat" ? "white" : "#10b981",
+              border: user.status === "khatamat" ? "2px solid #10b981" : "2px solid #10b981",
               padding: "10px 16px",
               "border-radius": "25px",
               cursor: "pointer",
               "font-size": "0.9rem",
               "font-weight": "600",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "box-shadow": user.status === "khatamat" ? "0 2px 8px rgba(16, 185, 129, 0.3)" : "none"
             }}
           >
             🟢 ختمات
@@ -297,21 +309,44 @@ function StudentDashboard(props: { user: Student }) {
         'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         {/* Search Input */}
-        <input
-          type="text"
-          placeholder="البحث عن طالب..."
-          value={searchTerm()}
-          onInput={(e) => setSearchTerm(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            'border-radius': '8px',
-            border: '1px solid #d1d5db',
-            'font-size': '16px',
-            'margin-bottom': '15px',
-            'box-sizing': 'border-box'
-          }}
-        />
+        <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
+          <input
+            type="text"
+            placeholder="🔍 البحث عن طالب بالاسم..."
+            value={searchTerm()}
+            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              'border-radius': '8px',
+              border: '2px solid #e5e7eb',
+              'font-size': '16px',
+              'box-sizing': 'border-box',
+              outline: 'none',
+              transition: 'border-color 0.2s ease'
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+          />
+          {searchTerm() && (
+            <button
+              onClick={() => setSearchTerm('')}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                'font-size': '18px',
+                color: '#6b7280'
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
         
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
@@ -325,7 +360,8 @@ function StudentDashboard(props: { user: Student }) {
               color: statusFilter() === 'all' ? 'white' : '#6b7280',
               cursor: 'pointer',
               'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-weight': '600',
+              transition: 'all 0.2s ease'
             }}
           >
             الجميع
@@ -337,10 +373,11 @@ function StudentDashboard(props: { user: Student }) {
               'border-radius': '20px',
               border: 'none',
               background: statusFilter() === 'not_available' ? '#ef4444' : '#f3f4f6',
-              color: statusFilter() === 'not_available' ? 'white' : '#6b7280',
+              color: statusFilter() === 'not_available' ? 'white' : '#ef4444',
               cursor: 'pointer',
               'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-weight': '600',
+              transition: 'all 0.2s ease'
             }}
           >
             🔴 غير متاح
@@ -352,10 +389,11 @@ function StudentDashboard(props: { user: Student }) {
               'border-radius': '20px',
               border: 'none',
               background: statusFilter() === 'revising' ? '#f59e0b' : '#f3f4f6',
-              color: statusFilter() === 'revising' ? 'white' : '#6b7280',
+              color: statusFilter() === 'revising' ? 'white' : '#f59e0b',
               cursor: 'pointer',
               'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-weight': '600',
+              transition: 'all 0.2s ease'
             }}
           >
             🟡 مراجعة
@@ -367,10 +405,11 @@ function StudentDashboard(props: { user: Student }) {
               'border-radius': '20px',
               border: 'none',
               background: statusFilter() === 'khatamat' ? '#10b981' : '#f3f4f6',
-              color: statusFilter() === 'khatamat' ? 'white' : '#6b7280',
+              color: statusFilter() === 'khatamat' ? 'white' : '#10b981',
               cursor: 'pointer',
               'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-weight': '600',
+              transition: 'all 0.2s ease'
             }}
           >
             🟢 ختمات
@@ -594,10 +633,7 @@ function TeacherDashboard(props: { user: Teacher }) {
   const getFilteredStudents = (students: Student[]) => {
     let filtered = students;
     
-    if (statusFilter() !== 'all') {
-      filtered = filtered.filter(s => s.status === statusFilter());
-    }
-    
+    // Apply search filter first
     if (searchTerm().trim()) {
       const term = searchTerm().toLowerCase().trim();
       filtered = filtered.filter(s => 
@@ -605,14 +641,22 @@ function TeacherDashboard(props: { user: Teacher }) {
       );
     }
     
+    // Apply status filter
+    if (statusFilter() !== 'all') {
+      filtered = filtered.filter(s => s.status === statusFilter());
+    }
+    
+    // Sort: Favorites first (within filtered results), then by name
     filtered.sort((a, b) => {
       const aIsFavorite = user.favorites.includes(a.id);
       const bIsFavorite = user.favorites.includes(b.id);
       
+      // Favorites come first
       if (aIsFavorite && !bIsFavorite) return -1;
       if (!aIsFavorite && bIsFavorite) return 1;
       
-      return a.name.localeCompare(b.name);
+      // Within same favorite status, sort by name
+      return a.name.localeCompare(b.name, 'ar');
     });
     
     return filtered;
