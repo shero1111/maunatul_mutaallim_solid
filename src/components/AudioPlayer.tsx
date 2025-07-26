@@ -8,6 +8,7 @@ export function AudioPlayer() {
   // Drag state for progress bar
   const [isDragging, setIsDragging] = createSignal(false);
   const [dragPosition, setDragPosition] = createSignal(0);
+  const [isSeeking, setIsSeeking] = createSignal(false);
   
   // Hold-to-accelerate skip state
   const [isHoldingSkip, setIsHoldingSkip] = createSignal<'forward' | 'backward' | null>(null);
@@ -18,9 +19,17 @@ export function AudioPlayer() {
   let accelerationTimeoutRef: number | undefined;
   
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
+    if (isNaN(seconds) || seconds < 0) return '00:00';
+    
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    
+    if (hours > 0) {
+      return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    } else {
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
   };
   
   const calculatePosition = (clientX: number): number => {
@@ -34,19 +43,26 @@ export function AudioPlayer() {
   const handleMouseDown = (e: MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
+    setIsSeeking(true);
     const percentage = calculatePosition(e.clientX);
     setDragPosition(percentage);
-    app.seekAudio(percentage);
+    // Don't seek while dragging - only when releasing
   };
   
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging()) return;
     const percentage = calculatePosition(e.clientX);
     setDragPosition(percentage);
-    app.seekAudio(percentage);
+    // Visual feedback only while dragging
   };
   
   const handleMouseUp = () => {
+    if (isDragging()) {
+      // Only seek when mouse is released
+      app.seekAudio(dragPosition());
+      // Keep seeking state until audio actually seeks
+      setTimeout(() => setIsSeeking(false), 1000);
+    }
     setIsDragging(false);
     removeGlobalListeners();
   };
@@ -55,10 +71,11 @@ export function AudioPlayer() {
   const handleTouchStart = (e: TouchEvent) => {
     e.preventDefault();
     setIsDragging(true);
+    setIsSeeking(true);
     const touch = e.touches[0];
     const percentage = calculatePosition(touch.clientX);
     setDragPosition(percentage);
-    app.seekAudio(percentage);
+    // Don't seek while dragging - only when releasing
   };
   
   const handleTouchMove = (e: TouchEvent) => {
@@ -67,10 +84,16 @@ export function AudioPlayer() {
     const touch = e.touches[0];
     const percentage = calculatePosition(touch.clientX);
     setDragPosition(percentage);
-    app.seekAudio(percentage);
+    // Visual feedback only while dragging
   };
   
   const handleTouchEnd = () => {
+    if (isDragging()) {
+      // Only seek when touch is released
+      app.seekAudio(dragPosition());
+      // Keep seeking state until audio actually seeks
+      setTimeout(() => setIsSeeking(false), 1000);
+    }
     setIsDragging(false);
     removeGlobalListeners();
   };
@@ -169,8 +192,11 @@ export function AudioPlayer() {
   // Simple click handler for non-drag clicks
   const handleProgressClick = (e: MouseEvent) => {
     if (!isDragging()) {
+      setIsSeeking(true);
       const percentage = calculatePosition(e.clientX);
       app.seekAudio(percentage);
+      // Keep seeking state until audio actually seeks
+      setTimeout(() => setIsSeeking(false), 1000);
     }
   };
   
@@ -427,38 +453,56 @@ export function AudioPlayer() {
             </div>
           </div>
           
-          {/* Speed Indicator */}
-          <Show when={isHoldingSkip()}>
-            <div style={{
-              textAlign: 'center',
-              fontSize: '12px',
-              color: 'var(--color-primary)',
-              fontWeight: '600',
-              marginBottom: '8px',
-              background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              animation: 'pulse 0.5s ease-in-out infinite alternate'
-            }}>
-              {skipSpeed().toFixed(1)}x {isHoldingSkip() === 'forward' ? 'Vorspulen' : 'Zurückspulen'}
-            </div>
-          </Show>
+                      {/* Speed Indicator */}
+            <Show when={isHoldingSkip()}>
+              <div style={{
+                textAlign: 'center',
+                fontSize: '12px',
+                color: 'var(--color-primary)',
+                fontWeight: '600',
+                marginBottom: '8px',
+                background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                animation: 'pulse 0.5s ease-in-out infinite alternate'
+              }}>
+                {skipSpeed().toFixed(1)}x {isHoldingSkip() === 'forward' ? 'Vorspulen' : 'Zurückspulen'}
+              </div>
+            </Show>
+
+            {/* Seeking Indicator */}
+            <Show when={isSeeking() || player().isLoading}>
+              <div style={{
+                textAlign: 'center',
+                fontSize: '12px',
+                color: 'var(--color-warning)',
+                fontWeight: '600',
+                marginBottom: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}>
+                <div style={{
+                  width: '12px',
+                  height: '12px',
+                  border: '2px solid var(--color-border)',
+                  borderTop: '2px solid var(--color-warning)',
+                  borderRadius: '50%',
+                  animation: 'spin 0.8s linear infinite'
+                }} />
+                {isSeeking() ? 'Spulen...' : 'Laden...'}
+              </div>
+            </Show>
 
           {/* Controls */}
-          <div style={controlsStyle}>
-            <Show when={player().isLoading}>
-              <div style={{
-                width: '48px',
-                height: '48px',
-                'border-radius': '50%',
-                border: '3px solid var(--color-border)',
-                'border-top': '3px solid var(--color-primary)',
-                animation: 'spin 1s linear infinite',
-                margin: '0 auto'
-              }} />
-            </Show>
-            
-            <Show when={!player().isLoading}>
+          <div style={{
+            ...controlsStyle,
+            position: 'relative',
+            opacity: player().isLoading && !isSeeking() ? '0.6' : '1',
+            pointerEvents: player().isLoading && !isSeeking() ? 'none' : 'auto',
+            transition: 'opacity 0.3s ease'
+          }}>
               {/* Hold-to-Accelerate Skip Backward - LEFTMOST */}
               <button
                 style={{
@@ -570,9 +614,31 @@ export function AudioPlayer() {
               >
                 ⏭
               </button>
-            </Show>
           </div>
         </div>
+        
+        {/* CSS Animations */}
+        <style>
+          {`
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+            
+            @keyframes pulse {
+              0%, 100% {
+                opacity: 1;
+              }
+              50% {
+                opacity: 0.7;
+              }
+            }
+          `}
+        </style>
       </div>
     </Show>
   );
