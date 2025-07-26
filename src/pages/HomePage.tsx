@@ -25,14 +25,23 @@ function HomePageContent(props: { user: User }) {
     }}>
       {/* Header */}
       <div style={{ 'text-align': 'center', 'margin-bottom': '24px' }}>
-        <h1 style={{ 
-          color: 'var(--color-primary)', 
-          'font-size': '2rem', 
-          margin: '0 0 8px 0', 
-          'font-weight': '700' 
+        <div style={{ 
+          display: 'flex', 
+          'align-items': 'center', 
+          'justify-content': 'center', 
+          gap: '12px',
+          'margin-bottom': '8px'
         }}>
-          معونة المتعلم
-        </h1>
+          <div style={{ 'font-size': '1.8rem' }}>🕌</div>
+          <h1 style={{ 
+            color: 'var(--color-primary)', 
+            'font-size': '2rem', 
+            margin: '0', 
+            'font-weight': '700' 
+          }}>
+            معونة المتعلم
+          </h1>
+        </div>
         <p style={{ 
           color: 'var(--color-text-secondary)', 
           'font-size': '0.9rem', 
