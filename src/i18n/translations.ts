@@ -31,7 +31,6 @@ export const translations = {
     edit: 'تعديل',
     delete: 'حذف',
     add: 'إضافة',
-    loading: 'جاري التحميل...',
     play: 'تشغيل',
     pause: 'إيقاف',
     allStatuses: 'جميع الحالات',
@@ -142,7 +141,10 @@ export const translations = {
     passwordChangeError: 'حدث خطأ أثناء تغيير كلمة المرور',
     
     // Audio Player
-    loading: 'جاري التحميل...'
+    loading: 'جاري التحميل...',
+    fastForward: 'تقديم سريع',
+    rewind: 'ترجيع',
+    holdForFaster: 'اضغط مطولاً للإسراع'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -176,7 +178,6 @@ export const translations = {
     edit: 'Edit',
     delete: 'Delete',
     add: 'Add',
-    loading: 'Loading...',
     play: 'Play',
     pause: 'Pause',
     allStatuses: 'All Statuses',
@@ -287,6 +288,9 @@ export const translations = {
     passwordChangeError: 'Error occurred while changing password',
     
     // Audio Player
-    loading: 'Loading...'
+    loading: 'Loading...',
+    fastForward: 'Fast Forward',
+    rewind: 'Rewind',
+    holdForFaster: 'Hold for faster'
   }
 };

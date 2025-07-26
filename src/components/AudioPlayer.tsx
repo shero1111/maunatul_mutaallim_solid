@@ -457,16 +457,14 @@ export function AudioPlayer() {
             <Show when={isHoldingSkip()}>
               <div style={{
                 textAlign: 'center',
-                fontSize: '12px',
-                color: 'var(--color-primary)',
-                fontWeight: '600',
-                marginBottom: '8px',
-                background: 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                animation: 'pulse 0.5s ease-in-out infinite alternate'
+                fontSize: '11px',
+                color: 'var(--color-text-secondary)',
+                fontWeight: '500',
+                marginBottom: '6px',
+                opacity: '0.8',
+                transition: 'opacity 0.3s ease'
               }}>
-                {skipSpeed().toFixed(1)}x {isHoldingSkip() === 'forward' ? 'Vorspulen' : 'Zurückspulen'}
+                {skipSpeed().toFixed(1)}x {isHoldingSkip() === 'forward' ? app.translate('fastForward') : app.translate('rewind')}
               </div>
             </Show>
 
@@ -529,7 +527,7 @@ export function AudioPlayer() {
                     e.currentTarget.style.color = 'var(--color-text)';
                   }
                 }}
-                title={isHoldingSkip() === 'backward' ? `${skipSpeed().toFixed(1)}x Speed` : 'Halten für schnelleres Zurückspulen'}
+                title={isHoldingSkip() === 'backward' ? `${skipSpeed().toFixed(1)}x ${app.translate('rewind')}` : `${app.translate('rewind')} (${app.translate('holdForFaster')})`}
               >
                 ⏮
               </button>
@@ -610,7 +608,7 @@ export function AudioPlayer() {
                     e.currentTarget.style.color = 'var(--color-text)';
                   }
                 }}
-                title={isHoldingSkip() === 'forward' ? `${skipSpeed().toFixed(1)}x Speed` : 'Halten für schnelleres Vorspulen'}
+                title={isHoldingSkip() === 'forward' ? `${skipSpeed().toFixed(1)}x ${app.translate('fastForward')}` : `${app.translate('fastForward')} (${app.translate('holdForFaster')})`}
               >
                 ⏭
               </button>
