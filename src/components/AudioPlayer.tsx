@@ -584,22 +584,23 @@ export function AudioPlayer() {
                     {player().isPlaying ? '⏸️' : '▶️'}
                   </button>
                   
-                  {/* Expand */}
-                  <button
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '50%',
-                      border: 'none',
-                      backgroundColor: 'var(--color-border)',
-                      color: 'var(--color-text)',
-                      fontSize: '10px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s ease'
-                    }}
+                                     {/* Expand */}
+                   <button
+                     style={{
+                       width: '28px',
+                       height: '28px',
+                       borderRadius: '50%',
+                       border: 'none',
+                       backgroundColor: 'var(--color-border)',
+                       color: 'var(--color-text)',
+                       fontSize: '10px',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s ease',
+                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                     }}
                     onClick={() => setIsMinimized(false)}
                     onMouseOver={(e) => {
                       e.currentTarget.style.backgroundColor = 'var(--color-primary)';
@@ -614,22 +615,23 @@ export function AudioPlayer() {
                     ▲
                   </button>
                   
-                  {/* Close */}
-                  <button
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '50%',
-                      border: 'none',
-                      backgroundColor: 'var(--color-text-secondary)',
-                      color: 'white',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'all 0.2s ease'
-                    }}
+                                     {/* Close */}
+                   <button
+                     style={{
+                       width: '28px',
+                       height: '28px',
+                       borderRadius: '50%',
+                       border: 'none',
+                       backgroundColor: 'var(--color-text-secondary)',
+                       color: 'white',
+                       fontSize: '12px',
+                       cursor: 'pointer',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       transition: 'all 0.2s ease',
+                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                     }}
                     onClick={app.stopAudio}
                     onMouseOver={(e) => {
                       e.currentTarget.style.backgroundColor = 'var(--color-error)';
