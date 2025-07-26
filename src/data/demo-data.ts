@@ -1,6 +1,6 @@
 import { User, Student, Teacher, Halaqa, Matn, NewsItem } from '../types';
 
-// UPDATED Mutuun Template with correct Archive.org Audio Links
+// UPDATED Mutuun Template with Archive.org Audio Links
 const mutunTemplate = [
   {
     title: 'المستوى الأول',
@@ -8,44 +8,44 @@ const mutunTemplate = [
       { 
         name: 'ثلاثة الأصول وأدلتها', 
         memorization_pdf_link: '', 
-        memorization_audio_link: '', // No memorization link for 1-1-usul-althalatha in the list
+        memorization_audio_link: 'https://archive.org/download/1-1-usul-althalatha/1-1-usul-althalatha.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-1-usul-althalatha-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-1-usul-althalatha-explanation/1-1-usul-althalatha-explanation.mp3' 
       },
       { 
         name: 'المفتاح في الفقه', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-2-al-miftah-fi-al-fiqh', 
+        memorization_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh/1-2-al-miftah-fi-al-fiqh.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-2-al-miftah-fi-al-fiqh-explanation/1-2-al-miftah-fi-al-fiqh-explanation.mp3' 
       },
       { 
         name: 'معاني الفاتحة وقصار المفصل', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal', 
+        memorization_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-3-maani-al-fatihah-wa-qisar-al-mufassal.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation/1-3-maani-al-fatihah-wa-qisar-al-mufassal-explanation.mp3' 
       },
       { 
-        name: 'الأربعون النووية', 
+        name: 'الأربعين النووية', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-4-al-arbaeen-an-nawawiyyah', 
+        memorization_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3' 
       },
       { 
         name: 'الزيادة الرجبية', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-5-az-ziyadah-ar-rajabiyyah', 
+        memorization_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah/1-5-az-ziyadah-ar-rajabiyyah.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-5-az-ziyadah-ar-rajabiyyah-explanation/1-5-az-ziyadah-ar-rajabiyyah-explanation.mp3' 
       },
       { 
         name: 'الآداب العشرة', 
         memorization_pdf_link: '', 
-        memorization_audio_link: 'https://archive.org/details/1-3-maani-al-fatihah-wa-qisar-al-mufassal/1-6-al-adab-al-asharah', 
+        memorization_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah/1-6-al-adab-al-asharah.mp3', 
         explanation_pdf_link: '', 
-        explanation_audio_link: 'https://archive.org/details/1-2-al-miftah-fi-al-fiqh-explanation/1-6-al-adab-al-asharah-explanation' 
+        explanation_audio_link: 'https://archive.org/download/1-6-al-adab-al-asharah-explanation/1-6-al-adab-al-asharah-explanation.mp3' 
       }
     ]
   },
@@ -53,38 +53,12 @@ const mutunTemplate = [
     title: 'المستوى الثاني',
     items: [
       { 
-        name: 'القواعد الأربع', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
         name: 'كتاب التوحيد', 
-        memorization_pdf_link: '', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1C_jT5XiC2x8Xha5RYF4ViGOKh85z8j6R/view?usp=sharing', 
         memorization_audio_link: '', 
         explanation_pdf_link: '', 
         explanation_audio_link: '' 
       },
-      { 
-        name: 'عمدة الأحكام', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
-        name: 'بلوغ المرام', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      }
-    ]
-  },
-  {
-    title: 'المستوى الثالث',
-    items: [
       { 
         name: 'كشف الشبهات', 
         memorization_pdf_link: '', 
@@ -93,7 +67,14 @@ const mutunTemplate = [
         explanation_audio_link: '' 
       },
       { 
-        name: 'أصول السنة', 
+        name: 'مختصر سيرة النبي', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'أصول الإيمان', 
         memorization_pdf_link: '', 
         memorization_audio_link: '', 
         explanation_pdf_link: '', 
@@ -109,17 +90,57 @@ const mutunTemplate = [
     ]
   },
   {
-    title: 'المستوى الرابع',
+    title: 'المستوى الثالث',
     items: [
       { 
-        name: 'العقيدة الطحاوية', 
+        name: 'بلوغ المرام (كتاب الطهارة والصلاة)', 
         memorization_pdf_link: '', 
         memorization_audio_link: '', 
         explanation_pdf_link: '', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'صحيح البخاري (مختارات)', 
+        name: 'منهج السالكين', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'فتح المجيد', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'الأجرومية', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      }
+    ]
+  },
+  {
+    title: 'المستوى الرابع',
+    items: [
+      { 
+        name: 'عمدة الفقه', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'ألفية ابن مالك', 
+        memorization_pdf_link: '', 
+        memorization_audio_link: '', 
+        explanation_pdf_link: '', 
+        explanation_audio_link: '' 
+      },
+      { 
+        name: 'عمدة الأحكام', 
         memorization_pdf_link: '', 
         memorization_audio_link: '', 
         explanation_pdf_link: '', 
