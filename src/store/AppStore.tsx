@@ -1,4 +1,4 @@
-import { createContext, useContext, createSignal, createMemo, JSX, onMount, onCleanup, batch } from 'solid-js';
+import { createContext, useContext, createSignal, createMemo, JSX, onMount, onCleanup } from 'solid-js';
 import { User, Student, Teacher, Halaqa, Matn, NewsItem, Theme, Language, Page, AudioPlayerState, TimerState } from '../types';
 import { demoUsers, demoHalaqat, demoMutun, demoNews, generatePersonalMutun } from '../data/demo-data';
 import { themeColors, setCSSVariables } from '../styles/themes';
@@ -73,9 +73,6 @@ export function AppProvider(props: { children: JSX.Element }) {
   const [mutun, setMutun] = createSignal<Matn[]>(demoMutun);
   const [news, setNews] = createSignal<NewsItem[]>(demoNews);
   const [searchTerm, setSearchTerm] = createSignal('');
-  
-  // UI refresh counter to force updates when needed
-  const [refreshCounter, setRefreshCounter] = createSignal(0);
   
   // Audio Player State
   const [audioPlayer, setAudioPlayer] = createSignal<AudioPlayerState>({
@@ -612,8 +609,6 @@ export function AppProvider(props: { children: JSX.Element }) {
   };
   
   const translate = (key: string): string => {
-    // Include refreshCounter in dependency to force re-evaluation
-    refreshCounter();
     return translations[language()][key as keyof typeof translations.ar] || key;
   };
   
@@ -648,15 +643,13 @@ export function AppProvider(props: { children: JSX.Element }) {
     setLanguage: (newLanguage: Language) => {
       console.log('🌐 Language change from', language(), 'to', newLanguage);
       
-      // Use batch to ensure atomic update
-      batch(() => {
-        setLanguage(newLanguage);
-        setRefreshCounter(prev => prev + 1);
-        localStorage.setItem('language', newLanguage);
-      });
-      
-      console.log('🔄 Language change completed immediately, current:', language());
+      // Save to localStorage first
+      localStorage.setItem('language', newLanguage);
       console.log('💾 Language saved to localStorage:', newLanguage);
+      
+      // Refresh page to ensure all UI elements are properly translated
+      console.log('🔄 Refreshing page for complete language update...');
+      window.location.reload();
     },
     updateMatn,
     updateUser,
