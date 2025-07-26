@@ -64,12 +64,17 @@ export function MutunPage() {
     const currentIndex = statusCycle.indexOf(matn.status);
     const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
 
+    console.log('🔄 Changing matn status from', matn.status, 'to', nextStatus);
+
     const updatedMatn = {
       ...matn,
       status: nextStatus,
-      lastChange_date: new Date().toISOString().split('T')[0]
+      lastChange_date: new Date().toISOString(),
+      // Reset days_since_last_revision when status becomes green (completed)
+      days_since_last_revision: nextStatus === 'green' ? 0 : matn.days_since_last_revision
     };
 
+    console.log('✅ Updated matn:', updatedMatn);
     app.updateMatn(updatedMatn);
   };
 
@@ -91,13 +96,29 @@ export function MutunPage() {
     }
   };
 
-  // Calculate days since last change
-  const calculateDaysSinceLastChange = (lastChange: string) => {
-    if (!lastChange) return 0;
+  // Calculate days since last change and handle threshold logic
+  const calculateDaysSinceLastChange = (matn: Matn) => {
+    if (!matn.lastChange_date) return 0;
+    
     const now = new Date();
-    const lastChangeDate = new Date(lastChange);
+    const lastChangeDate = new Date(matn.lastChange_date);
     const diffTime = Math.abs(now.getTime() - lastChangeDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const daysSince = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Auto-change from green to red if threshold exceeded
+    if (matn.status === 'green' && daysSince >= (matn.threshold || 7)) {
+      console.log('⏰ Auto-changing matn', matn.name, 'from green to red (threshold exceeded)');
+      const updatedMatn = {
+        ...matn,
+        status: 'red' as const,
+        lastChange_date: new Date().toISOString(),
+        days_since_last_revision: daysSince
+      };
+      // Delayed update to avoid infinite loops
+      setTimeout(() => app.updateMatn(updatedMatn), 100);
+    }
+    
+    return daysSince;
   };
 
   // Note State
@@ -582,8 +603,8 @@ export function MutunPage() {
                             direction: app.language() === 'ar' ? 'rtl' : 'ltr'
                           }}>
                             {app.language() === 'ar' 
-                              ? `آخر تغيير قبل: ${calculateDaysSinceLastChange(matn.lastChange_date || '')} يوم`
-                              : `Last change: ${calculateDaysSinceLastChange(matn.lastChange_date || '')} days ago`
+                              ? `آخر تغيير قبل: ${calculateDaysSinceLastChange(matn)} يوم`
+                              : `Last change: ${calculateDaysSinceLastChange(matn)} days ago`
                             }
                           </div>
                         </div>
