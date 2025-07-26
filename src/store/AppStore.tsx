@@ -41,6 +41,7 @@ export interface AppState {
   // Actions
   login: (username: string, password: string) => boolean;
   logout: () => void;
+  changePassword: (currentPassword: string, newPassword: string) => boolean;
   setCurrentUser: (user: User | null) => void;
   setCurrentPage: (page: Page) => void;
   setTheme: (theme: Theme) => void;
@@ -390,6 +391,46 @@ export function AppProvider(props: { children: JSX.Element }) {
     // Remove from localStorage
     localStorage.removeItem('currentUser');
   };
+
+  const changePassword = (currentPassword: string, newPassword: string): boolean => {
+    console.log('🔑 Password change attempt');
+    
+    const user = currentUser();
+    if (!user) {
+      console.error('❌ No user logged in');
+      return false;
+    }
+
+    // Verify current password
+    if (user.password !== currentPassword) {
+      console.error('❌ Current password incorrect');
+      return false;
+    }
+
+    try {
+      // Update user's password
+      const updatedUser = { ...user, password: newPassword };
+      
+      // Update in users array
+      const updatedUsers = users().map(u => 
+        u.id === user.id ? updatedUser : u
+      );
+      setUsers(updatedUsers);
+      
+      // Update current user
+      setCurrentUser(updatedUser);
+      
+      // Save to localStorage
+      localStorage.setItem('usersData', JSON.stringify(updatedUsers));
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      
+      console.log('✅ Password changed successfully');
+      return true;
+    } catch (error) {
+      console.error('💥 Error changing password:', error);
+      return false;
+    }
+  };
   
   const updateMatn = (updatedMatn: Matn) => {
     const newMutunData = mutun().map(m => m.id === updatedMatn.id ? updatedMatn : m);
@@ -629,6 +670,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     searchTerm,
     login,
     logout,
+    changePassword,
     setCurrentUser,
     setCurrentPage: (page: Page) => {
       setCurrentPage(page);

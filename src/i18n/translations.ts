@@ -110,7 +110,20 @@ export const translations = {
     noMutunFoundDesc: 'لم يتم العثور على متون للمستوى المحدد',
     saveNote: 'حفظ',
     appTitle: 'معونة المتعلم',
-    appSubtitle: 'نظام إدارة حلقات عَلٌمْنِي'
+    appSubtitle: 'نظام إدارة حلقات عَلٌمْنِي',
+    currentPassword: 'كلمة المرور الحالية',
+    enterCurrentPassword: 'أدخل كلمة المرور الحالية',
+    enterNewPassword: 'أدخل كلمة المرور الجديدة',
+    confirmNewPassword: 'تأكيد كلمة المرور الجديدة',
+    cancel: 'إلغاء',
+    changing: 'جاري التغيير...',
+    allFieldsRequired: 'جميع الحقول مطلوبة',
+    passwordTooShort: 'كلمة المرور قصيرة جداً (4 أحرف على الأقل)',
+    passwordsDoNotMatch: 'كلمات المرور غير متطابقة',
+    newPasswordSameAsCurrent: 'كلمة المرور الجديدة يجب أن تكون مختلفة عن الحالية',
+    currentPasswordIncorrect: 'كلمة المرور الحالية غير صحيحة',
+    passwordChangedSuccessfully: 'تم تغيير كلمة المرور بنجاح',
+    passwordChangeError: 'حدث خطأ أثناء تغيير كلمة المرور'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -223,6 +236,19 @@ export const translations = {
     noMutunFoundDesc: 'No mutun found for the selected level',
     saveNote: 'Save',
     appTitle: 'Maunatul Mutaallim',
-    appSubtitle: 'Allemni Learning Management System'
+    appSubtitle: 'Allemni Learning Management System',
+    currentPassword: 'Current Password',
+    enterCurrentPassword: 'Enter current password',
+    enterNewPassword: 'Enter new password',
+    confirmNewPassword: 'Confirm new password',
+    cancel: 'Cancel',
+    changing: 'Changing...',
+    allFieldsRequired: 'All fields are required',
+    passwordTooShort: 'Password too short (minimum 4 characters)',
+    passwordsDoNotMatch: 'Passwords do not match',
+    newPasswordSameAsCurrent: 'New password must be different from current password',
+    currentPasswordIncorrect: 'Current password is incorrect',
+    passwordChangedSuccessfully: 'Password changed successfully',
+    passwordChangeError: 'Error occurred while changing password'
   }
 };

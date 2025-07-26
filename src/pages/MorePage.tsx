@@ -604,6 +604,241 @@ export function MorePage() {
         </div>
       </div>
 
+      {/* Password Change Modal */}
+      {showPasswordModal() && (
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          'z-index': '1000',
+          padding: '20px'
+        }}>
+          <div style={{
+            'background-color': 'var(--color-background)',
+            'border-radius': '16px',
+            padding: '24px',
+            width: '100%',
+            'max-width': '400px',
+            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.3)',
+            animation: 'modalFadeIn 0.3s ease-out',
+            direction: app.language() === 'ar' ? 'rtl' : 'ltr'
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              'align-items': 'center',
+              'justify-content': 'space-between',
+              'margin-bottom': '24px'
+            }}>
+              <h2 style={{
+                'font-size': '20px',
+                'font-weight': 'bold',
+                color: 'var(--color-text)',
+                margin: '0'
+              }}>
+                🔑 {app.translate('changePassword')}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  resetPasswordForm();
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  'font-size': '24px',
+                  color: 'var(--color-text-secondary)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  'border-radius': '8px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Error/Success Messages */}
+            {passwordError() && (
+              <div style={{
+                'background-color': '#ffebee',
+                color: '#c62828',
+                padding: '12px',
+                'border-radius': '8px',
+                'margin-bottom': '16px',
+                'font-size': '14px',
+                border: '1px solid #ffcdd2'
+              }}>
+                ❌ {passwordError()}
+              </div>
+            )}
+
+            {passwordSuccess() && (
+              <div style={{
+                'background-color': '#e8f5e8',
+                color: '#2e7d32',
+                padding: '12px',
+                'border-radius': '8px',
+                'margin-bottom': '16px',
+                'font-size': '14px',
+                border: '1px solid #c8e6c9'
+              }}>
+                ✅ {passwordSuccess()}
+              </div>
+            )}
+
+            {/* Form Fields */}
+            <div style={{ 'margin-bottom': '16px' }}>
+              <label style={{
+                display: 'block',
+                'margin-bottom': '8px',
+                'font-weight': '500',
+                color: 'var(--color-text)',
+                'font-size': '14px'
+              }}>
+                {app.translate('currentPassword')}
+              </label>
+              <input
+                type="password"
+                value={currentPassword()}
+                onInput={(e) => setCurrentPassword(e.currentTarget.value)}
+                placeholder={app.translate('enterCurrentPassword')}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  'font-size': '16px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  'box-sizing': 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ 'margin-bottom': '16px' }}>
+              <label style={{
+                display: 'block',
+                'margin-bottom': '8px',
+                'font-weight': '500',
+                color: 'var(--color-text)',
+                'font-size': '14px'
+              }}>
+                {app.translate('newPassword')}
+              </label>
+              <input
+                type="password"
+                value={newPassword()}
+                onInput={(e) => setNewPassword(e.currentTarget.value)}
+                placeholder={app.translate('enterNewPassword')}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  'font-size': '16px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  'box-sizing': 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ 'margin-bottom': '24px' }}>
+              <label style={{
+                display: 'block',
+                'margin-bottom': '8px',
+                'font-weight': '500',
+                color: 'var(--color-text)',
+                'font-size': '14px'
+              }}>
+                {app.translate('confirmNewPassword')}
+              </label>
+              <input
+                type="password"
+                value={confirmPassword()}
+                onInput={(e) => setConfirmPassword(e.currentTarget.value)}
+                placeholder={app.translate('confirmNewPassword')}
+                onKeyDown={(e) => e.key === 'Enter' && !isChangingPassword() && handlePasswordChange()}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  'font-size': '16px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  'box-sizing': 'border-box'
+                }}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              'justify-content': 'flex-end'
+            }}>
+              <button
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  resetPasswordForm();
+                }}
+                disabled={isChangingPassword()}
+                style={{
+                  padding: '12px 24px',
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  'background-color': 'var(--color-surface)',
+                  color: 'var(--color-text)',
+                  cursor: isChangingPassword() ? 'not-allowed' : 'pointer',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  opacity: isChangingPassword() ? '0.5' : '1'
+                }}
+              >
+                {app.translate('cancel')}
+              </button>
+              <button
+                onClick={handlePasswordChange}
+                disabled={isChangingPassword()}
+                style={{
+                  padding: '12px 24px',
+                  border: 'none',
+                  'border-radius': '8px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  cursor: isChangingPassword() ? 'not-allowed' : 'pointer',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  opacity: isChangingPassword() ? '0.7' : '1',
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px'
+                }}
+              >
+                {isChangingPassword() && (
+                  <div style={{
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid transparent',
+                    'border-top': '2px solid white',
+                    'border-radius': '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
+                )}
+                {isChangingPassword() ? app.translate('changing') : app.translate('changePassword')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Logout Modal */}
       {showLogoutModal() && <LogoutModal />}
 
@@ -618,6 +853,15 @@ export function MorePage() {
             to {
               opacity: 1;
               transform: scale(1);
+            }
+          }
+          
+          @keyframes spin {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
             }
           }
         `}
