@@ -30,7 +30,12 @@ export function MutunPage() {
     return grouped;
   });
 
-  const allLevels = ['المستوى الأول', 'المستوى الثاني', 'المستوى الثالث', 'المستوى الرابع'];
+  const allLevels = [
+    app.translate('level1'), 
+    app.translate('level2'), 
+    app.translate('level3'), 
+    app.translate('level4')
+  ];
 
   // Toggle-Funktion für Sektionen
   const toggleSection = (section: string) => {
@@ -89,10 +94,10 @@ export function MutunPage() {
 
   const getMatnStatusText = (status: string) => {
     switch (status) {
-      case 'red': return 'يحتاج مراجعة';
-      case 'orange': return 'قريب الانتهاء';
-      case 'green': return 'تم الختمة';
-      default: return 'غير محدد';
+      case 'red': return app.translate('needsRevision');
+      case 'orange': return app.translate('nearCompletion');
+      case 'green': return app.translate('completed');
+      default: return app.translate('status');
     }
   };
 

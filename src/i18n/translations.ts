@@ -93,7 +93,38 @@ export const translations = {
     appVersion: 'إصدار التطبيق',
     aboutUs: 'معلومات عنا',
     changePassword: 'تغيير كلمة المرور',
-    account: 'الحساب'
+    account: 'الحساب',
+    
+    // Status translations
+    needsRevision: 'يحتاج مراجعة',
+    nearCompletion: 'قريب الانتهاء', 
+    completed: 'تم الختمة',
+    
+    // Level translations
+    level1: 'المستوى الأول',
+    level2: 'المستوى الثاني',
+    level3: 'المستوى الثالث',
+    level4: 'المستوى الرابع',
+    
+    // Page titles
+    mutunPageTitle: 'متون',
+    
+    // Search and filter
+    searchStudent: 'البحث عن طالب بالاسم...',
+    allStudents: 'الجميع',
+    
+    // Days counter
+    lastChangeBefore: 'آخر تغيير قبل',
+    daysAgo: 'يوم',
+    
+    // Empty states
+    noMutunFound: 'لا توجد متون',
+    noMutunFoundDesc: 'لم يتم العثور على متون للمستوى المحدد',
+    
+    // Save/Edit
+    saveNote: 'حفظ',
+    writeNote: 'اكتب ملاحظة',
+    materials: 'المواد'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -189,6 +220,37 @@ export const translations = {
     appVersion: 'App Version',
     aboutUs: 'About Us',
     changePassword: 'Change Password',
-    account: 'Account'
+    account: 'Account',
+    
+    // Status translations
+    needsRevision: 'Needs Revision',
+    nearCompletion: 'Near Completion',
+    completed: 'Completed',
+    
+    // Level translations
+    level1: 'Level 1',
+    level2: 'Level 2', 
+    level3: 'Level 3',
+    level4: 'Level 4',
+    
+    // Page titles
+    mutunPageTitle: 'Mutun',
+    
+    // Search and filter
+    searchStudent: 'Search student by name...',
+    allStudents: 'All',
+    
+    // Days counter
+    lastChangeBefore: 'Last change before',
+    daysAgo: 'days ago',
+    
+    // Empty states
+    noMutunFound: 'No Mutun Found',
+    noMutunFoundDesc: 'No mutun found for the selected level',
+    
+    // Save/Edit
+    saveNote: 'Save',
+    writeNote: 'Write a note',
+    materials: 'Materials'
   }
 };

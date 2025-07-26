@@ -214,7 +214,7 @@ export function MorePage() {
     },
     {
       icon: 'ℹ️',
-      text: 'About Us',
+      text: app.translate('aboutUs'),
       type: 'action' as const,
       action: () => {
         app.setCurrentPage('about-us');
@@ -231,7 +231,7 @@ export function MorePage() {
   const accountItems = [
     {
       icon: '🔑',
-      text: 'Change Password',
+      text: app.translate('changePassword'),
       type: 'action' as const,
       action: () => {
         alert('Change Password coming soon!');
@@ -501,7 +501,7 @@ export function MorePage() {
       {/* Account */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>
-          Account
+          {app.translate('account')}
         </div>
         <div style={itemsContainerStyle}>
           <For each={accountItems}>
