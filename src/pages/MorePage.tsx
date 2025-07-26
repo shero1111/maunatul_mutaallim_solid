@@ -14,6 +14,7 @@ export function MorePage() {
   const [confirmPassword, setConfirmPassword] = createSignal('');
   const [passwordError, setPasswordError] = createSignal('');
   const [passwordSuccess, setPasswordSuccess] = createSignal('');
+  const [fieldErrors, setFieldErrors] = createSignal<{[key: string]: boolean}>({});
   const [isChangingPassword, setIsChangingPassword] = createSignal(false);
   
   const containerStyle = {
@@ -244,6 +245,7 @@ export function MorePage() {
     setConfirmPassword('');
     setPasswordError('');
     setPasswordSuccess('');
+    setFieldErrors({});
     setIsChangingPassword(false);
   };
 
@@ -252,28 +254,40 @@ export function MorePage() {
     const newPass = newPassword().trim();
     const confirm = confirmPassword().trim();
 
-    // Clear previous messages
+    // Clear previous messages and field errors
     setPasswordError('');
     setPasswordSuccess('');
+    setFieldErrors({});
 
-    // Validation
-    if (!current || !newPass || !confirm) {
-      setPasswordError(app.translate('allFieldsRequired'));
-      return;
+    let errors: {[key: string]: boolean} = {};
+    let errorMessage = '';
+
+    // Validation with field-specific errors
+    if (!current) {
+      errors.currentPassword = true;
+      errorMessage = app.translate('currentPasswordRequired');
+    } else if (!newPass) {
+      errors.newPassword = true;
+      errorMessage = app.translate('newPasswordRequired');
+    } else if (!confirm) {
+      errors.confirmPassword = true;
+      errorMessage = app.translate('confirmPasswordRequired');
+    } else if (newPass.length < 4) {
+      errors.newPassword = true;
+      errorMessage = app.translate('passwordTooShort');
+    } else if (newPass !== confirm) {
+      errors.newPassword = true;
+      errors.confirmPassword = true;
+      errorMessage = app.translate('passwordsDoNotMatch');
+    } else if (current === newPass) {
+      errors.newPassword = true;
+      errorMessage = app.translate('newPasswordSameAsCurrent');
     }
 
-    if (newPass.length < 4) {
-      setPasswordError(app.translate('passwordTooShort'));
-      return;
-    }
-
-    if (newPass !== confirm) {
-      setPasswordError(app.translate('passwordsDoNotMatch'));
-      return;
-    }
-
-    if (current === newPass) {
-      setPasswordError(app.translate('newPasswordSameAsCurrent'));
+    // If there are validation errors, show them and return
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setPasswordError(errorMessage);
       return;
     }
 
@@ -283,6 +297,7 @@ export function MorePage() {
       // Verify current password
       const user = app.currentUser();
       if (!user || user.password !== current) {
+        setFieldErrors({ currentPassword: true });
         setPasswordError(app.translate('currentPasswordIncorrect'));
         setIsChangingPassword(false);
         return;
@@ -686,7 +701,10 @@ export function MorePage() {
                   ❌ {passwordError()}
                 </span>
                 <button
-                  onClick={() => setPasswordError('')}
+                  onClick={() => {
+                    setPasswordError('');
+                    setFieldErrors({});
+                  }}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -759,12 +777,19 @@ export function MorePage() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid var(--color-border)',
+                  border: fieldErrors().currentPassword 
+                    ? '2px solid #e53e3e' 
+                    : '1px solid var(--color-border)',
                   'border-radius': '8px',
                   'font-size': '16px',
-                  'background-color': 'var(--color-surface)',
+                  'background-color': fieldErrors().currentPassword 
+                    ? '#ffeaea' 
+                    : 'var(--color-surface)',
                   color: 'var(--color-text)',
-                  'box-sizing': 'border-box'
+                  'box-sizing': 'border-box',
+                  'box-shadow': fieldErrors().currentPassword 
+                    ? '0 0 0 1px rgba(229, 62, 62, 0.3)' 
+                    : 'none'
                 }}
               />
             </div>
@@ -787,12 +812,19 @@ export function MorePage() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid var(--color-border)',
+                  border: fieldErrors().newPassword 
+                    ? '2px solid #e53e3e' 
+                    : '1px solid var(--color-border)',
                   'border-radius': '8px',
                   'font-size': '16px',
-                  'background-color': 'var(--color-surface)',
+                  'background-color': fieldErrors().newPassword 
+                    ? '#ffeaea' 
+                    : 'var(--color-surface)',
                   color: 'var(--color-text)',
-                  'box-sizing': 'border-box'
+                  'box-sizing': 'border-box',
+                  'box-shadow': fieldErrors().newPassword 
+                    ? '0 0 0 1px rgba(229, 62, 62, 0.3)' 
+                    : 'none'
                 }}
               />
             </div>
@@ -816,12 +848,19 @@ export function MorePage() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid var(--color-border)',
+                  border: fieldErrors().confirmPassword 
+                    ? '2px solid #e53e3e' 
+                    : '1px solid var(--color-border)',
                   'border-radius': '8px',
                   'font-size': '16px',
-                  'background-color': 'var(--color-surface)',
+                  'background-color': fieldErrors().confirmPassword 
+                    ? '#ffeaea' 
+                    : 'var(--color-surface)',
                   color: 'var(--color-text)',
-                  'box-sizing': 'border-box'
+                  'box-sizing': 'border-box',
+                  'box-shadow': fieldErrors().confirmPassword 
+                    ? '0 0 0 1px rgba(229, 62, 62, 0.3)' 
+                    : 'none'
                 }}
               />
             </div>
