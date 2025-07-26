@@ -1,7 +1,6 @@
 import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
-import { Student, User } from '../types';
-import { getStatusColor } from '../styles/themes';
+import { Student, User, Matn } from '../types';
 
 export function HomePage() {
   const app = useApp();
@@ -18,24 +17,6 @@ function HomePageContent(props: { user: User }) {
   const app = useApp();
   const { user } = props;
   
-  // Student-specific signals
-  const [searchTerm, setSearchTerm] = createSignal('');
-  const [statusFilter, setStatusFilter] = createSignal<string>('all');
-  
-  // Get favorites
-  const favorites = createMemo(() => user?.favorites || []);
-  
-  const setFavorites = (newFavorites: string[] | ((prev: string[]) => string[])) => {
-    if (!user) return;
-    
-    const finalFavorites = typeof newFavorites === 'function' 
-      ? newFavorites(favorites()) 
-      : newFavorites;
-    
-    const updatedUser = { ...user, favorites: finalFavorites };
-    app.updateUser(updatedUser);
-  };
-
   return (
     <div style={{ 
       padding: '20px 16px 80px 16px', 
@@ -63,55 +44,40 @@ function HomePageContent(props: { user: User }) {
 
       {/* Role-based Content */}
       <Show when={user.role === 'student'}>
-        <StudentDashboard 
-          user={user as Student}
-          app={app}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          favorites={favorites}
-          setFavorites={setFavorites}
-        />
+        <StudentDashboard user={user as Student} />
       </Show>
 
       <Show when={user.role === 'lehrer'}>
-        <TeacherDashboard 
-          user={user}
-          app={app}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          favorites={favorites}
-          setFavorites={setFavorites}
-        />
+        <TeacherDashboard user={user} />
       </Show>
 
       <Show when={user.role === 'leitung' || user.role === 'superuser'}>
-        <LeadershipDashboard 
-          app={app} 
-          role={user.role}
-        />
+        <LeadershipDashboard />
       </Show>
     </div>
   );
 }
 
-// Student Dashboard Component
-function StudentDashboard(props: any) {
-  const { user, app, searchTerm, setSearchTerm, statusFilter, setStatusFilter, favorites, setFavorites } = props;
+// Simple Student Dashboard Component
+function StudentDashboard(props: { user: Student }) {
+  const app = useApp();
+  const { user } = props;
+  
+  // Get user's personal mutun
+  const userMutun = createMemo(() => 
+    app.mutun().filter(matn => matn.user_id === user.id)
+  );
   
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'not_available':
-        return { color: 'var(--color-error)', icon: '🔴', text: 'غير متاح' };
+        return { color: '#ef4444', icon: '🔴', text: 'غير متاح' };
       case 'revising':
-        return { color: 'var(--color-warning)', icon: '🟡', text: 'مراجعة' };
+        return { color: '#f59e0b', icon: '🟡', text: 'مراجعة' };
       case 'khatamat':
-        return { color: 'var(--color-success)', icon: '🟢', text: 'ختمات' };
+        return { color: '#10b981', icon: '🟢', text: 'ختمات' };
       default:
-        return { color: 'var(--color-text)', icon: '⚪', text: 'غير محدد' };
+        return { color: '#6b7280', icon: '⚪', text: 'غير محدد' };
     }
   };
   
@@ -126,24 +92,20 @@ function StudentDashboard(props: any) {
     app.updateUser(updatedUser);
   };
   
-  const toggleFavorite = (userId: string) => {
-    const current = favorites();
-    if (current.includes(userId)) {
-      setFavorites(current.filter(id => id !== userId));
-    } else {
-      setFavorites([...current, userId]);
-    }
+  const updateMatnProgress = (matn: Matn, field: string, value: number) => {
+    const updatedMatn = { ...matn, [field]: value };
+    app.updateMatn(updatedMatn);
   };
 
   return (
     <div>
       {/* Student Info Card */}
       <div style={{ 
-        background: 'var(--color-surface)', 
+        background: 'white', 
         'border-radius': '12px', 
         padding: '20px', 
         'margin-bottom': '20px',
-        border: '1px solid var(--color-border)',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
         display: 'flex',
         'align-items': 'center',
         'justify-content': 'space-between',
@@ -151,12 +113,12 @@ function StudentDashboard(props: any) {
       }}>
         <div style={{ flex: '1' }}>
           <h3 style={{ 
-            color: 'var(--color-text)', 
-            'margin-bottom': '6px',
-            'font-size': '1.2rem',
+            color: '#1f2937', 
+            'margin-bottom': '10px',
+            'font-size': '1.3rem',
             'font-weight': '600'
           }}>
-            {user?.name}
+            مرحباً {user?.name}
           </h3>
           
           <div style={{
@@ -164,8 +126,8 @@ function StudentDashboard(props: any) {
             'align-items': 'center',
             background: statusInfo().color,
             color: 'white',
-            padding: '4px 12px',
-            'border-radius': '16px',
+            padding: '6px 16px',
+            'border-radius': '20px',
             'font-size': '0.9rem',
             'font-weight': '600'
           }}>
@@ -182,16 +144,15 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus("not_available")}
             style={{
-              background: user?.status === "not_available" ? "var(--color-error)" : "var(--color-background)",
-              color: user?.status === "not_available" ? "white" : "var(--color-text-secondary)",
-              border: "1px solid var(--color-border)",
-              padding: "6px 12px",
-              "border-radius": "16px",
+              background: user?.status === "not_available" ? "#ef4444" : "#f3f4f6",
+              color: user?.status === "not_available" ? "white" : "#6b7280",
+              border: "none",
+              padding: "8px 16px",
+              "border-radius": "20px",
               cursor: "pointer",
-              "font-size": "0.8rem",
+              "font-size": "0.85rem",
               "font-weight": "500",
-              transition: "all 0.2s ease",
-              outline: "none"
+              transition: "all 0.2s ease"
             }}
           >
             غير متاح
@@ -200,16 +161,15 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus("revising")}
             style={{
-              background: user?.status === "revising" ? "var(--color-warning)" : "var(--color-background)",
-              color: user?.status === "revising" ? "white" : "var(--color-text-secondary)",
-              border: "1px solid var(--color-border)",
-              padding: "6px 12px",
-              "border-radius": "16px",
+              background: user?.status === "revising" ? "#f59e0b" : "#f3f4f6",
+              color: user?.status === "revising" ? "white" : "#6b7280",
+              border: "none",
+              padding: "8px 16px",
+              "border-radius": "20px",
               cursor: "pointer",
-              "font-size": "0.8rem",
+              "font-size": "0.85rem",
               "font-weight": "500",
-              transition: "all 0.2s ease",
-              outline: "none"
+              transition: "all 0.2s ease"
             }}
           >
             مراجعة
@@ -218,16 +178,15 @@ function StudentDashboard(props: any) {
           <button
             onClick={() => changeStatus("khatamat")}
             style={{
-              background: user?.status === "khatamat" ? "var(--color-success)" : "var(--color-background)",
-              color: user?.status === "khatamat" ? "white" : "var(--color-text-secondary)",
-              border: "1px solid var(--color-border)",
-              padding: "6px 12px",
-              "border-radius": "16px",
+              background: user?.status === "khatamat" ? "#10b981" : "#f3f4f6",
+              color: user?.status === "khatamat" ? "white" : "#6b7280",
+              border: "none",
+              padding: "8px 16px",
+              "border-radius": "20px",
               cursor: "pointer",
-              "font-size": "0.8rem",
+              "font-size": "0.85rem",
               "font-weight": "500",
-              transition: "all 0.2s ease",
-              outline: "none"
+              transition: "all 0.2s ease"
             }}
           >
             ختمات
@@ -235,299 +194,335 @@ function StudentDashboard(props: any) {
         </div>
       </div>
 
-      {/* Search and Filter */}
-      <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '12px', 
-        padding: '16px', 
-        'margin-bottom': '20px',
-        border: '1px solid var(--color-border)'
-      }}>
-        {/* Search Bar */}
-        <div style={{ position: 'relative', 'margin-bottom': '12px' }}>
-          <input
-            type="text"
-            placeholder="البحث عن طالب..."
-            value={searchTerm()}
-            onInput={(e) => setSearchTerm(e.currentTarget.value)}
-            style={{
-              width: '100%',
-              padding: '10px 40px 10px 12px',
-              'border-radius': '8px',
-              border: '1px solid var(--color-border)',
-              'font-size': '14px',
-              background: 'var(--color-background)',
-              color: 'var(--color-text)',
-              'box-sizing': 'border-box'
-            }}
-          />
-        </div>
-        
-        {/* Status Filter Buttons */}
-        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
-          <button
-            onClick={() => setStatusFilter('all')}
-            style={{
-              padding: '6px 12px',
-              'border-radius': '16px',
-              border: statusFilter() === 'all' ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'all' ? 'var(--color-primary)' : 'var(--color-background)',
-              color: statusFilter() === 'all' ? 'white' : 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              'font-size': '12px',
-              'font-weight': statusFilter() === 'all' ? '600' : '500'
-            }}
-          >
-            الجميع
-          </button>
-          <button
-            onClick={() => setStatusFilter('not_available')}
-            style={{
-              padding: '6px 12px',
-              'border-radius': '16px',
-              border: statusFilter() === 'not_available' ? '1px solid var(--color-error)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'not_available' ? 'var(--color-error)' : 'var(--color-background)',
-              color: statusFilter() === 'not_available' ? 'white' : 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              'font-size': '12px',
-              'font-weight': statusFilter() === 'not_available' ? '600' : '500'
-            }}
-          >
-            غير متاح
-          </button>
-          <button
-            onClick={() => setStatusFilter('revising')}
-            style={{
-              padding: '6px 12px',
-              'border-radius': '16px',
-              border: statusFilter() === 'revising' ? '1px solid var(--color-warning)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'revising' ? 'var(--color-warning)' : 'var(--color-background)',
-              color: statusFilter() === 'revising' ? 'white' : 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              'font-size': '12px',
-              'font-weight': statusFilter() === 'revising' ? '600' : '500'
-            }}
-          >
-            مراجعة
-          </button>
-          <button
-            onClick={() => setStatusFilter('khatamat')}
-            style={{
-              padding: '6px 12px',
-              'border-radius': '16px',
-              border: statusFilter() === 'khatamat' ? '1px solid var(--color-success)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'khatamat' ? 'var(--color-success)' : 'var(--color-background)',
-              color: statusFilter() === 'khatamat' ? 'white' : 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              'font-size': '12px',
-              'font-weight': statusFilter() === 'khatamat' ? '600' : '500'
-            }}
-          >
-            ختمات
-          </button>
-        </div>
-      </div>
-
+      {/* Progress Overview */}
       <div style={{
-        background: 'var(--color-surface)',
+        background: 'white',
         'border-radius': '12px',
         padding: '20px',
-        border: '1px solid var(--color-border)'
+        'margin-bottom': '20px',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <p style={{ 'text-align': 'center', color: 'var(--color-text)' }}>
-          Student Dashboard - Halaqa Lists wird geladen...
-        </p>
+        <h3 style={{
+          color: '#1f2937',
+          'margin-bottom': '15px',
+          'font-size': '1.1rem',
+          'font-weight': '600'
+        }}>
+          📊 نظرة عامة على التقدم
+        </h3>
+        
+        <div style={{
+          display: 'grid',
+          'grid-template-columns': 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '15px'
+        }}>
+          <div style={{
+            'text-align': 'center',
+            padding: '15px',
+            background: '#f8fafc',
+            'border-radius': '8px',
+            border: '2px solid #e2e8f0'
+          }}>
+            <div style={{ 'font-size': '2rem', 'margin-bottom': '5px' }}>📚</div>
+            <div style={{
+              'font-size': '1.5rem',
+              'font-weight': 'bold',
+              color: '#2563eb',
+              'margin-bottom': '5px'
+            }}>
+              {userMutun().length}
+            </div>
+            <div style={{ color: '#64748b', 'font-size': '0.85rem' }}>
+              إجمالي المتون
+            </div>
+          </div>
+          
+          <div style={{
+            'text-align': 'center',
+            padding: '15px',
+            background: '#f0fdf4',
+            'border-radius': '8px',
+            border: '2px solid #22c55e'
+          }}>
+            <div style={{ 'font-size': '2rem', 'margin-bottom': '5px' }}>✅</div>
+            <div style={{
+              'font-size': '1.5rem',
+              'font-weight': 'bold',
+              color: '#16a34a',
+              'margin-bottom': '5px'
+            }}>
+              {userMutun().filter(m => m.memorization_progress === 100).length}
+            </div>
+            <div style={{ color: '#64748b', 'font-size': '0.85rem' }}>
+              مكتملة الحفظ
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mutun List */}
+      <div style={{
+        background: 'white',
+        'border-radius': '12px',
+        padding: '20px',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <h3 style={{
+          color: '#1f2937',
+          'margin-bottom': '20px',
+          'font-size': '1.1rem',
+          'font-weight': '600'
+        }}>
+          📖 متونك الشخصية
+        </h3>
+        
+        <Show when={userMutun().length === 0}>
+          <div style={{
+            'text-align': 'center',
+            padding: '40px 20px',
+            color: '#64748b'
+          }}>
+            <div style={{ 'font-size': '3rem', 'margin-bottom': '10px' }}>📚</div>
+            <p>لا توجد متون مخصصة لك بعد</p>
+          </div>
+        </Show>
+        
+        <For each={userMutun()}>
+          {(matn) => (
+            <div style={{
+              border: '1px solid #e5e7eb',
+              'border-radius': '8px',
+              padding: '15px',
+              'margin-bottom': '15px',
+              background: '#fafafa'
+            }}>
+              <h4 style={{
+                color: '#1f2937',
+                'margin-bottom': '10px',
+                'font-size': '1rem',
+                'font-weight': '600'
+              }}>
+                {matn.title}
+              </h4>
+              
+              {/* Progress Bars */}
+              <div style={{ 'margin-bottom': '10px' }}>
+                <div style={{
+                  display: 'flex',
+                  'justify-content': 'space-between',
+                  'align-items': 'center',
+                  'margin-bottom': '5px'
+                }}>
+                  <span style={{ 'font-size': '0.85rem', color: '#64748b' }}>
+                    الحفظ
+                  </span>
+                  <span style={{ 'font-size': '0.85rem', color: '#1f2937', 'font-weight': '600' }}>
+                    {matn.memorization_progress || 0}%
+                  </span>
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '8px',
+                  background: '#e5e7eb',
+                  'border-radius': '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${matn.memorization_progress || 0}%`,
+                    height: '100%',
+                    background: '#10b981',
+                    transition: 'width 0.3s ease'
+                  }}></div>
+                </div>
+              </div>
+              
+              <div style={{ 'margin-bottom': '15px' }}>
+                <div style={{
+                  display: 'flex',
+                  'justify-content': 'space-between',
+                  'align-items': 'center',
+                  'margin-bottom': '5px'
+                }}>
+                  <span style={{ 'font-size': '0.85rem', color: '#64748b' }}>
+                    المراجعة
+                  </span>
+                  <span style={{ 'font-size': '0.85rem', color: '#1f2937', 'font-weight': '600' }}>
+                    {matn.review_progress || 0}%
+                  </span>
+                </div>
+                <div style={{
+                  width: '100%',
+                  height: '8px',
+                  background: '#e5e7eb',
+                  'border-radius': '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${matn.review_progress || 0}%`,
+                    height: '100%',
+                    background: '#f59e0b',
+                    transition: 'width 0.3s ease'
+                  }}></div>
+                </div>
+              </div>
+              
+              {/* Progress Update Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                'flex-wrap': 'wrap'
+              }}>
+                <button
+                  onClick={() => updateMatnProgress(matn, 'memorization_progress', Math.min(100, (matn.memorization_progress || 0) + 10))}
+                  style={{
+                    background: '#10b981',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    'border-radius': '6px',
+                    cursor: 'pointer',
+                    'font-size': '0.8rem'
+                  }}
+                >
+                  +10% حفظ
+                </button>
+                <button
+                  onClick={() => updateMatnProgress(matn, 'review_progress', Math.min(100, (matn.review_progress || 0) + 10))}
+                  style={{
+                    background: '#f59e0b',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    'border-radius': '6px',
+                    cursor: 'pointer',
+                    'font-size': '0.8rem'
+                  }}
+                >
+                  +10% مراجعة
+                </button>
+              </div>
+            </div>
+          )}
+        </For>
       </div>
     </div>
   );
 }
 
-// Teacher Dashboard Component
-function TeacherDashboard(props: any) {
+// Simple Teacher Dashboard Component
+function TeacherDashboard(props: { user: User }) {
+  const app = useApp();
+  
   return (
     <div style={{
-      background: 'var(--color-surface)',
+      background: 'white',
       'border-radius': '12px',
       padding: '20px',
-      border: '1px solid var(--color-border)'
+      'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
     }}>
-      <h2>Teacher Dashboard</h2>
-      <p>Teacher functionality coming soon...</p>
+      <h2 style={{ color: '#1f2937', 'margin-bottom': '10px' }}>
+        👨‍🏫 لوحة تحكم المعلم
+      </h2>
+      <p style={{ color: '#64748b' }}>
+        مرحباً {props.user.name}، ستتوفر وظائف المعلم قريباً...
+      </p>
     </div>
   );
 }
 
-// Leadership Dashboard Component
-function LeadershipDashboard(props: any) {
-  const { app } = props;
+// Simple Leadership Dashboard Component
+function LeadershipDashboard() {
+  const app = useApp();
   
   const users = app.users();
-  const totalUsers = users.length;
-  const totalTeachers = users.filter(u => u.role === 'lehrer').length;
-  const totalHalaqat = app.halaqat().length;
+  const students = users.filter(u => u.role === 'student');
+  const teachers = users.filter(u => u.role === 'lehrer');
   
-  const students = users.filter(u => u.role === 'student') as Student[];
-  const statusCounts = {
-    not_available: students.filter(s => s.status === 'not_available').length,
-    revising: students.filter(s => s.status === 'revising').length,
-    khatamat: students.filter(s => s.status === 'khatamat').length
-  };
-
   return (
     <div>
-      {/* Statistics */}
+      {/* Statistics Cards */}
       <div style={{ 
         display: 'grid', 
-        'grid-template-columns': 'repeat(auto-fit, minmax(150px, 1fr))', 
-        gap: '15px', 
+        'grid-template-columns': 'repeat(auto-fit, minmax(200px, 1fr))', 
+        gap: '20px', 
         'margin-bottom': '20px' 
       }}>
         <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '15px', 
+          background: 'white', 
+          padding: '25px', 
+          'border-radius': '12px', 
           'text-align': 'center', 
-          border: '1px solid var(--color-border)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
         }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👥</div>
+          <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>👥</div>
           <div style={{ 
-            'font-size': '1.8rem', 
+            'font-size': '2rem', 
             'font-weight': 'bold', 
-            color: 'var(--color-primary)',
+            color: '#2563eb',
             'margin-bottom': '5px'
           }}>
-            {totalUsers}
+            {users.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
+          <div style={{ color: '#64748b', 'font-size': '0.9rem' }}>
             إجمالي المستخدمين
           </div>
         </div>
 
         <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '15px', 
+          background: 'white', 
+          padding: '25px', 
+          'border-radius': '12px', 
           'text-align': 'center', 
-          border: '1px solid var(--color-border)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
         }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👨‍🏫</div>
+          <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>👨‍🎓</div>
           <div style={{ 
-            'font-size': '1.8rem', 
+            'font-size': '2rem', 
             'font-weight': 'bold', 
-            color: 'var(--color-secondary)',
+            color: '#10b981',
             'margin-bottom': '5px'
           }}>
-            {totalTeachers}
+            {students.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
-            إجمالي المعلمين
+          <div style={{ color: '#64748b', 'font-size': '0.9rem' }}>
+            الطلاب
           </div>
         </div>
 
         <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '15px', 
+          background: 'white', 
+          padding: '25px', 
+          'border-radius': '12px', 
           'text-align': 'center', 
-          border: '1px solid var(--color-border)' 
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)' 
         }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🔵</div>
+          <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>👨‍🏫</div>
           <div style={{ 
-            'font-size': '1.8rem', 
+            'font-size': '2rem', 
             'font-weight': 'bold', 
-            color: 'var(--color-primary)',
+            color: '#f59e0b',
             'margin-bottom': '5px'
           }}>
-            {totalHalaqat}
+            {teachers.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
-            إجمالي الحلقات
+          <div style={{ color: '#64748b', 'font-size': '0.9rem' }}>
+            المعلمين
           </div>
         </div>
       </div>
 
-      {/* Status Statistics */}
-      <div style={{ 
-        background: 'var(--color-surface)', 
-        'border-radius': '15px', 
-        padding: '20px', 
-        border: '1px solid var(--color-border)' 
+      <div style={{
+        background: 'white',
+        'border-radius': '12px',
+        padding: '20px',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <h3 style={{ 
-          color: 'var(--color-text)', 
-          'margin-bottom': '20px',
-          'font-size': '1.3rem'
-        }}>
-          📊 إحصائيات حالات الطلاب
+        <h3 style={{ color: '#1f2937', 'margin-bottom': '10px' }}>
+          📊 لوحة تحكم الإدارة
         </h3>
-        <div style={{ 
-          display: 'grid', 
-          'grid-template-columns': 'repeat(auto-fit, minmax(140px, 1fr))', 
-          gap: '15px' 
-        }}>
-          <div style={{ 
-            'text-align': 'center', 
-            padding: '20px', 
-            background: 'var(--color-background)', 
-            'border-radius': '12px', 
-            border: '3px solid var(--color-error)' 
-          }}>
-            <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>🔴</div>
-            <div style={{ 
-              'font-size': '1.8rem', 
-              'font-weight': 'bold', 
-              color: 'var(--color-error)',
-              'margin-bottom': '5px'
-            }}>
-              {statusCounts.not_available}
-            </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
-              غير متاح
-            </div>
-          </div>
-
-          <div style={{ 
-            'text-align': 'center', 
-            padding: '20px', 
-            background: 'var(--color-background)', 
-            'border-radius': '12px', 
-            border: '3px solid var(--color-warning)' 
-          }}>
-            <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>🟡</div>
-            <div style={{ 
-              'font-size': '1.8rem', 
-              'font-weight': 'bold', 
-              color: 'var(--color-warning)',
-              'margin-bottom': '5px'
-            }}>
-              {statusCounts.revising}
-            </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
-              يراجع
-            </div>
-          </div>
-
-          <div style={{ 
-            'text-align': 'center', 
-            padding: '20px', 
-            background: 'var(--color-background)', 
-            'border-radius': '12px', 
-            border: '3px solid var(--color-success)' 
-          }}>
-            <div style={{ 'font-size': '2.5rem', 'margin-bottom': '10px' }}>🟢</div>
-            <div style={{ 
-              'font-size': '1.8rem', 
-              'font-weight': 'bold', 
-              color: 'var(--color-success)',
-              'margin-bottom': '5px'
-            }}>
-              {statusCounts.khatamat}
-            </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.9rem' }}>
-              ختمات
-            </div>
-          </div>
-        </div>
+        <p style={{ color: '#64748b' }}>
+          ستتوفر تقارير مفصلة وإحصائيات شاملة قريباً...
+        </p>
       </div>
     </div>
   );
