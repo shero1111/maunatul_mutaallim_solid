@@ -124,7 +124,11 @@ export const translations = {
     // Save/Edit
     saveNote: 'حفظ',
     writeNote: 'اكتب ملاحظة',
-    materials: 'المواد'
+    materials: 'المواد',
+    
+    // Header
+    appTitle: 'معونة المتعلم',
+    appSubtitle: 'نظام إدارة حلقات عَلٌمْنِي'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -251,6 +255,10 @@ export const translations = {
     // Save/Edit
     saveNote: 'Save',
     writeNote: 'Write a note',
-    materials: 'Materials'
+    materials: 'Materials',
+    
+    // Header
+    appTitle: 'Maunatul Mutaallim',
+    appSubtitle: 'Allemni Learning Management System'
   }
 };

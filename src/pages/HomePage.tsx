@@ -32,14 +32,23 @@ function HomePageContent(props: { user: User }) {
           gap: '12px',
           'margin-bottom': '8px'
         }}>
-          <div style={{ 'font-size': '1.8rem' }}>🕌</div>
+          <img 
+            src="https://archive.org/download/logo-allemni/Logo_allemni.jpg" 
+            alt="Logo" 
+            style={{ 
+              width: '32px', 
+              height: '32px', 
+              'border-radius': '6px',
+              'object-fit': 'contain'
+            }} 
+          />
           <h1 style={{ 
             color: 'var(--color-primary)', 
             'font-size': '2rem', 
             margin: '0', 
             'font-weight': '700' 
           }}>
-            معونة المتعلم
+            {app.translate('appTitle')}
           </h1>
         </div>
         <p style={{ 
@@ -47,7 +56,7 @@ function HomePageContent(props: { user: User }) {
           'font-size': '0.9rem', 
           margin: '0' 
         }}>
-          نظام إدارة حلقات عَلٌمْنِي
+          {app.translate('appSubtitle')}
         </p>
       </div>
 
@@ -373,7 +382,11 @@ function StudentDashboard(props: { user: Student }) {
             {app.translate('allStudents')}
           </button>
           <button
-            onClick={() => setStatusFilter('not_available')}
+            onClick={() => {
+              console.log('🔴 Setting status filter to not_available');
+              setStatusFilter('not_available');
+              console.log('🔴 Status filter is now:', statusFilter());
+            }}
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
