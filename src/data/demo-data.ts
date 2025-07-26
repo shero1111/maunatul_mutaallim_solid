@@ -28,9 +28,9 @@ const mutunTemplate = [
       },
       { 
         name: 'الأربعين النووية', 
-        memorization_pdf_link: 'https://drive.google.com/file/d/1WOiMH2FGIrLcN9LHiXYJwN2wbpYYaW3M/view?usp=sharing', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1C-Pc9Yx9D6G-M-sJJ6Ybvd7mPKQ-m5N-/view?usp=sharing', 
         memorization_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah/1-4-al-arbaeen-an-nawawiyyah.mp3', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1s1e-6uQ8y8_S7S0Bj9Qpk4q-kM7X-z1/view?usp=sharing', 
         explanation_audio_link: 'https://archive.org/download/1-4-al-arbaeen-an-nawawiyyah-explanation/1-4-al-arbaeen-an-nawawiyyah-explanation.mp3' 
       },
       { 
@@ -53,38 +53,31 @@ const mutunTemplate = [
     title: 'المستوى الثاني',
     items: [
       { 
-        name: 'القواعد الأربع', 
-        memorization_pdf_link: 'https://drive.google.com/file/d/1J4vG2gYfEsRKp8N9QaWpXt7uMcDhE3sL/view?usp=sharing', 
+        name: 'آداب المشي إلى الصلاة', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1QhLyKkXJlGbVzV5cVpMxZ8qWyTnO1I2N/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1NG_aXyRyT-_tYzJm7H7uP2rN3lO9Ak4V/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'كشف الشبهات', 
-        memorization_pdf_link: '', 
+        name: 'الورقات في أصول الفقه', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1pFqXhVyVnY5oN8wX4r2Tb6jK1Oj9Zx3L/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1u9VxKmJhB7Ag6LpM3nO1Xc5WyZnV2Gq8/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'نواقض الإسلام', 
-        memorization_pdf_link: '', 
+        name: 'نخبة الفكر في مصطلح أهل الأثر', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1W8jKlRvNmY3xP6oZ9qA2Cs4DtF7Hg1I5/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1x7FgHkJmVnB5Np3wQ8rE4Zy2Lp6Oj9K1/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'الحج', 
-        memorization_pdf_link: '', 
+        name: 'شرح السنة للبربهاري', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1EhLyVxNzKpB7wA8qG3rM5tO2Cn1Dj6F9/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
-        name: 'أصول الإيمان', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1m4PqWyTgBvC8xL9nR2uJ6kF3Oj7Gh5I1/view?usp=sharing', 
         explanation_audio_link: '' 
       }
     ]
@@ -94,30 +87,23 @@ const mutunTemplate = [
     items: [
       { 
         name: 'كتاب التوحيد', 
-        memorization_pdf_link: 'https://drive.google.com/file/d/1K3wF7zM9NbPcQ4eRtYuIoL6vXgB2hE8s/view?usp=sharing', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1VxMzLpGhKjN5wQ2Y8rT4uA7Cs9Df3Hm1/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1n6OjKmBvHyC4xL8pQ9rF2Zy5Gk3Wj7I9/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'آداب المشي إلى الصلاة', 
-        memorization_pdf_link: '', 
+        name: 'كشف الشبهات', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1YzNgLkRhTpA3xM6wE9uB4Cs7Fj8Hm2I5/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1p7QjMvCyGzD5yN8rK1uL4Aw6Bk9Oj3F2/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'أصول الفقه', 
-        memorization_pdf_link: '', 
+        name: 'الآجرومية', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1BzFhKoLmRpC6yN9xQ2uT5Aw8Dj1Gk4I7/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
-        name: 'لمعة الاعتقاد', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1r8VjPyCzHvF7wO1sK3mE6Lz9Qj2Gk5H8/view?usp=sharing', 
         explanation_audio_link: '' 
       }
     ]
@@ -126,31 +112,17 @@ const mutunTemplate = [
     title: 'المستوى الرابع',
     items: [
       { 
-        name: 'العقيدة الواسطية', 
-        memorization_pdf_link: '', 
+        name: 'مختصر صحيح مسلم', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1DzGkJpMvRyE8xQ3wT6uA9Cs2Fj5Hm7I1/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1t9WjQzCyIvG8yR1sL4nF7Bz3Qk6Hm9J2/view?usp=sharing', 
         explanation_audio_link: '' 
       },
       { 
-        name: 'بلوغ المرام - كتاب الطهارة', 
-        memorization_pdf_link: '', 
+        name: 'عمدة الفقه', 
+        memorization_pdf_link: 'https://drive.google.com/file/d/1FzIkLpNvSyH9xS4wU7rB1Dt6Gj8Km2I5/view?usp=sharing', 
         memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
-        name: 'بلوغ المرام - كتاب الصلاة', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
-        explanation_audio_link: '' 
-      },
-      { 
-        name: 'ألفية ابن مالك - مقدمة', 
-        memorization_pdf_link: '', 
-        memorization_audio_link: '', 
-        explanation_pdf_link: '', 
+        explanation_pdf_link: 'https://drive.google.com/file/d/1v1XjRzDyJvI9yT2sM5oG8Cz4Rl7Jm1K6/view?usp=sharing', 
         explanation_audio_link: '' 
       }
     ]
