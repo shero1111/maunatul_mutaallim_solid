@@ -606,7 +606,7 @@ export function MorePage() {
 
       {/* Password Change Modal */}
       {showPasswordModal() && (
-        <div style={{
+        <div class="password-modal-container" style={{
           position: 'fixed',
           top: '0',
           left: '0',
@@ -617,24 +617,28 @@ export function MorePage() {
           'align-items': 'center',
           'justify-content': 'center',
           'z-index': '1000',
-          padding: '20px'
+          padding: '16px',
+          'overflow-y': 'auto'
         }}>
-          <div style={{
+          <div class="password-modal" style={{
             'background-color': 'var(--color-background)',
             'border-radius': '16px',
-            padding: '24px',
+            padding: '20px',
             width: '100%',
             'max-width': '400px',
+            'max-height': '90vh',
+            'overflow-y': 'auto',
             'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.3)',
             animation: 'modalFadeIn 0.3s ease-out',
-            direction: app.language() === 'ar' ? 'rtl' : 'ltr'
+            direction: app.language() === 'ar' ? 'rtl' : 'ltr',
+            margin: 'auto 0'
           }}>
             {/* Modal Header */}
             <div style={{
               display: 'flex',
               'align-items': 'center',
               'justify-content': 'space-between',
-              'margin-bottom': '24px'
+              'margin-bottom': '20px'
             }}>
               <h2 style={{
                 'font-size': '20px',
@@ -672,9 +676,31 @@ export function MorePage() {
                 'border-radius': '8px',
                 'margin-bottom': '16px',
                 'font-size': '14px',
-                border: '1px solid #ffcdd2'
+                border: '1px solid #ffcdd2',
+                display: 'flex',
+                'align-items': 'flex-start',
+                'justify-content': 'space-between',
+                gap: '8px'
               }}>
-                ❌ {passwordError()}
+                <span style={{ flex: '1' }}>
+                  ❌ {passwordError()}
+                </span>
+                <button
+                  onClick={() => setPasswordError('')}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#c62828',
+                    cursor: 'pointer',
+                    'font-size': '16px',
+                    padding: '0',
+                    'line-height': '1',
+                    'flex-shrink': '0'
+                  }}
+                  title={app.translate('close')}
+                >
+                  ✕
+                </button>
               </div>
             )}
 
@@ -686,9 +712,31 @@ export function MorePage() {
                 'border-radius': '8px',
                 'margin-bottom': '16px',
                 'font-size': '14px',
-                border: '1px solid #c8e6c9'
+                border: '1px solid #c8e6c9',
+                display: 'flex',
+                'align-items': 'flex-start',
+                'justify-content': 'space-between',
+                gap: '8px'
               }}>
-                ✅ {passwordSuccess()}
+                <span style={{ flex: '1' }}>
+                  ✅ {passwordSuccess()}
+                </span>
+                <button
+                  onClick={() => setPasswordSuccess('')}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#2e7d32',
+                    cursor: 'pointer',
+                    'font-size': '16px',
+                    padding: '0',
+                    'line-height': '1',
+                    'flex-shrink': '0'
+                  }}
+                  title={app.translate('close')}
+                >
+                  ✕
+                </button>
               </div>
             )}
 
@@ -749,7 +797,7 @@ export function MorePage() {
               />
             </div>
 
-            <div style={{ 'margin-bottom': '24px' }}>
+            <div style={{ 'margin-bottom': '20px' }}>
               <label style={{
                 display: 'block',
                 'margin-bottom': '8px',
@@ -862,6 +910,27 @@ export function MorePage() {
             }
             to {
               transform: rotate(360deg);
+            }
+          }
+
+          /* Responsive modal adjustments for small devices */
+          @media (max-height: 600px) {
+            .password-modal-container {
+              align-items: flex-start !important;
+              padding-top: 10px !important;
+              padding-bottom: 10px !important;
+            }
+            .password-modal {
+              margin: 0 !important;
+              max-height: 95vh !important;
+              padding: 16px !important;
+            }
+          }
+
+          @media (max-height: 500px) {
+            .password-modal {
+              max-height: 98vh !important;
+              padding: 12px !important;
             }
           }
         `}
