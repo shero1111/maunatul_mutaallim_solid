@@ -211,19 +211,10 @@ function StudentDashboard(props: { user: Student }) {
             padding: '8px 20px',
             'border-radius': '25px',
             'font-size': '1rem',
-            'font-weight': '600',
-            'margin-bottom': '8px'
+            'font-weight': '600'
           }}>
             {statusInfo().icon} {statusInfo().text}
           </div>
-          
-          <p style={{ 
-            color: '#6b7280', 
-            'font-size': '0.85rem',
-            margin: '0'
-          }}>
-            آخر تغيير: {formatDate(user().status_changed_at)}
-          </p>
         </div>
         
         {/* Separator */}
