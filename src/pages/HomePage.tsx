@@ -346,18 +346,18 @@ function StudentDashboard(props: { user: Student }) {
         </div>
         
         {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
           <button
             onClick={() => setStatusFilter('all')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'all' ? '#2563eb' : '#f3f4f6',
-              color: statusFilter() === 'all' ? 'white' : '#6b7280',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid #e5e7eb',
+              background: statusFilter() === 'all' ? '#eff6ff' : '#f9fafb',
+              color: statusFilter() === 'all' ? '#1d4ed8' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600',
+              'font-size': '0.8rem',
+              'font-weight': '500',
               transition: 'all 0.2s ease'
             }}
           >
@@ -366,14 +366,14 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('not_available')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'not_available' ? '#ef4444' : '#f3f4f6',
-              color: statusFilter() === 'not_available' ? 'white' : '#ef4444',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid #e5e7eb',
+              background: statusFilter() === 'not_available' ? '#fef2f2' : '#f9fafb',
+              color: statusFilter() === 'not_available' ? '#dc2626' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600',
+              'font-size': '0.8rem',
+              'font-weight': '500',
               transition: 'all 0.2s ease'
             }}
           >
@@ -382,14 +382,14 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('revising')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'revising' ? '#f59e0b' : '#f3f4f6',
-              color: statusFilter() === 'revising' ? 'white' : '#f59e0b',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid #e5e7eb',
+              background: statusFilter() === 'revising' ? '#fffbeb' : '#f9fafb',
+              color: statusFilter() === 'revising' ? '#d97706' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600',
+              'font-size': '0.8rem',
+              'font-weight': '500',
               transition: 'all 0.2s ease'
             }}
           >
@@ -398,14 +398,14 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('khatamat')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'khatamat' ? '#10b981' : '#f3f4f6',
-              color: statusFilter() === 'khatamat' ? 'white' : '#10b981',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid #e5e7eb',
+              background: statusFilter() === 'khatamat' ? '#f0fdf4' : '#f9fafb',
+              color: statusFilter() === 'khatamat' ? '#059669' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600',
+              'font-size': '0.8rem',
+              'font-weight': '500',
               transition: 'all 0.2s ease'
             }}
           >
@@ -742,18 +742,19 @@ function TeacherDashboard(props: { user: Teacher }) {
           }}
         />
         
-        <div style={{ display: 'flex', gap: '8px', 'flex-wrap': 'wrap' }}>
+        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
           <button
             onClick={() => setStatusFilter('all')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'all' ? '#2563eb' : '#f3f4f6',
-              color: statusFilter() === 'all' ? 'white' : '#6b7280',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'all' ? '1px solid #dbeafe' : '1px solid #e5e7eb',
+              background: statusFilter() === 'all' ? '#eff6ff' : '#f9fafb',
+              color: statusFilter() === 'all' ? '#1d4ed8' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-size': '0.8rem',
+              'font-weight': '500',
+              transition: 'all 0.2s ease'
             }}
           >
             الجميع
@@ -761,14 +762,15 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('not_available')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'not_available' ? '#ef4444' : '#f3f4f6',
-              color: statusFilter() === 'not_available' ? 'white' : '#6b7280',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'not_available' ? '1px solid #fecaca' : '1px solid #e5e7eb',
+              background: statusFilter() === 'not_available' ? '#fef2f2' : '#f9fafb',
+              color: statusFilter() === 'not_available' ? '#dc2626' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-size': '0.8rem',
+              'font-weight': '500',
+              transition: 'all 0.2s ease'
             }}
           >
             🔴 غير متاح
@@ -776,14 +778,15 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('revising')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'revising' ? '#f59e0b' : '#f3f4f6',
-              color: statusFilter() === 'revising' ? 'white' : '#6b7280',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'revising' ? '1px solid #fed7aa' : '1px solid #e5e7eb',
+              background: statusFilter() === 'revising' ? '#fffbeb' : '#f9fafb',
+              color: statusFilter() === 'revising' ? '#d97706' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-size': '0.8rem',
+              'font-weight': '500',
+              transition: 'all 0.2s ease'
             }}
           >
             🟡 مراجعة
@@ -791,14 +794,15 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('khatamat')}
             style={{
-              padding: '8px 16px',
-              'border-radius': '20px',
-              border: 'none',
-              background: statusFilter() === 'khatamat' ? '#10b981' : '#f3f4f6',
-              color: statusFilter() === 'khatamat' ? 'white' : '#6b7280',
+              padding: '6px 12px',
+              'border-radius': '6px',
+              border: statusFilter() === 'khatamat' ? '1px solid #bbf7d0' : '1px solid #e5e7eb',
+              background: statusFilter() === 'khatamat' ? '#f0fdf4' : '#f9fafb',
+              color: statusFilter() === 'khatamat' ? '#059669' : '#6b7280',
               cursor: 'pointer',
-              'font-size': '0.85rem',
-              'font-weight': '600'
+              'font-size': '0.8rem',
+              'font-weight': '500',
+              transition: 'all 0.2s ease'
             }}
           >
             🟢 ختمات
