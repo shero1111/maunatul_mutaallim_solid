@@ -561,11 +561,10 @@ export function AudioPlayer() {
                 }}>
                   {/* Play/Pause - Beautiful rounded gradient button */}
                   <button
+                    className="audio-player-button"
                     style={{
                       width: '36px',
                       height: '36px',
-                      borderRadius: '50%',
-                      border: 'none',
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       color: 'white',
                       fontSize: '16px',
@@ -574,9 +573,7 @@ export function AudioPlayer() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
-                      outline: 'none',
-                      WebkitAppearance: 'none'
+                      boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
                     }}
                     onClick={app.pauseAudio}
                     onMouseOver={(e) => {
@@ -593,11 +590,10 @@ export function AudioPlayer() {
                   
                   {/* Expand - Beautiful rounded button */}
                   <button
+                    className="audio-player-button"
                     style={{
                       width: '30px',
                       height: '30px',
-                      borderRadius: '50%',
-                      border: 'none',
                       background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
                       color: '#4a5568',
                       fontSize: '12px',
@@ -606,9 +602,7 @@ export function AudioPlayer() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                      outline: 'none',
-                      WebkitAppearance: 'none'
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                     }}
                     onClick={() => setIsMinimized(false)}
                     onMouseOver={(e) => {
@@ -630,11 +624,10 @@ export function AudioPlayer() {
                   
                   {/* Close - Beautiful rounded button */}
                   <button
+                    className="audio-player-button"
                     style={{
                       width: '30px',
                       height: '30px',
-                      borderRadius: '50%',
-                      border: 'none',
                       background: 'linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%)',
                       color: '#c53030',
                       fontSize: '14px',
@@ -643,9 +636,7 @@ export function AudioPlayer() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                      outline: 'none',
-                      WebkitAppearance: 'none'
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                     }}
                     onClick={() => {
                       setIsMinimized(false); // Reset to expanded when closing
@@ -788,28 +779,51 @@ export function AudioPlayer() {
           </div>
         </div>
         
-        {/* CSS Animations */}
-        <style>
-          {`
-            @keyframes spin {
-              from {
-                transform: rotate(0deg);
-              }
-              to {
-                transform: rotate(360deg);
-              }
-            }
-            
-            @keyframes pulse {
-              0%, 100% {
-                opacity: 1;
-              }
-              50% {
-                opacity: 0.7;
-              }
-            }
-          `}
-        </style>
+                            {/* CSS Animations and Forced Button Styles */}
+                    <style>
+                      {`
+                        @keyframes spin {
+                          from {
+                            transform: rotate(0deg);
+                          }
+                          to {
+                            transform: rotate(360deg);
+                          }
+                        }
+                        
+                        @keyframes pulse {
+                          0%, 100% {
+                            opacity: 1;
+                          }
+                          50% {
+                            opacity: 0.7;
+                          }
+                        }
+                        
+                        /* Force round buttons - override ALL browser defaults */
+                        .audio-player-button {
+                          border-radius: 50% !important;
+                          -webkit-border-radius: 50% !important;
+                          -moz-border-radius: 50% !important;
+                          border: none !important;
+                          outline: none !important;
+                          -webkit-appearance: none !important;
+                          -moz-appearance: none !important;
+                          appearance: none !important;
+                          box-sizing: border-box !important;
+                        }
+                        
+                        .audio-player-button:focus {
+                          outline: none !important;
+                          border: none !important;
+                        }
+                        
+                        .audio-player-button:active {
+                          outline: none !important;
+                          border: none !important;
+                        }
+                      `}
+                    </style>
       </div>
     </Show>
   );
