@@ -431,7 +431,10 @@ export function AudioPlayer() {
                 {/* Close Button */}
                 <button
                   style={closeButtonStyle}
-                  onClick={app.stopAudio}
+                  onClick={() => {
+                    setIsMinimized(false); // Reset to expanded when closing
+                    app.stopAudio();
+                  }}
                   onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-error)'}
                   onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-text-secondary)'}
                   title={app.translate('close')}
@@ -529,7 +532,7 @@ export function AudioPlayer() {
             gap: isMinimized() ? '8px' : '12px'
           }}>
             
-            {/* Minimized Controls - Single line layout */}
+                        {/* Minimized Controls - Single line layout */}
             <Show when={isMinimized()}>
               <div style={{
                 display: 'flex',
@@ -556,88 +559,109 @@ export function AudioPlayer() {
                   gap: '8px',
                   flexShrink: '0'
                 }}>
-                  {/* Play/Pause */}
+                  {/* Play/Pause - Beautiful rounded gradient button */}
                   <button
                     style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '36px',
+                      height: '36px',
                       borderRadius: '50%',
                       border: 'none',
-                      background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       color: 'white',
-                      fontSize: '14px',
+                      fontSize: '16px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)'
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                      outline: 'none',
+                      WebkitAppearance: 'none'
                     }}
                     onClick={app.pauseAudio}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
                     }}
                     onMouseOut={(e) => {
                       e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
                     }}
                   >
                     {player().isPlaying ? '⏸️' : '▶️'}
                   </button>
                   
-                                     {/* Expand */}
-                   <button
-                     style={{
-                       width: '28px',
-                       height: '28px',
-                       borderRadius: '50%',
-                       border: 'none',
-                       backgroundColor: 'var(--color-border)',
-                       color: 'var(--color-text)',
-                       fontSize: '10px',
-                       cursor: 'pointer',
-                       display: 'flex',
-                       alignItems: 'center',
-                       justifyContent: 'center',
-                       transition: 'all 0.2s ease',
-                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                     }}
+                  {/* Expand - Beautiful rounded button */}
+                  <button
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)',
+                      color: '#4a5568',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                      outline: 'none',
+                      WebkitAppearance: 'none'
+                    }}
                     onClick={() => setIsMinimized(false)}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
                       e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-border)';
-                      e.currentTarget.style.color = 'var(--color-text)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%)';
+                      e.currentTarget.style.color = '#4a5568';
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
                     }}
                     title={app.translate('expand')}
                   >
                     ▲
                   </button>
                   
-                                     {/* Close */}
-                   <button
-                     style={{
-                       width: '28px',
-                       height: '28px',
-                       borderRadius: '50%',
-                       border: 'none',
-                       backgroundColor: 'var(--color-text-secondary)',
-                       color: 'white',
-                       fontSize: '12px',
-                       cursor: 'pointer',
-                       display: 'flex',
-                       alignItems: 'center',
-                       justifyContent: 'center',
-                       transition: 'all 0.2s ease',
-                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                     }}
-                    onClick={app.stopAudio}
+                  {/* Close - Beautiful rounded button */}
+                  <button
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%)',
+                      color: '#c53030',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                      outline: 'none',
+                      WebkitAppearance: 'none'
+                    }}
+                    onClick={() => {
+                      setIsMinimized(false); // Reset to expanded when closing
+                      app.stopAudio();
+                    }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-error)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(229, 62, 62, 0.4)';
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-text-secondary)';
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%)';
+                      e.currentTarget.style.color = '#c53030';
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
                     }}
                     title={app.translate('close')}
                   >
