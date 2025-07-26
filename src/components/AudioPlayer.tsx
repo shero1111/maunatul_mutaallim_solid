@@ -210,7 +210,7 @@ export function AudioPlayer() {
     right: '0',
     'background': 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%)',
     'border-top': '1px solid var(--color-border)',
-    padding: isMinimized() ? '8px 20px' : '16px 20px',
+    padding: isMinimized() ? '6px 20px' : '16px 20px',
     'z-index': '999',
     'box-shadow': '0 -4px 20px rgba(0, 0, 0, 0.15)',
     transform: player().title ? 'translateY(0)' : 'translateY(100%)',
@@ -405,40 +405,42 @@ export function AudioPlayer() {
     <Show when={player().title}>
       <div style={playerStyle()}>
         <div style={contentStyle}>
-          {/* Header with Title and Controls */}
-          <div style={headerStyle}>
-            <div style={titleStyle}>
-              {player().title}
-            </div>
-            
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {/* Minimize/Expand Button */}
-              <button
-                style={{
-                  ...closeButtonStyle,
-                  backgroundColor: 'var(--color-border)',
-                  fontSize: '12px'
-                }}
-                onClick={() => setIsMinimized(!isMinimized())}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-border)'}
-                title={isMinimized() ? app.translate('expand') : app.translate('minimize')}
-              >
-                {isMinimized() ? '▲' : '▼'}
-              </button>
+          {/* Header with Title and Controls - Only shown when expanded */}
+          <Show when={!isMinimized()}>
+            <div style={headerStyle}>
+              <div style={titleStyle}>
+                {player().title}
+              </div>
               
-              {/* Close Button */}
-              <button
-                style={closeButtonStyle}
-                onClick={app.stopAudio}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-error)'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-text-secondary)'}
-                title={app.translate('close')}
-              >
-                ✕
-              </button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {/* Minimize/Expand Button */}
+                <button
+                  style={{
+                    ...closeButtonStyle,
+                    backgroundColor: 'var(--color-border)',
+                    fontSize: '12px'
+                  }}
+                  onClick={() => setIsMinimized(!isMinimized())}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-border)'}
+                  title={isMinimized() ? app.translate('expand') : app.translate('minimize')}
+                >
+                  {isMinimized() ? '▲' : '▼'}
+                </button>
+                
+                {/* Close Button */}
+                <button
+                  style={closeButtonStyle}
+                  onClick={app.stopAudio}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-error)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-text-secondary)'}
+                  title={app.translate('close')}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
-          </div>
+          </Show>
           
                       {/* Enhanced Progress Bar with Drag & Drop */}
             <Show when={!isMinimized()}>
@@ -527,27 +529,120 @@ export function AudioPlayer() {
             gap: isMinimized() ? '8px' : '12px'
           }}>
             
-            {/* Minimized Controls - Just Play/Pause in center */}
+            {/* Minimized Controls - Single line layout */}
             <Show when={isMinimized()}>
-              <button
-                style={{
-                  ...buttonStyle,
-                  width: '40px',
-                  height: '40px',
-                  fontSize: '16px'
-                }}
-                onClick={app.pauseAudio}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                }}
-              >
-                {player().isPlaying ? '⏸️' : '▶️'}
-              </button>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                gap: '12px'
+              }}>
+                {/* Title (left) */}
+                <div style={{
+                  ...titleStyle,
+                  fontSize: '14px',
+                  margin: '0',
+                  flex: '1',
+                  minWidth: '0'
+                }}>
+                  {player().title}
+                </div>
+                
+                {/* Controls (right) */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  flexShrink: '0'
+                }}>
+                  {/* Play/Pause */}
+                  <button
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+                      color: 'white',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)'
+                    }}
+                    onClick={app.pauseAudio}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
+                    {player().isPlaying ? '⏸️' : '▶️'}
+                  </button>
+                  
+                  {/* Expand */}
+                  <button
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      backgroundColor: 'var(--color-border)',
+                      color: 'var(--color-text)',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={() => setIsMinimized(false)}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-border)';
+                      e.currentTarget.style.color = 'var(--color-text)';
+                    }}
+                    title={app.translate('expand')}
+                  >
+                    ▲
+                  </button>
+                  
+                  {/* Close */}
+                  <button
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      backgroundColor: 'var(--color-text-secondary)',
+                      color: 'white',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onClick={app.stopAudio}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-error)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-text-secondary)';
+                    }}
+                    title={app.translate('close')}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
             </Show>
 
             {/* Full Controls - Normal view */}
