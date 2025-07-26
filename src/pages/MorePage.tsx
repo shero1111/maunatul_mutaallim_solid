@@ -7,6 +7,15 @@ export function MorePage() {
   // State for logout modal
   const [showLogoutModal, setShowLogoutModal] = createSignal(false);
   
+  // State for password change modal
+  const [showPasswordModal, setShowPasswordModal] = createSignal(false);
+  const [currentPassword, setCurrentPassword] = createSignal('');
+  const [newPassword, setNewPassword] = createSignal('');
+  const [confirmPassword, setConfirmPassword] = createSignal('');
+  const [passwordError, setPasswordError] = createSignal('');
+  const [passwordSuccess, setPasswordSuccess] = createSignal('');
+  const [isChangingPassword, setIsChangingPassword] = createSignal(false);
+  
   const containerStyle = {
     padding: '20px 16px 80px 16px',
     'background-color': 'var(--color-surface)',
@@ -228,13 +237,84 @@ export function MorePage() {
     }
   ];
 
+  // Password change functions
+  const resetPasswordForm = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
+    setPasswordSuccess('');
+    setIsChangingPassword(false);
+  };
+
+  const handlePasswordChange = async () => {
+    const current = currentPassword().trim();
+    const newPass = newPassword().trim();
+    const confirm = confirmPassword().trim();
+
+    // Clear previous messages
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    // Validation
+    if (!current || !newPass || !confirm) {
+      setPasswordError(app.translate('allFieldsRequired'));
+      return;
+    }
+
+    if (newPass.length < 4) {
+      setPasswordError(app.translate('passwordTooShort'));
+      return;
+    }
+
+    if (newPass !== confirm) {
+      setPasswordError(app.translate('passwordsDoNotMatch'));
+      return;
+    }
+
+    if (current === newPass) {
+      setPasswordError(app.translate('newPasswordSameAsCurrent'));
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      // Verify current password
+      const user = app.currentUser();
+      if (!user || user.password !== current) {
+        setPasswordError(app.translate('currentPasswordIncorrect'));
+        setIsChangingPassword(false);
+        return;
+      }
+
+      // Update password in app store
+      const success = app.changePassword(current, newPass);
+      
+      if (success) {
+        setPasswordSuccess(app.translate('passwordChangedSuccessfully'));
+        setTimeout(() => {
+          setShowPasswordModal(false);
+          resetPasswordForm();
+        }, 2000);
+      } else {
+        setPasswordError(app.translate('passwordChangeError'));
+      }
+    } catch (error) {
+      setPasswordError(app.translate('passwordChangeError'));
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   const accountItems = [
     {
       icon: '🔑',
       text: app.translate('changePassword'),
       type: 'action' as const,
       action: () => {
-        alert('Change Password coming soon!');
+        resetPasswordForm();
+        setShowPasswordModal(true);
       }
     },
     {
