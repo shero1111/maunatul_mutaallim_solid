@@ -436,9 +436,9 @@ export function MorePage() {
             style={{
               padding: '8px 16px',
               'border-radius': '8px',
-              border: `1px solid var(--color-border)`,
+              border: `1px solid #6b7280`,
               background: 'var(--color-surface)',
-              color: 'var(--color-text-secondary)',
+              color: 'var(--color-text)',
               'font-size': '14px',
               'font-weight': '400',
               cursor: 'pointer',
@@ -446,12 +446,12 @@ export function MorePage() {
               'min-width': '80px'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-text-secondary)';
-              e.currentTarget.style.color = 'var(--color-text)';
+              e.currentTarget.style.borderColor = '#4b5563';
+              e.currentTarget.style.background = '#f9fafb';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border)';
-              e.currentTarget.style.color = 'var(--color-text-secondary)';
+              e.currentTarget.style.borderColor = '#6b7280';
+              e.currentTarget.style.background = 'var(--color-surface)';
             }}
           >
             {app.language() === 'ar' ? 'إلغاء' : 'Cancel'}
@@ -466,8 +466,8 @@ export function MorePage() {
             style={{
               padding: '8px 16px',
               'border-radius': '8px',
-              border: '1px solid #dc2626',
-              background: '#dc2626',
+              border: '1px solid #e11d48',
+              background: '#e11d48',
               color: 'white',
               'font-size': '14px',
               'font-weight': '500',
@@ -476,12 +476,12 @@ export function MorePage() {
               'min-width': '80px'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#b91c1c';
-              e.currentTarget.style.borderColor = '#b91c1c';
+              e.currentTarget.style.background = '#be185d';
+              e.currentTarget.style.borderColor = '#be185d';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#dc2626';
-              e.currentTarget.style.borderColor = '#dc2626';
+              e.currentTarget.style.background = '#e11d48';
+              e.currentTarget.style.borderColor = '#e11d48';
             }}
           >
             {app.language() === 'ar' ? 'تسجيل الخروج' : 'Logout'}
