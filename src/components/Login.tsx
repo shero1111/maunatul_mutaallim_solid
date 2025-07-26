@@ -6,11 +6,19 @@ export function Login() {
   const [password, setPassword] = createSignal('');
   const app = useApp();
 
-  const login = () => {
-    const success = app.login(username(), password());
-    if (success) {
-      // Do nothing - let the app handle it
-    }
+  const handleLogin = () => {
+    const user = username().trim();
+    const pass = password().trim();
+    
+    if (!user || !pass) return;
+    
+    app.login(user, pass);
+  };
+
+  const quickLogin = (user: string, pass: string) => {
+    setUsername(user);
+    setPassword(pass);
+    app.login(user, pass);
   };
 
   return (
@@ -49,6 +57,7 @@ export function Login() {
           placeholder="Password"
           value={password()}
           onInput={(e) => setPassword(e.currentTarget.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           style={{
             width: '100%',
             padding: '10px',
@@ -59,7 +68,7 @@ export function Login() {
         />
         
         <button
-          onClick={login}
+          onClick={handleLogin}
           style={{
             width: '100%',
             padding: '10px',
@@ -75,12 +84,32 @@ export function Login() {
         </button>
         
         <div style={{ 'text-align': 'center' }}>
-          <button onClick={() => { setUsername('admin'); setPassword('test'); login(); }}
-                  style={{ margin: '5px', padding: '5px 10px', background: '#10b981', color: 'white', border: 'none', 'border-radius': '3px', cursor: 'pointer' }}>
+          <button 
+            onClick={() => quickLogin('admin', 'test')}
+            style={{ 
+              margin: '5px', 
+              padding: '5px 10px', 
+              background: '#10b981', 
+              color: 'white', 
+              border: 'none', 
+              'border-radius': '3px', 
+              cursor: 'pointer' 
+            }}
+          >
             Admin
           </button>
-          <button onClick={() => { setUsername('student1'); setPassword('test'); login(); }}
-                  style={{ margin: '5px', padding: '5px 10px', background: '#ef4444', color: 'white', border: 'none', 'border-radius': '3px', cursor: 'pointer' }}>
+          <button 
+            onClick={() => quickLogin('student1', 'test')}
+            style={{ 
+              margin: '5px', 
+              padding: '5px 10px', 
+              background: '#ef4444', 
+              color: 'white', 
+              border: 'none', 
+              'border-radius': '3px', 
+              cursor: 'pointer' 
+            }}
+          >
             Student
           </button>
         </div>

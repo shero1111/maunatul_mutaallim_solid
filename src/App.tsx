@@ -1,5 +1,5 @@
 import { Show } from 'solid-js';
-import { AppProvider, useApp } from './store/AppStore';
+import { useApp } from './store/AppStore';
 import { Login } from './components/Login';
 import { BottomNavigation } from './components/BottomNavigation';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -11,17 +11,8 @@ import { NewsPage } from './pages/NewsPage';
 import { MorePage } from './pages/MorePage';
 import { AboutUsPage } from './pages/AboutUsPage';
 
-function AppContent() {
+export default function App() {
   const app = useApp();
-  
-  // DEBUG AUTHENTICATION
-  const currentUser = app.currentUser();
-  const isAuth = app.isAuthenticated();
-  
-  console.log('🔍 APP STATE:', {
-    currentUser: currentUser?.name || 'NULL',
-    isAuthenticated: isAuth
-  });
   
   const renderCurrentPage = () => {
     switch (app.currentPage()) {
@@ -42,21 +33,6 @@ function AppContent() {
       'background-color': 'var(--color-surface)',
       'font-family': 'system-ui, -apple-system, sans-serif'
     }}>
-      {/* DEBUG */}
-      <div style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        background: 'black',
-        color: 'white',
-        padding: '5px',
-        'font-size': '12px',
-        'z-index': '9999'
-      }}>
-        User: {currentUser?.name || 'NONE'}<br/>
-        Auth: {isAuth ? 'YES' : 'NO'}
-      </div>
-      
       <Show 
         when={app.isAuthenticated()}
         fallback={<Login />}
@@ -66,13 +42,5 @@ function AppContent() {
         <AudioPlayer />
       </Show>
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
   );
 }
