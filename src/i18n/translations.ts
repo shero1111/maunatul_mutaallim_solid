@@ -144,7 +144,9 @@ export const translations = {
     loading: 'جاري التحميل...',
     fastForward: 'تقديم سريع',
     rewind: 'ترجيع',
-    holdForFaster: 'اضغط مطولاً للإسراع'
+    holdForFaster: 'اضغط مطولاً للإسراع',
+    minimize: 'تصغير',
+    expand: 'توسيع'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -291,6 +293,8 @@ export const translations = {
     loading: 'Loading...',
     fastForward: 'Fast Forward',
     rewind: 'Rewind',
-    holdForFaster: 'Hold for faster'
+    holdForFaster: 'Hold for faster',
+    minimize: 'Minimize',
+    expand: 'Expand'
   }
 };
