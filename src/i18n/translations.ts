@@ -118,7 +118,7 @@ export const translations = {
     daysAgo: 'يوم',
     lastFullRevision: 'آخر ختمة كاملة قبل',
     days: 'أيام',
-    day: 'يوم'
+    day: 'يوم',
     
     // Empty states
     noMutunFound: 'لا توجد متون',
