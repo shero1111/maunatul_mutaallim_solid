@@ -102,8 +102,22 @@ export function MutunPage() {
     
     const now = new Date();
     const lastChangeDate = new Date(matn.lastChange_date);
-    const diffTime = Math.abs(now.getTime() - lastChangeDate.getTime());
-    const daysSince = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = now.getTime() - lastChangeDate.getTime();
+    const daysSince = Math.floor(diffTime / (1000 * 60 * 60 * 24)); // Use Math.floor instead of Math.ceil
+    
+    console.log('📅 Days calculation for', matn.name, ':', {
+      lastChange: matn.lastChange_date,
+      now: now.toISOString(),
+      diffTime,
+      daysSince,
+      status: matn.status
+    });
+    
+    // If status is green and just changed (same day), return 0
+    if (matn.status === 'green' && daysSince === 0) {
+      console.log('✅ Status is green and same day - returning 0 days');
+      return 0;
+    }
     
     // Auto-change from green to red if threshold exceeded
     if (matn.status === 'green' && daysSince >= (matn.threshold || 7)) {
@@ -118,7 +132,7 @@ export function MutunPage() {
       setTimeout(() => app.updateMatn(updatedMatn), 100);
     }
     
-    return daysSince;
+    return Math.max(0, daysSince); // Ensure never negative
   };
 
   // Note State
@@ -602,10 +616,21 @@ export function MutunPage() {
                             'font-size': '12px',
                             direction: app.language() === 'ar' ? 'rtl' : 'ltr'
                           }}>
-                            {app.language() === 'ar' 
-                              ? `آخر تغيير قبل: ${calculateDaysSinceLastChange(matn)} يوم`
-                              : `Last change: ${calculateDaysSinceLastChange(matn)} days ago`
-                            }
+                            {(() => {
+                              // Get the most current matn data from store
+                              const currentMatn = app.mutun().find(m => m.id === matn.id) || matn;
+                              const days = calculateDaysSinceLastChange(currentMatn);
+                              
+                              console.log('🔍 Displaying days for', currentMatn.name, ':', {
+                                days,
+                                status: currentMatn.status,
+                                lastChange: currentMatn.lastChange_date
+                              });
+                              
+                              return app.language() === 'ar' 
+                                ? `آخر تغيير قبل: ${days} يوم`
+                                : `Last change: ${days} days ago`;
+                            })()}
                           </div>
                         </div>
                       );
