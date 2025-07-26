@@ -491,9 +491,9 @@ export function AudioPlayer() {
                   borderRadius: '50%',
                   animation: 'spin 0.8s linear infinite'
                 }} />
-                {isSeeking() ? 'Spulen...' : 'Laden...'}
-              </div>
-            </Show>
+                                 {app.translate('loading')}
+               </div>
+             </Show>
 
           {/* Controls */}
           <div style={{

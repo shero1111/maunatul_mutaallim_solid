@@ -139,7 +139,10 @@ export const translations = {
     newPasswordSameAsCurrent: 'كلمة المرور الجديدة يجب أن تكون مختلفة عن الحالية',
     currentPasswordIncorrect: 'كلمة المرور الحالية غير صحيحة',
     passwordChangedSuccessfully: 'تم تغيير كلمة المرور بنجاح',
-    passwordChangeError: 'حدث خطأ أثناء تغيير كلمة المرور'
+    passwordChangeError: 'حدث خطأ أثناء تغيير كلمة المرور',
+    
+    // Audio Player
+    loading: 'جاري التحميل...'
   },
   en: {
     appName: 'Maunatul Mutaallim',
@@ -281,6 +284,9 @@ export const translations = {
     newPasswordSameAsCurrent: 'New password must be different from current password',
     currentPasswordIncorrect: 'Current password is incorrect',
     passwordChangedSuccessfully: 'Password changed successfully',
-    passwordChangeError: 'Error occurred while changing password'
+    passwordChangeError: 'Error occurred while changing password',
+    
+    // Audio Player
+    loading: 'Loading...'
   }
 };
