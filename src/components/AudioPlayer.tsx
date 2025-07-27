@@ -543,11 +543,19 @@ export function AudioPlayer() {
               }}>
                 {/* Title (left) */}
                 <div style={{
-                  ...titleStyle,
                   fontSize: '14px',
                   margin: '0',
                   flex: '1',
-                  minWidth: '0'
+                  minWidth: '0',
+                  color: 'var(--color-text)',
+                  fontWeight: '500',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '40px',
+                  lineHeight: '1'
                 }}>
                   {player().title}
                 </div>
