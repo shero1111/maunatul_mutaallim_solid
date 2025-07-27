@@ -211,16 +211,7 @@ export function TimerModal() {
               <div style={{ 'text-align': 'center' }}>
                                  {/* Unified time display with integrated picker */}
                  <div style={{ 'margin-bottom': '20px' }}>
-                   <Show when={app.timer().time === 0 || !app.timer().isRunning}>
-                     <p style={{
-                       color: 'var(--color-text-secondary)',
-                       'margin-bottom': '10px',
-                       'font-size': '0.9rem',
-                       'text-align': 'center'
-                     }}>
-                       {app.language() === 'ar' ? 'ضبط الوقت:' : 'Set time:'}
-                     </p>
-                   </Show>
+
                    
                    <div style={{ 
                      display: 'flex', 
@@ -407,15 +398,8 @@ export function TimerModal() {
 
                 {/* Quick timer presets */}
                 <div style={{ 'margin-top': '20px' }}>
-                  <p style={{
-                    color: 'var(--color-text-secondary)',
-                    'margin-bottom': '10px',
-                    'font-size': '0.9rem'
-                  }}>
-                    Quick presets:
-                  </p>
                   <div style={{ display: 'flex', gap: '4px', 'justify-content': 'center', 'flex-wrap': 'nowrap', 'overflow-x': 'auto' }}>
-                                         {[1, 3, 5, 10, 15, 20, 30].map(minutes => (
+                    {[5, 10, 15, 20, 30].map(minutes => (
                        <button
                          onClick={() => {
                            setCustomMinutes(minutes);
