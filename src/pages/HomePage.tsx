@@ -354,7 +354,7 @@ function StudentDashboard(props: { user: Student }) {
             onInput={(e) => setSearchTerm(e.currentTarget.value)}
             style={{
               width: '100%',
-              padding: '12px 16px',
+              padding: '12px 45px 12px 16px', // More right padding for X button
               'border-radius': '8px',
               border: '2px solid var(--color-border)',
               'background-color': 'var(--color-background)',
@@ -372,14 +372,19 @@ function StudentDashboard(props: { user: Student }) {
               onClick={() => setSearchTerm('')}
               style={{
                 position: 'absolute',
-                right: '10px',
+                right: '12px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 'font-size': '18px',
-                color: 'var(--color-text-secondary)'
+                color: 'var(--color-text-secondary)',
+                'min-width': '24px',
+                height: '24px',
+                display: 'flex',
+                'align-items': 'center',
+                'justify-content': 'center'
               }}
             >
               ✕
@@ -464,7 +469,7 @@ function StudentDashboard(props: { user: Student }) {
       <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
         <HalaqaSection 
           halaqa={{
-            id: 'search-results',
+            id: 'student-search-results',
             name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
             type: 'search',
             teacher_id: '',
@@ -837,7 +842,7 @@ function TeacherDashboard(props: { user: Teacher }) {
             onInput={(e) => setSearchTerm(e.currentTarget.value)}
             style={{
               width: '100%',
-              padding: '12px 16px',
+              padding: '12px 45px 12px 16px', // More right padding for X button
               'border-radius': '8px',
               border: '2px solid var(--color-border)',
               'background-color': 'var(--color-background)',
@@ -855,14 +860,19 @@ function TeacherDashboard(props: { user: Teacher }) {
               onClick={() => setSearchTerm('')}
               style={{
                 position: 'absolute',
-                right: '10px',
+                right: '12px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 'font-size': '18px',
-                color: 'var(--color-text-secondary)'
+                color: 'var(--color-text-secondary)',
+                'min-width': '24px',
+                height: '24px',
+                display: 'flex',
+                'align-items': 'center',
+                'justify-content': 'center'
               }}
             >
               ✕
@@ -938,26 +948,26 @@ function TeacherDashboard(props: { user: Teacher }) {
         </div>
       </div>
 
-      {/* Show filtered students when search/filter is active */}
-      <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
-        <HalaqaSection 
-          halaqa={{
-            id: 'search-results',
-            name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
-            type: 'search',
-            teacher_id: '',
-            student_ids: [],
-            internal_number: 0,
-            isActive: true
-          }}
-          students={getFilteredStudents(allStudents())}
-          userFavorites={user.favorites}
-          onToggleFavorite={toggleFavorite}
-          formatDate={formatDate}
-          getStatusInfo={getStatusInfo}
-          isSearchResults={true}
-        />
-      </Show>
+             {/* Show filtered students when search/filter is active */}
+       <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
+         <HalaqaSection 
+           halaqa={{
+             id: 'teacher-search-results',
+             name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
+             type: 'search',
+             teacher_id: '',
+             student_ids: [],
+             internal_number: 0,
+             isActive: true
+           }}
+           students={getFilteredStudents(allStudents())}
+           userFavorites={user.favorites}
+           onToggleFavorite={toggleFavorite}
+           formatDate={formatDate}
+           getStatusInfo={getStatusInfo}
+           isSearchResults={true}
+         />
+       </Show>
 
       {/* Teacher's Halaqat - only show when no search/filter is active */}
       <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
