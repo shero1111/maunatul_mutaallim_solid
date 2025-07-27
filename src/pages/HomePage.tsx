@@ -336,14 +336,29 @@ function StudentDashboard(props: { user: Student }) {
         </div>
       </div>
 
+      {/* Halaqat Section Title */}
+      <div style={{
+        'margin-bottom': '12px'
+      }}>
+        <h3 style={{
+          color: 'var(--color-text)',
+          margin: '0',
+          'font-size': '1.2rem',
+          'font-weight': '600'
+        }}>
+          حلقاتك
+        </h3>
+      </div>
+
       {/* Search and Filter Section */}
       <div style={{
         background: 'var(--color-surface)',
-        'border-radius': '12px',
+        'border-radius': '12px 12px 0 0',
         padding: '15px',
-        'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
-        border: '1px solid var(--color-border)'
+        'margin-bottom': '0',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+        border: '1px solid var(--color-border)',
+        'border-bottom': 'none'
       }}>
         {/* Search Input */}
         <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
@@ -399,13 +414,15 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'all' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'all' ? 'rgba(29, 78, 216, 0.1)' : 'transparent',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             {app.translate('allStudents')}
@@ -417,10 +434,10 @@ function StudentDashboard(props: { user: Student }) {
               console.log('🔴 Status filter is now:', statusFilter());
             }}
             style={{
-              padding: '4px 10px',
+              padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'not_available' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'not_available' ? 'rgba(220, 38, 38, 0.1)' : 'transparent',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
               'font-size': '0.75rem',
@@ -437,13 +454,15 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'revising' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'revising' ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🟡 {app.translate('revising')}
@@ -453,13 +472,15 @@ function StudentDashboard(props: { user: Student }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'khatamat' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'khatamat' ? 'rgba(5, 150, 105, 0.1)' : 'transparent',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🟢 {app.translate('khatamat')}
@@ -467,42 +488,60 @@ function StudentDashboard(props: { user: Student }) {
         </div>
       </div>
 
-      {/* Show filtered students when search/filter is active AND has results */}
-      <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length > 0}>
-        <HalaqaSection 
-          halaqa={{
-            id: 'student-search-results',
-            name: 'نتائج البحث',
-            type: 'search',
-            teacher_id: '',
-            student_ids: [],
-            internal_number: 0,
-            isActive: true
-          }}
-          students={getFilteredStudents(allStudents())}
-          userFavorites={user().favorites}
-          onToggleFavorite={toggleFavorite}
-          formatDate={formatDate}
-          getStatusInfo={getStatusInfo}
-          isSearchResults={true}
-        />
-      </Show>
-
-      {/* Halaqat Sections - only show when no search/filter is active */}
-      <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
-        <For each={userHalaqat()}>
-          {(halaqa) => (
+      {/* Halaqat Content Container */}
+      <div style={{
+        background: 'var(--color-surface)',
+        'border-radius': '0 0 12px 12px',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+        border: '1px solid var(--color-border)',
+        'border-top': 'none',
+        'margin-bottom': '20px',
+        overflow: 'hidden'
+      }}>
+        {/* Show filtered students when search/filter is active AND has results */}
+        <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length > 0}>
+          <div style={{ padding: '0' }}>
             <HalaqaSection 
-              halaqa={halaqa}
-              students={getStudentsInHalaqa(halaqa.id)}
+              halaqa={{
+                id: 'student-search-results',
+                name: 'نتائج البحث',
+                type: 'search',
+                teacher_id: '',
+                student_ids: [],
+                internal_number: 0,
+                isActive: true
+              }}
+              students={getFilteredStudents(allStudents())}
               userFavorites={user().favorites}
               onToggleFavorite={toggleFavorite}
               formatDate={formatDate}
               getStatusInfo={getStatusInfo}
+              isSearchResults={true}
+              isConnected={true}
             />
-          )}
-        </For>
-      </Show>
+          </div>
+        </Show>
+
+        {/* Halaqat Sections - only show when no search/filter is active */}
+        <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
+          <div style={{ padding: '0' }}>
+            <For each={userHalaqat()}>
+              {(halaqa, index) => (
+                <HalaqaSection 
+                  halaqa={halaqa}
+                  students={getStudentsInHalaqa(halaqa.id)}
+                  userFavorites={user().favorites}
+                  onToggleFavorite={toggleFavorite}
+                  formatDate={formatDate}
+                  getStatusInfo={getStatusInfo}
+                  isConnected={true}
+                  isLast={index() === userHalaqat().length - 1}
+                />
+              )}
+            </For>
+          </div>
+        </Show>
+      </div>
       
       <Show when={userHalaqat().length === 0 && !searchTerm().trim() && statusFilter() === 'all'}>
         <div style={{
@@ -555,7 +594,7 @@ function StudentDashboard(props: { user: Student }) {
 
 // Halaqa Section Component
 function HalaqaSection(props: any) {
-  const { halaqa, students, userFavorites, onToggleFavorite, formatDate, getStatusInfo } = props;
+  const { halaqa, students, userFavorites, onToggleFavorite, formatDate, getStatusInfo, isConnected = false, isLast = false } = props;
   const [isExpanded, setIsExpanded] = createSignal(true);
   
   const getHalaqaTypeText = (type: string) => {
@@ -571,10 +610,12 @@ function HalaqaSection(props: any) {
   
   return (
     <div style={{
-      background: 'var(--color-surface)',
-      'border-radius': '12px',
-      'margin-bottom': '20px',
-      'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+      background: isConnected ? 'transparent' : 'var(--color-surface)',
+      'border-radius': isConnected ? '0' : '12px',
+      'margin-bottom': isConnected ? '0' : '20px',
+      'box-shadow': isConnected ? 'none' : '0 2px 8px rgba(0,0,0,0.1)',
+      border: isConnected ? 'none' : '1px solid var(--color-border)',
+      'border-bottom': isConnected && !isLast ? '1px solid var(--color-border)' : 'none',
       overflow: 'hidden'
     }}>
       {/* Halaqa Header */}
@@ -827,13 +868,29 @@ function TeacherDashboard(props: { user: Teacher }) {
         </p>
       </div>
 
-      {/* Search and Filter Section (same as student) */}
+      {/* Halaqat Section Title */}
+      <div style={{
+        'margin-bottom': '12px'
+      }}>
+        <h3 style={{
+          color: 'var(--color-text)',
+          margin: '0',
+          'font-size': '1.2rem',
+          'font-weight': '600'
+        }}>
+          حلقاتك
+        </h3>
+      </div>
+
+      {/* Search and Filter Section */}
       <div style={{
         background: 'var(--color-surface)',
-        'border-radius': '12px',
+        'border-radius': '12px 12px 0 0',
         padding: '15px',
-        'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)'
+        'margin-bottom': '0',
+        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+        border: '1px solid var(--color-border)',
+        'border-bottom': 'none'
       }}>
         {/* Search Input */}
         <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
@@ -882,19 +939,22 @@ function TeacherDashboard(props: { user: Teacher }) {
           )}
         </div>
         
-                  <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
+        {/* Filter Buttons */}
+        <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
           <button
             onClick={() => setStatusFilter('all')}
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'all' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'all' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'all' ? 'rgba(29, 78, 216, 0.1)' : 'transparent',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             {app.translate('allStudents')}
@@ -904,13 +964,15 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'not_available' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'not_available' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'not_available' ? 'rgba(220, 38, 38, 0.1)' : 'transparent',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🔴 {app.translate('not_available')}
@@ -920,13 +982,15 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'revising' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'revising' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'revising' ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🟡 {app.translate('revising')}
@@ -936,13 +1000,15 @@ function TeacherDashboard(props: { user: Teacher }) {
             style={{
               padding: '6px 12px',
               'border-radius': '6px',
-              border: statusFilter() === 'khatamat' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
-              background: statusFilter() === 'khatamat' ? 'var(--color-surface)' : 'var(--color-surface)',
+              border: 'none',
+              background: statusFilter() === 'khatamat' ? 'rgba(5, 150, 105, 0.1)' : 'transparent',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🟢 {app.translate('khatamat')}
