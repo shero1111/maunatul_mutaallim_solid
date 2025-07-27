@@ -125,8 +125,9 @@ export function AppProvider(props: { children: JSX.Element }) {
       setCSSVariables(savedTheme);
     }
     if (savedLanguage) {
-      // Don't trigger reload during initialization, just set the language directly
+      // During initialization, set the language signal directly (not through store function)
       setLanguage(savedLanguage);
+      console.log('🌐 Language restored from localStorage:', savedLanguage);
     }
     if (savedCurrentPage) {
       setCurrentPage(savedCurrentPage);
