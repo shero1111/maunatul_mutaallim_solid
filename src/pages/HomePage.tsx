@@ -409,6 +409,8 @@ function StudentDashboard(props: { user: Student }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             {app.translate('allStudents')}
@@ -433,6 +435,8 @@ function StudentDashboard(props: { user: Student }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🔴 {app.translate('not_available')}
@@ -453,6 +457,8 @@ function StudentDashboard(props: { user: Student }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🟡 {app.translate('revising')}
@@ -473,6 +479,8 @@ function StudentDashboard(props: { user: Student }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🟢 {app.translate('khatamat')}
@@ -881,6 +889,8 @@ function TeacherDashboard(props: { user: Teacher }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             {app.translate('allStudents')}
@@ -901,6 +911,8 @@ function TeacherDashboard(props: { user: Teacher }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🔴 {app.translate('not_available')}
@@ -921,6 +933,8 @@ function TeacherDashboard(props: { user: Teacher }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🟡 {app.translate('revising')}
@@ -941,6 +955,8 @@ function TeacherDashboard(props: { user: Teacher }) {
               'white-space': 'nowrap',
               'flex-shrink': 0,
               'min-width': 'fit-content'
+              'max-width': 'none',
+              'overflow': 'visible'
             }}
           >
             🟢 {app.translate('khatamat')}
