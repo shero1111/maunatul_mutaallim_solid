@@ -414,10 +414,11 @@ export function TimerModal() {
                    </Show>
                  </div>
 
-                {/* Quick timer presets */}
-                <div style={{ 'margin-top': '20px' }}>
-                  <div style={{ display: 'flex', gap: '4px', 'justify-content': 'center', 'flex-wrap': 'nowrap', 'overflow-x': 'auto' }}>
-                    {[5, 10, 15, 20, 30].map(minutes => (
+                                 {/* Quick timer presets - only when timer is stopped */}
+                 <Show when={!app.timer().isRunning}>
+                   <div style={{ 'margin-top': '20px' }}>
+                     <div style={{ display: 'flex', gap: '4px', 'justify-content': 'center', 'flex-wrap': 'nowrap', 'overflow-x': 'auto' }}>
+                       {[5, 10, 15, 20, 30].map(minutes => (
                        <button
                          onClick={() => {
                            // Stop timer if running and set new time
@@ -443,9 +444,10 @@ export function TimerModal() {
                       >
                         {minutes}m
                       </button>
-                    ))}
-                  </div>
-                </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Show>
               </div>
             </Show>
 
