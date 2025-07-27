@@ -66,7 +66,7 @@ export function TimerModal() {
         style={{
           position: 'fixed',
           bottom: '90px', // Above bottom navigation
-          right: '20px',
+          left: '20px',
           width: '56px',
           height: '56px',
           'border-radius': '50%',
@@ -263,7 +263,7 @@ export function TimerModal() {
                     <button
                       onClick={() => app.stopTimer()}
                       style={{
-                        background: '#dc2626',
+                        background: '#f59e0b',
                         color: 'white',
                         border: 'none',
                         outline: 'none',
@@ -273,14 +273,14 @@ export function TimerModal() {
                         'font-weight': '500'
                       }}
                     >
-                      Stop
+                      Pause
                     </button>
                   </Show>
                   
                   <button
                     onClick={() => app.resetTimer()}
                     style={{
-                      background: 'var(--color-text-secondary)',
+                      background: '#dc2626',
                       color: 'white',
                       border: 'none',
                       outline: 'none',
@@ -290,7 +290,7 @@ export function TimerModal() {
                       'font-weight': '500'
                     }}
                   >
-                    Reset
+                    Stop
                   </button>
                 </div>
 
@@ -303,8 +303,8 @@ export function TimerModal() {
                   }}>
                     Quick presets:
                   </p>
-                  <div style={{ display: 'flex', gap: '8px', 'justify-content': 'center', 'flex-wrap': 'wrap' }}>
-                    {[5, 15, 25, 45].map(minutes => (
+                  <div style={{ display: 'flex', gap: '4px', 'justify-content': 'center', 'flex-wrap': 'nowrap', 'overflow-x': 'auto' }}>
+                    {[1, 3, 5, 10, 15, 20, 30].map(minutes => (
                       <button
                         onClick={() => {
                           setCustomMinutes(minutes);
@@ -315,10 +315,13 @@ export function TimerModal() {
                           color: 'var(--color-text)',
                           border: '1px solid var(--color-border)',
                           outline: 'none',
-                          padding: '6px 12px',
-                          'border-radius': '6px',
+                          padding: '4px 8px',
+                          'border-radius': '4px',
                           cursor: 'pointer',
-                          'font-size': '0.85rem'
+                          'font-size': '0.75rem',
+                          'white-space': 'nowrap',
+                          'flex-shrink': 0,
+                          'min-width': '32px'
                         }}
                       >
                         {minutes}m
