@@ -396,18 +396,19 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('all')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'all' ? 'rgba(29, 78, 216, 0.1)' : 'transparent',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             {app.translate('allStudents')}
@@ -419,18 +420,19 @@ function StudentDashboard(props: { user: Student }) {
               console.log('🔴 Status filter is now:', statusFilter());
             }}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'not_available' ? 'rgba(220, 38, 38, 0.1)' : 'transparent',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🔴 {app.translate('not_available')}
@@ -438,18 +440,19 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('revising')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'revising' ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🟡 {app.translate('revising')}
@@ -457,18 +460,19 @@ function StudentDashboard(props: { user: Student }) {
           <button
             onClick={() => setStatusFilter('khatamat')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'khatamat' ? 'rgba(5, 150, 105, 0.1)' : 'transparent',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🟢 {app.translate('khatamat')}
@@ -669,7 +673,7 @@ function HalaqaSection(props: any) {
                   color: 'white',
                   padding: '4px 10px',
                   'border-radius': '12px',
-                  'font-size': '0.75rem',
+                  'font-size': '0.7rem',
                   'font-weight': '600'
                 }}>
                   {getStatusInfo(student.status).icon} {getStatusInfo(student.status).text}
@@ -864,18 +868,19 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('all')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'all' ? 'rgba(29, 78, 216, 0.1)' : 'transparent',
               color: statusFilter() === 'all' ? '#1d4ed8' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             {app.translate('allStudents')}
@@ -883,18 +888,19 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('not_available')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'not_available' ? 'rgba(220, 38, 38, 0.1)' : 'transparent',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🔴 {app.translate('not_available')}
@@ -902,18 +908,19 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('revising')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'revising' ? 'rgba(217, 119, 6, 0.1)' : 'transparent',
               color: statusFilter() === 'revising' ? '#d97706' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🟡 {app.translate('revising')}
@@ -921,18 +928,19 @@ function TeacherDashboard(props: { user: Teacher }) {
           <button
             onClick={() => setStatusFilter('khatamat')}
             style={{
-              padding: '6px 12px',
-              'border-radius': '6px',
+              padding: '4px 8px',
+              'border-radius': '4px',
               border: 'none',
               outline: 'none',
               background: statusFilter() === 'khatamat' ? 'rgba(5, 150, 105, 0.1)' : 'transparent',
               color: statusFilter() === 'khatamat' ? '#059669' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.75rem',
+              'font-size': '0.7rem',
               'font-weight': '500',
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
-              'flex-shrink': 0
+              'flex-shrink': 0,
+              'min-width': 'fit-content'
             }}
           >
             🟢 {app.translate('khatamat')}
