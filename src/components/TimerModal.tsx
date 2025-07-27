@@ -232,7 +232,8 @@ export function TimerModal() {
                      display: 'flex', 
                      'align-items': 'center', 
                      'justify-content': 'center', 
-                     gap: '10px'
+                     gap: '10px',
+                     direction: 'ltr'
                    }}>
                      {/* Minutes section */}
                      <div style={{ 'text-align': 'center' }}>
