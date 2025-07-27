@@ -544,32 +544,16 @@ function StudentDashboard(props: { user: Student }) {
       <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length === 0}>
         <div style={{
           background: 'var(--color-surface)',
-          'border-radius': '12px',
-          padding: '40px 20px',
+          'border-radius': '0 0 12px 12px',
+          padding: '15px 20px',
           'text-align': 'center',
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
-          color: 'var(--color-text-secondary)'
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+          border: '1px solid var(--color-border)',
+          'border-top': 'none',
+          color: 'var(--color-text-secondary)',
+          'margin-bottom': '20px'
         }}>
-          <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>🔍</div>
-          <p>لا توجد نتائج للبحث المحدد</p>
-          <button 
-            onClick={() => {
-              setSearchTerm('');
-              setStatusFilter('all');
-            }}
-            style={{
-              background: 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              outline: 'none',
-              padding: '8px 16px',
-              'border-radius': '6px',
-              cursor: 'pointer',
-              'margin-top': '10px'
-            }}
-          >
-            مسح البحث
-          </button>
+          <span style={{ 'font-size': '0.9rem' }}>No results found</span>
         </div>
       </Show>
     </div>
@@ -1006,32 +990,16 @@ function TeacherDashboard(props: { user: Teacher }) {
       <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length === 0}>
         <div style={{
           background: 'var(--color-surface)',
-          'border-radius': '12px',
-          padding: '40px 20px',
+          'border-radius': '0 0 12px 12px',
+          padding: '15px 20px',
           'text-align': 'center',
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
-          color: 'var(--color-text-secondary)'
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+          border: '1px solid var(--color-border)',
+          'border-top': 'none',
+          color: 'var(--color-text-secondary)',
+          'margin-bottom': '20px'
         }}>
-          <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>🔍</div>
-          <p>لا توجد نتائج للبحث المحدد</p>
-          <button 
-            onClick={() => {
-              setSearchTerm('');
-              setStatusFilter('all');
-            }}
-            style={{
-              background: 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              outline: 'none',
-              padding: '8px 16px',
-              'border-radius': '6px',
-              cursor: 'pointer',
-              'margin-top': '10px'
-            }}
-          >
-            مسح البحث
-          </button>
+          <span style={{ 'font-size': '0.9rem' }}>No results found</span>
         </div>
       </Show>
     </div>
