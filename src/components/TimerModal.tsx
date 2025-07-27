@@ -264,7 +264,7 @@ export function TimerModal() {
                          'line-height': '1'
                        }}>
                          {app.timer().isRunning ? 
-                           formatTime(app.timer().time).split(':')[0] : 
+                           Math.floor(app.timer().time / 60).toString().padStart(2, '0') : 
                            customMinutes().toString().padStart(2, '0')
                          }
                        </div>
@@ -330,7 +330,7 @@ export function TimerModal() {
                          'line-height': '1'
                        }}>
                          {app.timer().isRunning ? 
-                           formatTime(app.timer().time).split(':')[1] : 
+                           (app.timer().time % 60).toString().padStart(2, '0') : 
                            customSeconds().toString().padStart(2, '0')
                          }
                        </div>
