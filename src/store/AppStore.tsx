@@ -359,13 +359,18 @@ export function AppProvider(props: { children: JSX.Element }) {
       const newMutunData = [...mutun().filter(m => m.user_id !== foundUser.id), ...personalMutun];
       setMutun(newMutunData);
       
+      // Reset to home page on login
+      setCurrentPage('home');
+      
       // Save to localStorage
       localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      localStorage.setItem('currentPage', 'home');
       localStorage.setItem('mutunData', JSON.stringify(newMutunData));
       localStorage.setItem('usersData', JSON.stringify(currentUsers));
       localStorage.setItem('newsData', JSON.stringify(news()));
       
       console.log('💾 User saved to localStorage');
+      console.log('🏠 Page reset to home on login');
       
       // FINAL VERIFICATION
       setTimeout(() => {
@@ -403,6 +408,9 @@ export function AppProvider(props: { children: JSX.Element }) {
     
     // Remove from localStorage
     localStorage.removeItem('currentUser');
+    // Also reset the current page in localStorage to 'home'
+    localStorage.setItem('currentPage', 'home');
+    console.log('🏠 Page reset to home on logout');
   };
 
   const changePassword = (currentPassword: string, newPassword: string): boolean => {
