@@ -13,7 +13,7 @@ export function TimerModal() {
   // Show timer FAB only on specific pages
   const shouldShowTimer = () => {
     const currentPage = app.currentPage();
-    return currentPage === 'home' || currentPage === 'mutun';
+    return currentPage === 'home' || currentPage === 'mutuun';
   };
 
   // Update custom values when timer is stopped/paused
@@ -76,7 +76,7 @@ export function TimerModal() {
 
   return (
     <>
-      {/* Floating Action Button - only on home and mutun pages */}
+      {/* Floating Action Button - only on home and mutuun pages */}
       <Show when={shouldShowTimer()}>
         <button
           onClick={() => setIsModalOpen(true)}
