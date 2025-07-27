@@ -209,36 +209,28 @@ export function TimerModal() {
             {/* Timer Tab */}
             <Show when={activeTab() === 'timer'}>
               <div style={{ 'text-align': 'center' }}>
-                                 <div style={{
-                   'font-size': '3rem',
-                   'font-weight': 'bold',
-                   color: 'var(--color-primary)',
-                   'margin-bottom': '20px',
-                   'font-family': 'monospace'
-                 }}>
-                   {formatTime(app.timer().time)}
-                 </div>
-
-                 {/* Manual time picker - only when timer is stopped/reset */}
-                 <Show when={app.timer().time === 0 || !app.timer().isRunning}>
-                   <div style={{ 'margin-bottom': '20px' }}>
+                                 {/* Unified time display with integrated picker */}
+                 <div style={{ 'margin-bottom': '20px' }}>
+                   <Show when={app.timer().time === 0 || !app.timer().isRunning}>
                      <p style={{
                        color: 'var(--color-text-secondary)',
-                       'margin-bottom': '15px',
-                       'font-size': '0.9rem'
+                       'margin-bottom': '10px',
+                       'font-size': '0.9rem',
+                       'text-align': 'center'
                      }}>
                        {app.language() === 'ar' ? 'ضبط الوقت:' : 'Set time:'}
                      </p>
-                     
-                     <div style={{ 
-                       display: 'flex', 
-                       'align-items': 'center', 
-                       'justify-content': 'center', 
-                       gap: '20px',
-                       'margin-bottom': '15px' 
-                     }}>
-                       {/* Minutes picker */}
-                       <div style={{ 'text-align': 'center' }}>
+                   </Show>
+                   
+                   <div style={{ 
+                     display: 'flex', 
+                     'align-items': 'center', 
+                     'justify-content': 'center', 
+                     gap: '10px'
+                   }}>
+                     {/* Minutes section */}
+                     <div style={{ 'text-align': 'center' }}>
+                       <Show when={app.timer().time === 0 || !app.timer().isRunning}>
                          <button
                            onClick={() => setCustomMinutes(Math.min(120, customMinutes() + 1))}
                            style={{
@@ -248,26 +240,30 @@ export function TimerModal() {
                              cursor: 'pointer',
                              'font-size': '1.2rem',
                              color: 'var(--color-primary)',
-                             padding: '4px',
-                             display: 'block',
-                             margin: '0 auto'
+                             padding: '4px 8px',
+                             margin: '0 auto 4px auto',
+                             display: 'block'
                            }}
                          >
                            ▲
                          </button>
-                         
-                         <div style={{
-                           'font-size': '1.5rem',
-                           'font-weight': 'bold',
-                           color: 'var(--color-text)',
-                           'font-family': 'monospace',
-                           'min-width': '60px',
-                           'text-align': 'center',
-                           padding: '8px'
-                         }}>
-                           {customMinutes().toString().padStart(2, '0')}
-                         </div>
-                         
+                       </Show>
+                       
+                       <div style={{
+                         'font-size': '3rem',
+                         'font-weight': 'bold',
+                         color: 'var(--color-primary)',
+                         'font-family': 'monospace',
+                         'text-align': 'center',
+                         'line-height': '1'
+                       }}>
+                         {app.timer().isRunning ? 
+                           formatTime(app.timer().time).split(':')[0] : 
+                           customMinutes().toString().padStart(2, '0')
+                         }
+                       </div>
+                       
+                       <Show when={app.timer().time === 0 || !app.timer().isRunning}>
                          <button
                            onClick={() => setCustomMinutes(Math.max(0, customMinutes() - 1))}
                            style={{
@@ -277,36 +273,30 @@ export function TimerModal() {
                              cursor: 'pointer',
                              'font-size': '1.2rem',
                              color: 'var(--color-primary)',
-                             padding: '4px',
-                             display: 'block',
-                             margin: '0 auto'
+                             padding: '4px 8px',
+                             margin: '4px auto 0 auto',
+                             display: 'block'
                            }}
                          >
                            ▼
                          </button>
-                         
-                         <span style={{
-                           'font-size': '0.8rem',
-                           color: 'var(--color-text-secondary)',
-                           'margin-top': '4px',
-                           display: 'block'
-                         }}>
-                           min
-                         </span>
-                       </div>
+                       </Show>
+                     </div>
 
-                       {/* Separator */}
-                       <div style={{
-                         'font-size': '2rem',
-                         'font-weight': 'bold',
-                         color: 'var(--color-text-secondary)',
-                         'font-family': 'monospace'
-                       }}>
-                         :
-                       </div>
+                     {/* Separator */}
+                     <div style={{
+                       'font-size': '3rem',
+                       'font-weight': 'bold',
+                       color: 'var(--color-primary)',
+                       'font-family': 'monospace',
+                       'line-height': '1'
+                     }}>
+                       :
+                     </div>
 
-                       {/* Seconds picker */}
-                       <div style={{ 'text-align': 'center' }}>
+                     {/* Seconds section */}
+                     <div style={{ 'text-align': 'center' }}>
+                       <Show when={app.timer().time === 0 || !app.timer().isRunning}>
                          <button
                            onClick={() => setCustomSeconds(Math.min(59, customSeconds() + 1))}
                            style={{
@@ -316,26 +306,30 @@ export function TimerModal() {
                              cursor: 'pointer',
                              'font-size': '1.2rem',
                              color: 'var(--color-primary)',
-                             padding: '4px',
-                             display: 'block',
-                             margin: '0 auto'
+                             padding: '4px 8px',
+                             margin: '0 auto 4px auto',
+                             display: 'block'
                            }}
                          >
                            ▲
                          </button>
-                         
-                         <div style={{
-                           'font-size': '1.5rem',
-                           'font-weight': 'bold',
-                           color: 'var(--color-text)',
-                           'font-family': 'monospace',
-                           'min-width': '60px',
-                           'text-align': 'center',
-                           padding: '8px'
-                         }}>
-                           {customSeconds().toString().padStart(2, '0')}
-                         </div>
-                         
+                       </Show>
+                       
+                       <div style={{
+                         'font-size': '3rem',
+                         'font-weight': 'bold',
+                         color: 'var(--color-primary)',
+                         'font-family': 'monospace',
+                         'text-align': 'center',
+                         'line-height': '1'
+                       }}>
+                         {app.timer().isRunning ? 
+                           formatTime(app.timer().time).split(':')[1] : 
+                           customSeconds().toString().padStart(2, '0')
+                         }
+                       </div>
+                       
+                       <Show when={app.timer().time === 0 || !app.timer().isRunning}>
                          <button
                            onClick={() => setCustomSeconds(Math.max(0, customSeconds() - 1))}
                            style={{
@@ -345,26 +339,17 @@ export function TimerModal() {
                              cursor: 'pointer',
                              'font-size': '1.2rem',
                              color: 'var(--color-primary)',
-                             padding: '4px',
-                             display: 'block',
-                             margin: '0 auto'
+                             padding: '4px 8px',
+                             margin: '4px auto 0 auto',
+                             display: 'block'
                            }}
                          >
                            ▼
                          </button>
-                         
-                         <span style={{
-                           'font-size': '0.8rem',
-                           color: 'var(--color-text-secondary)',
-                           'margin-top': '4px',
-                           display: 'block'
-                         }}>
-                           sec
-                         </span>
-                       </div>
+                       </Show>
                      </div>
                    </div>
-                 </Show>
+                 </div>
 
                 <div style={{ display: 'flex', gap: '10px', 'justify-content': 'center', 'flex-wrap': 'wrap' }}>
                   <Show when={!app.timer().isRunning}>
