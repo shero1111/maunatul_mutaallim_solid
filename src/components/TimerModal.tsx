@@ -9,6 +9,12 @@ export function TimerModal() {
   const [isStopwatchRunning, setIsStopwatchRunning] = createSignal(false);
   const [customMinutes, setCustomMinutes] = createSignal(25);
   const [customSeconds, setCustomSeconds] = createSignal(0);
+
+  // Show timer FAB only on specific pages
+  const shouldShowTimer = () => {
+    const currentPage = app.currentPage();
+    return currentPage === 'home' || currentPage === 'mutun';
+  };
   
   let stopwatchInterval: number | null = null;
 
@@ -61,34 +67,36 @@ export function TimerModal() {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        style={{
-          position: 'fixed',
-          bottom: '90px', // Above bottom navigation
-          left: '20px',
-          width: '56px',
-          height: '56px',
-          'border-radius': '50%',
-          background: 'var(--color-primary)',
-          color: 'white',
-          border: 'none',
-          outline: 'none',
-          cursor: 'pointer',
-          'box-shadow': '0 4px 12px rgba(0,0,0,0.3)',
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'center',
-          'font-size': '1.5rem',
-          'z-index': 1000,
-          transition: 'all 0.2s ease'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-      >
-        ⏱️
-      </button>
+      {/* Floating Action Button - only on home and mutun pages */}
+      <Show when={shouldShowTimer()}>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          style={{
+            position: 'fixed',
+            bottom: '90px', // Above bottom navigation
+            left: '20px',
+            width: '56px',
+            height: '56px',
+            'border-radius': '50%',
+            background: 'var(--color-primary)',
+            color: 'white',
+            border: 'none',
+            outline: 'none',
+            cursor: 'pointer',
+            'box-shadow': '0 4px 12px rgba(0,0,0,0.3)',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'font-size': '1.5rem',
+            'z-index': 1000,
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          ⏱️
+        </button>
+      </Show>
 
       {/* Modal */}
       <Show when={isModalOpen()}>
