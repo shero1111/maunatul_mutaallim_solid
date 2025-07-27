@@ -200,7 +200,7 @@ export function TimerModal() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                Timer
+                {app.language() === 'ar' ? 'مؤقت' : 'Timer'}
               </button>
               <button
                 onClick={() => setActiveTab('stopwatch')}
@@ -217,7 +217,7 @@ export function TimerModal() {
                   transition: 'all 0.2s ease'
                 }}
               >
-                Stopwatch
+                {app.language() === 'ar' ? 'ساعة إيقاف' : 'Stopwatch'}
               </button>
             </div>
 
@@ -362,7 +362,7 @@ export function TimerModal() {
                      <button
                        onClick={() => app.startTimerWithSeconds(customMinutes(), customSeconds())}
                        style={{
-                         background: 'var(--color-primary)',
+                         background: '#22c55e',
                          color: 'white',
                          border: 'none',
                          outline: 'none',
@@ -372,7 +372,7 @@ export function TimerModal() {
                          'font-weight': '500'
                        }}
                      >
-                       Start
+                       {app.language() === 'ar' ? 'ابدأ' : 'Start'}
                      </button>
                    </Show>
 
@@ -392,25 +392,25 @@ export function TimerModal() {
                          cursor: 'pointer',
                          'font-weight': '500'
                        }}
-                     >
-                       Pause
-                     </button>
+                                            >
+                         {app.language() === 'ar' ? 'توقف' : 'Pause'}
+                       </button>
                      
-                     <button
-                       onClick={() => app.resetTimer()}
-                       style={{
-                         background: '#dc2626',
-                         color: 'white',
-                         border: 'none',
-                         outline: 'none',
-                         padding: '10px 20px',
-                         'border-radius': '8px',
-                         cursor: 'pointer',
-                         'font-weight': '500'
-                       }}
-                     >
-                       Stop
-                     </button>
+                                            <button
+                         onClick={() => app.resetTimer()}
+                         style={{
+                           background: '#dc2626',
+                           color: 'white',
+                           border: 'none',
+                           outline: 'none',
+                           padding: '10px 20px',
+                           'border-radius': '8px',
+                           cursor: 'pointer',
+                           'font-weight': '500'
+                         }}
+                       >
+                         {app.language() === 'ar' ? 'إيقاف' : 'Stop'}
+                       </button>
                    </Show>
                  </div>
 
@@ -469,7 +469,7 @@ export function TimerModal() {
                     <button
                       onClick={startStopwatch}
                       style={{
-                        background: 'var(--color-primary)',
+                        background: '#22c55e',
                         color: 'white',
                         border: 'none',
                         outline: 'none',
@@ -480,7 +480,7 @@ export function TimerModal() {
                         'font-size': '1rem'
                       }}
                     >
-                      Start
+                      {app.language() === 'ar' ? 'ابدأ' : 'Start'}
                     </button>
                   </Show>
                   
@@ -499,7 +499,7 @@ export function TimerModal() {
                         'font-size': '1rem'
                       }}
                     >
-                      Stop
+                      {app.language() === 'ar' ? 'إيقاف' : 'Stop'}
                     </button>
                   </Show>
                   
@@ -517,7 +517,7 @@ export function TimerModal() {
                       'font-size': '1rem'
                     }}
                   >
-                    Reset
+                    {app.language() === 'ar' ? 'إعادة تعيين' : 'Reset'}
                   </button>
                 </div>
               </div>
