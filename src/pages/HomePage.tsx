@@ -393,7 +393,7 @@ function StudentDashboard(props: { user: Student }) {
         </div>
         
         {/* Filter Buttons */}
-        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
+        <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
           <button
             onClick={() => setStatusFilter('all')}
             style={{
@@ -417,15 +417,17 @@ function StudentDashboard(props: { user: Student }) {
               console.log('🔴 Status filter is now:', statusFilter());
             }}
             style={{
-              padding: '6px 12px',
+              padding: '4px 10px',
               'border-radius': '6px',
               border: statusFilter() === 'not_available' ? '1px solid var(--color-border)' : '1px solid var(--color-border)',
               background: statusFilter() === 'not_available' ? 'var(--color-surface)' : 'var(--color-surface)',
               color: statusFilter() === 'not_available' ? '#dc2626' : 'var(--color-text-secondary)',
               cursor: 'pointer',
-              'font-size': '0.8rem',
+              'font-size': '0.75rem',
               'font-weight': '500',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              'white-space': 'nowrap',
+              'flex-shrink': 0
             }}
           >
             🔴 {app.translate('not_available')}
@@ -465,12 +467,12 @@ function StudentDashboard(props: { user: Student }) {
         </div>
       </div>
 
-      {/* Show filtered students when search/filter is active */}
-      <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
+      {/* Show filtered students when search/filter is active AND has results */}
+      <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length > 0}>
         <HalaqaSection 
           halaqa={{
             id: 'student-search-results',
-            name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
+            name: 'نتائج البحث',
             type: 'search',
             teacher_id: '',
             student_ids: [],
@@ -880,7 +882,7 @@ function TeacherDashboard(props: { user: Teacher }) {
           )}
         </div>
         
-        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
           <button
             onClick={() => setStatusFilter('all')}
             style={{
@@ -948,26 +950,26 @@ function TeacherDashboard(props: { user: Teacher }) {
         </div>
       </div>
 
-             {/* Show filtered students when search/filter is active */}
-       <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
-         <HalaqaSection 
-           halaqa={{
-             id: 'teacher-search-results',
-             name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
-             type: 'search',
-             teacher_id: '',
-             student_ids: [],
-             internal_number: 0,
-             isActive: true
-           }}
-           students={getFilteredStudents(allStudents())}
-           userFavorites={user.favorites}
-           onToggleFavorite={toggleFavorite}
-           formatDate={formatDate}
-           getStatusInfo={getStatusInfo}
-           isSearchResults={true}
-         />
-       </Show>
+                           {/* Show filtered students when search/filter is active AND has results */}
+        <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length > 0}>
+          <HalaqaSection 
+                        halaqa={{
+               id: 'teacher-search-results',
+               name: 'نتائج البحث',
+               type: 'search',
+               teacher_id: '',
+               student_ids: [],
+               internal_number: 0,
+               isActive: true
+            }}
+            students={getFilteredStudents(allStudents())}
+            userFavorites={user.favorites}
+            onToggleFavorite={toggleFavorite}
+            formatDate={formatDate}
+            getStatusInfo={getStatusInfo}
+            isSearchResults={true}
+          />
+        </Show>
 
       {/* Teacher's Halaqat - only show when no search/filter is active */}
       <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
