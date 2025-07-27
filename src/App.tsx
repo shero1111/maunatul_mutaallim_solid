@@ -3,6 +3,7 @@ import { useApp } from './store/AppStore';
 import { Login } from './components/Login';
 import { BottomNavigation } from './components/BottomNavigation';
 import { AudioPlayer } from './components/AudioPlayer';
+import { TimerModal } from './components/TimerModal';
 import { HomePage } from './pages/HomePage';
 import { MutunPage } from './pages/MutunPage';
 import { HalaqatPage } from './pages/HalaqatPage';
@@ -40,6 +41,7 @@ export default function App() {
         {renderCurrentPage()}
         <BottomNavigation />
         <AudioPlayer />
+        <TimerModal />
       </Show>
     </div>
   );
