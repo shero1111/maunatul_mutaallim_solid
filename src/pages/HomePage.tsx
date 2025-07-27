@@ -417,7 +417,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -443,7 +443,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -465,7 +465,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -487,7 +487,7 @@ function StudentDashboard(props: { user: Student }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -897,7 +897,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -919,7 +919,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -941,7 +941,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
@@ -963,7 +963,7 @@ function TeacherDashboard(props: { user: Teacher }) {
               transition: 'all 0.2s ease',
               'white-space': 'nowrap',
               'flex-shrink': 0,
-              'min-width': 'fit-content'
+              'min-width': 'fit-content',
               'max-width': 'none',
               'overflow': 'visible'
             }}
