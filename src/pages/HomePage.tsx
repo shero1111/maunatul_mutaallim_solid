@@ -460,21 +460,44 @@ function StudentDashboard(props: { user: Student }) {
         </div>
       </div>
 
-      {/* Halaqat Sections */}
-      <For each={userHalaqat()}>
-        {(halaqa) => (
-          <HalaqaSection 
-            halaqa={halaqa}
-            students={getFilteredStudents(getStudentsInHalaqa(halaqa.id))}
-            userFavorites={user().favorites}
-            onToggleFavorite={toggleFavorite}
-            formatDate={formatDate}
-            getStatusInfo={getStatusInfo}
-          />
-        )}
-      </For>
+      {/* Show filtered students when search/filter is active */}
+      <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
+        <HalaqaSection 
+          halaqa={{
+            id: 'search-results',
+            name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
+            type: 'search',
+            teacher_id: '',
+            student_ids: [],
+            internal_number: 0,
+            isActive: true
+          }}
+          students={getFilteredStudents(allStudents())}
+          userFavorites={user().favorites}
+          onToggleFavorite={toggleFavorite}
+          formatDate={formatDate}
+          getStatusInfo={getStatusInfo}
+          isSearchResults={true}
+        />
+      </Show>
+
+      {/* Halaqat Sections - only show when no search/filter is active */}
+      <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
+        <For each={userHalaqat()}>
+          {(halaqa) => (
+            <HalaqaSection 
+              halaqa={halaqa}
+              students={getStudentsInHalaqa(halaqa.id)}
+              userFavorites={user().favorites}
+              onToggleFavorite={toggleFavorite}
+              formatDate={formatDate}
+              getStatusInfo={getStatusInfo}
+            />
+          )}
+        </For>
+      </Show>
       
-      <Show when={userHalaqat().length === 0}>
+      <Show when={userHalaqat().length === 0 && !searchTerm().trim() && statusFilter() === 'all'}>
         <div style={{
           background: 'var(--color-surface)',
           'border-radius': '12px',
@@ -485,6 +508,38 @@ function StudentDashboard(props: { user: Student }) {
         }}>
           <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>📚</div>
           <p>لم يتم تخصيص أي حلقة لك بعد</p>
+        </div>
+      </Show>
+
+      {/* Show "No Results" message when search/filter returns no results */}
+      <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length === 0}>
+        <div style={{
+          background: 'var(--color-surface)',
+          'border-radius': '12px',
+          padding: '40px 20px',
+          'text-align': 'center',
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+          color: 'var(--color-text-secondary)'
+        }}>
+          <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>🔍</div>
+          <p>لا توجد نتائج للبحث المحدد</p>
+          <button 
+            onClick={() => {
+              setSearchTerm('');
+              setStatusFilter('all');
+            }}
+            style={{
+              background: 'var(--color-primary)',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              'border-radius': '6px',
+              cursor: 'pointer',
+              'margin-top': '10px'
+            }}
+          >
+            مسح البحث
+          </button>
         </div>
       </Show>
     </div>
@@ -502,6 +557,7 @@ function HalaqaSection(props: any) {
       case 'explanation': return 'شرح';
       case 'memorizing_intensive': return 'حفظ مكثف';
       case 'explanation_intensive': return 'شرح مكثف';
+      case 'search': return halaqa.name; // For search results, use the custom name
       default: return type;
     }
   };
@@ -772,21 +828,47 @@ function TeacherDashboard(props: { user: Teacher }) {
         'margin-bottom': '20px',
         'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)'
       }}>
-        <input
-          type="text"
-          placeholder="{app.translate('searchStudent')}..."
-          value={searchTerm()}
-          onInput={(e) => setSearchTerm(e.currentTarget.value)}
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            'border-radius': '8px',
-            border: '1px solid var(--color-text-secondary)',
-            'font-size': '16px',
-            'margin-bottom': '15px',
-            'box-sizing': 'border-box'
-          }}
-        />
+        {/* Search Input */}
+        <div style={{ position: 'relative', 'margin-bottom': '15px' }}>
+          <input
+            type="text"
+            placeholder={`🔍 ${app.translate('searchStudent')}`}
+            value={searchTerm()}
+            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              'border-radius': '8px',
+              border: '2px solid var(--color-border)',
+              'background-color': 'var(--color-background)',
+              color: 'var(--color-text)',
+              'font-size': '16px',
+              'box-sizing': 'border-box',
+              outline: 'none',
+              transition: 'border-color 0.2s ease'
+            }}
+            onFocus={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+            onBlur={(e) => e.currentTarget.style.borderColor = 'var(--color-border)'}
+          />
+          {searchTerm() && (
+            <button
+              onClick={() => setSearchTerm('')}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                'font-size': '18px',
+                color: 'var(--color-text-secondary)'
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
         
         <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
           <button
@@ -856,21 +938,44 @@ function TeacherDashboard(props: { user: Teacher }) {
         </div>
       </div>
 
-      {/* Teacher's Halaqat */}
-      <For each={teacherHalaqat()}>
-        {(halaqa) => (
-          <HalaqaSection 
-            halaqa={halaqa}
-            students={getFilteredStudents(getStudentsInHalaqa(halaqa.id))}
-            userFavorites={user.favorites}
-            onToggleFavorite={toggleFavorite}
-            formatDate={formatDate}
-            getStatusInfo={getStatusInfo}
-          />
-        )}
-      </For>
+      {/* Show filtered students when search/filter is active */}
+      <Show when={searchTerm().trim() || statusFilter() !== 'all'}>
+        <HalaqaSection 
+          halaqa={{
+            id: 'search-results',
+            name: searchTerm().trim() ? `نتائج البحث: "${searchTerm()}"` : `${statusFilter() === 'not_available' ? 'غير متاح' : statusFilter() === 'revising' ? 'مراجعة' : 'ختمات'}`,
+            type: 'search',
+            teacher_id: '',
+            student_ids: [],
+            internal_number: 0,
+            isActive: true
+          }}
+          students={getFilteredStudents(allStudents())}
+          userFavorites={user.favorites}
+          onToggleFavorite={toggleFavorite}
+          formatDate={formatDate}
+          getStatusInfo={getStatusInfo}
+          isSearchResults={true}
+        />
+      </Show>
+
+      {/* Teacher's Halaqat - only show when no search/filter is active */}
+      <Show when={!searchTerm().trim() && statusFilter() === 'all'}>
+        <For each={teacherHalaqat()}>
+          {(halaqa) => (
+            <HalaqaSection 
+              halaqa={halaqa}
+              students={getStudentsInHalaqa(halaqa.id)}
+              userFavorites={user.favorites}
+              onToggleFavorite={toggleFavorite}
+              formatDate={formatDate}
+              getStatusInfo={getStatusInfo}
+            />
+          )}
+        </For>
+      </Show>
       
-      <Show when={teacherHalaqat().length === 0}>
+      <Show when={teacherHalaqat().length === 0 && !searchTerm().trim() && statusFilter() === 'all'}>
         <div style={{
           background: 'var(--color-surface)',
           'border-radius': '12px',
@@ -881,6 +986,38 @@ function TeacherDashboard(props: { user: Teacher }) {
         }}>
           <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>👨‍🏫</div>
           <p>لم يتم تخصيص أي حلقة لك بعد</p>
+        </div>
+      </Show>
+
+      {/* Show "No Results" message when search/filter returns no results */}
+      <Show when={(searchTerm().trim() || statusFilter() !== 'all') && getFilteredStudents(allStudents()).length === 0}>
+        <div style={{
+          background: 'var(--color-surface)',
+          'border-radius': '12px',
+          padding: '40px 20px',
+          'text-align': 'center',
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
+          color: 'var(--color-text-secondary)'
+        }}>
+          <div style={{ 'font-size': '3rem', 'margin-bottom': '15px' }}>🔍</div>
+          <p>لا توجد نتائج للبحث المحدد</p>
+          <button 
+            onClick={() => {
+              setSearchTerm('');
+              setStatusFilter('all');
+            }}
+            style={{
+              background: 'var(--color-primary)',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              'border-radius': '6px',
+              cursor: 'pointer',
+              'margin-top': '10px'
+            }}
+          >
+            مسح البحث
+          </button>
         </div>
       </Show>
     </div>
