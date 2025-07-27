@@ -274,7 +274,10 @@ function StudentDashboard(props: { user: Student }) {
               "font-size": "0.85rem",
               "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "white-space": "nowrap",
+              "overflow": "hidden",
+              "text-overflow": "ellipsis"
             }}
           >
             🔴 {app.translate('not_available')}
@@ -292,7 +295,10 @@ function StudentDashboard(props: { user: Student }) {
               "font-size": "0.85rem",
               "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "white-space": "nowrap",
+              "overflow": "hidden",
+              "text-overflow": "ellipsis"
             }}
           >
             🟡 {app.translate('revising')}
@@ -310,7 +316,10 @@ function StudentDashboard(props: { user: Student }) {
               "font-size": "0.85rem",
               "font-weight": "500",
               transition: "all 0.2s ease",
-              flex: "1"
+              flex: "1",
+              "white-space": "nowrap",
+              "overflow": "hidden",
+              "text-overflow": "ellipsis"
             }}
           >
             🟢 {app.translate('khatamat')}
