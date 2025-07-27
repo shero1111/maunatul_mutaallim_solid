@@ -145,28 +145,19 @@ export function AppProvider(props: { children: JSX.Element }) {
       }
     }
     
-    // AUTO LOGIN - User bleibt angemeldet
-    if (savedCurrentUser) {
+    // Load saved data FIRST
+    let loadedUsers = users();
+    if (savedUsersData) {
       try {
-        const user = JSON.parse(savedCurrentUser);
-        console.log('🔄 Auto-login attempt for user:', user.name);
-        
-        // Verify user still exists in demo data
-        const userExists = demoUsers.find(u => u.id === user.id && u.username === user.username);
-        if (userExists) {
-          setCurrentUser(user);
-          console.log('✅ Auto-login successful for:', user.name);
-        } else {
-          console.warn('⚠️ Saved user no longer exists, clearing localStorage');
-          localStorage.removeItem('currentUser');
-        }
+        const usersData = JSON.parse(savedUsersData);
+        setUsers(usersData);
+        loadedUsers = usersData;
+        console.log('📋 Users loaded from localStorage:', usersData.length, 'users');
       } catch (e) {
-        console.error('💥 Error parsing saved user:', e);
-        localStorage.removeItem('currentUser');
+        console.error('Error parsing saved users:', e);
       }
     }
     
-    // Load saved data
     if (savedMutunData) {
       try {
         const mutunData = JSON.parse(savedMutunData);
@@ -176,12 +167,27 @@ export function AppProvider(props: { children: JSX.Element }) {
       }
     }
     
-    if (savedUsersData) {
+    // AUTO LOGIN - User bleibt angemeldet (AFTER loading users data)
+    if (savedCurrentUser) {
       try {
-        const usersData = JSON.parse(savedUsersData);
-        setUsers(usersData);
+        const user = JSON.parse(savedCurrentUser);
+        console.log('🔄 Auto-login attempt for user:', user.name, 'role:', user.role);
+        
+        // Verify user exists in either loaded users data OR demo data
+        const userExistsInLoaded = loadedUsers.find(u => u.id === user.id && u.username === user.username);
+        const userExistsInDemo = demoUsers.find(u => u.id === user.id && u.username === user.username);
+        
+        if (userExistsInLoaded || userExistsInDemo) {
+          setCurrentUser(user);
+          console.log('✅ Auto-login successful for:', user.name, 'role:', user.role);
+        } else {
+          console.warn('⚠️ Saved user no longer exists in loaded or demo data, clearing localStorage');
+          console.log('📋 Available users:', loadedUsers.map(u => `${u.username} (${u.role})`));
+          localStorage.removeItem('currentUser');
+        }
       } catch (e) {
-        console.error('Error parsing saved users:', e);
+        console.error('💥 Error parsing saved user:', e);
+        localStorage.removeItem('currentUser');
       }
     }
     
