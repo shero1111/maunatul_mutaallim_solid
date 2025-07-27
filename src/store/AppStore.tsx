@@ -69,6 +69,7 @@ export function AppProvider(props: { children: JSX.Element }) {
   const [currentPage, setCurrentPage] = createSignal<Page>('home');
   const [theme, setTheme] = createSignal<Theme>('light');
   const [language, setLanguage] = createSignal<Language>('ar');
+  const [isInitializing, setIsInitializing] = createSignal(true);
   const [users, setUsers] = createSignal<User[]>(demoUsers);
   const [halaqat, setHalaqat] = createSignal<Halaqa[]>(demoHalaqat);
   const [mutun, setMutun] = createSignal<Matn[]>(demoMutun);
@@ -124,6 +125,7 @@ export function AppProvider(props: { children: JSX.Element }) {
       setCSSVariables(savedTheme);
     }
     if (savedLanguage) {
+      // Don't trigger reload during initialization, just set the language directly
       setLanguage(savedLanguage);
     }
     if (savedCurrentPage) {
@@ -190,6 +192,10 @@ export function AppProvider(props: { children: JSX.Element }) {
         console.error('Error parsing saved news:', e);
       }
     }
+    
+    // Initialization complete
+    setIsInitializing(false);
+    console.log('✅ App initialization complete');
   });
   
   // Theme watcher
@@ -684,14 +690,19 @@ export function AppProvider(props: { children: JSX.Element }) {
     },
     setLanguage: (newLanguage: Language) => {
       console.log('🌐 Language change from', language(), 'to', newLanguage);
+      setLanguage(newLanguage);
       
-      // Save to localStorage first
+      // Save to localStorage
       localStorage.setItem('language', newLanguage);
       console.log('💾 Language saved to localStorage:', newLanguage);
       
-      // Refresh page to ensure all UI elements are properly translated
-      console.log('🔄 Refreshing page for complete language update...');
-      window.location.reload();
+      // Only reload if not during initialization
+      if (!isInitializing()) {
+        console.log('🔄 Refreshing page for complete language update...');
+        window.location.reload();
+      } else {
+        console.log('🚫 Skipping reload during initialization');
+      }
     },
     updateMatn,
     updateUser,

@@ -552,10 +552,8 @@ export function AudioPlayer() {
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  display: 'flex',
-                  alignItems: 'center',
-                  height: '40px',
-                  lineHeight: '1'
+                  lineHeight: '40px',
+                  height: '40px'
                 }}>
                   {player().title}
                 </div>
