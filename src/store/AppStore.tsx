@@ -68,7 +68,7 @@ export function AppProvider(props: { children: JSX.Element }) {
   const [currentUser, setCurrentUser] = createSignal<User | null>(null);
   const [currentPage, setCurrentPage] = createSignal<Page>('home');
   const [theme, setTheme] = createSignal<Theme>('light');
-  const [language, setLanguage] = createSignal<Language>('ar');
+  const [language, setLanguageSignal] = createSignal<Language>('ar');
   const [isInitializing, setIsInitializing] = createSignal(true);
   const [users, setUsers] = createSignal<User[]>(demoUsers);
   const [halaqat, setHalaqat] = createSignal<Halaqa[]>(demoHalaqat);
@@ -126,7 +126,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     }
     if (savedLanguage) {
       // During initialization, set the language signal directly (not through store function)
-      setLanguage(savedLanguage);
+      setLanguageSignal(savedLanguage);
       console.log('🌐 Language restored from localStorage:', savedLanguage);
     }
     if (savedCurrentPage) {
@@ -691,7 +691,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     },
     setLanguage: (newLanguage: Language) => {
       console.log('🌐 Language change from', language(), 'to', newLanguage);
-      setLanguage(newLanguage);
+      setLanguageSignal(newLanguage);
       
       // Save to localStorage
       localStorage.setItem('language', newLanguage);
