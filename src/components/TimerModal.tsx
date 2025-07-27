@@ -131,31 +131,37 @@ export function TimerModal() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
+            {/* Close button */}
             <div style={{
               display: 'flex',
-              'justify-content': 'space-between',
-              'align-items': 'center',
-              'margin-bottom': '20px'
+              'justify-content': 'flex-end',
+              'margin-bottom': '16px'
             }}>
-              <h3 style={{
-                color: 'var(--color-text)',
-                margin: '0',
-                'font-size': '1.3rem',
-                'font-weight': '600'
-              }}>
-                ⏱️ Timer & Stopwatch
-              </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
                 style={{
-                  background: 'none',
-                  border: 'none',
+                  background: 'var(--color-background)',
+                  border: '1px solid var(--color-border)',
                   outline: 'none',
                   cursor: 'pointer',
-                  'font-size': '1.5rem',
+                  'font-size': '1.2rem',
                   color: 'var(--color-text-secondary)',
-                  padding: '4px'
+                  padding: '8px',
+                  'border-radius': '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  'align-items': 'center',
+                  'justify-content': 'center',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-border)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--color-background)';
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
                 }}
               >
                 ✕
