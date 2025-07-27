@@ -55,6 +55,7 @@ export interface AppState {
   skipForward: () => void;
   seekAudio: (percentage: number) => void;
   startTimer: (minutes: number) => void;
+  startTimerWithSeconds: (minutes: number, seconds: number) => void;
   stopTimer: () => void;
   resetTimer: () => void;
   setSearchTerm: (term: string) => void;
@@ -652,6 +653,32 @@ export function AppProvider(props: { children: JSX.Element }) {
       });
     }, 1000);
   };
+
+  const startTimerWithSeconds = (minutes: number, seconds: number) => {
+    const targetTime = minutes * 60 + seconds;
+    setTimer({
+      time: targetTime,
+      isRunning: true,
+      startTime: Date.now(),
+      targetTime
+    });
+    
+    timerInterval = setInterval(() => {
+      setTimer(prev => {
+        if (!prev.isRunning) return prev;
+        
+        const elapsed = Math.floor((Date.now() - (prev.startTime || 0)) / 1000);
+        const remaining = Math.max(0, prev.targetTime - elapsed);
+        
+        if (remaining === 0) {
+          clearInterval(timerInterval!);
+          return { ...prev, time: 0, isRunning: false };
+        }
+        
+        return { ...prev, time: remaining };
+      });
+    }, 1000);
+  };
   
   const stopTimer = () => {
     if (timerInterval) {
@@ -728,6 +755,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     skipForward,
     seekAudio,
     startTimer,
+    startTimerWithSeconds,
     stopTimer,
     resetTimer,
     setSearchTerm,
