@@ -219,7 +219,7 @@ export function TimerModal() {
                        'margin-bottom': '15px',
                        'font-size': '0.9rem'
                      }}>
-                       Set time:
+                       {app.language() === 'ar' ? 'ضبط الوقت:' : 'Set time:'}
                      </p>
                      
                      <div style={{ 
