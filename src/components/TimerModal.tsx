@@ -15,6 +15,15 @@ export function TimerModal() {
     const currentPage = app.currentPage();
     return currentPage === 'home' || currentPage === 'mutun';
   };
+
+  // Update custom values when timer is stopped/paused
+  const updateCustomTimeFromTimer = () => {
+    const totalSeconds = app.timer().time;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    setCustomMinutes(minutes);
+    setCustomSeconds(seconds);
+  };
   
   let stopwatchInterval: number | null = null;
 
@@ -348,59 +357,62 @@ export function TimerModal() {
                    </div>
                  </div>
 
-                <div style={{ display: 'flex', gap: '10px', 'justify-content': 'center', 'flex-wrap': 'wrap' }}>
-                  <Show when={!app.timer().isRunning}>
-                    <button
-                      onClick={() => app.startTimerWithSeconds(customMinutes(), customSeconds())}
-                      style={{
-                        background: 'var(--color-primary)',
-                        color: 'white',
-                        border: 'none',
-                        outline: 'none',
-                        padding: '10px 20px',
-                        'border-radius': '8px',
-                        cursor: 'pointer',
-                        'font-weight': '500'
-                      }}
-                    >
-                      Start
-                    </button>
-                  </Show>
-                  
-                  <Show when={app.timer().isRunning}>
-                    <button
-                      onClick={() => app.stopTimer()}
-                      style={{
-                        background: '#f59e0b',
-                        color: 'white',
-                        border: 'none',
-                        outline: 'none',
-                        padding: '10px 20px',
-                        'border-radius': '8px',
-                        cursor: 'pointer',
-                        'font-weight': '500'
-                      }}
-                    >
-                      Pause
-                    </button>
-                  </Show>
-                  
-                  <button
-                    onClick={() => app.resetTimer()}
-                    style={{
-                      background: '#dc2626',
-                      color: 'white',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '10px 20px',
-                      'border-radius': '8px',
-                      cursor: 'pointer',
-                      'font-weight': '500'
-                    }}
-                  >
-                    Stop
-                  </button>
-                </div>
+                                 <div style={{ display: 'flex', gap: '10px', 'justify-content': 'center', 'flex-wrap': 'wrap' }}>
+                   <Show when={!app.timer().isRunning}>
+                     <button
+                       onClick={() => app.startTimerWithSeconds(customMinutes(), customSeconds())}
+                       style={{
+                         background: 'var(--color-primary)',
+                         color: 'white',
+                         border: 'none',
+                         outline: 'none',
+                         padding: '10px 20px',
+                         'border-radius': '8px',
+                         cursor: 'pointer',
+                         'font-weight': '500'
+                       }}
+                     >
+                       Start
+                     </button>
+                   </Show>
+
+                   <Show when={app.timer().isRunning}>
+                     <button
+                       onClick={() => {
+                         updateCustomTimeFromTimer();
+                         app.stopTimer();
+                       }}
+                       style={{
+                         background: '#f59e0b',
+                         color: 'white',
+                         border: 'none',
+                         outline: 'none',
+                         padding: '10px 20px',
+                         'border-radius': '8px',
+                         cursor: 'pointer',
+                         'font-weight': '500'
+                       }}
+                     >
+                       Pause
+                     </button>
+                     
+                     <button
+                       onClick={() => app.resetTimer()}
+                       style={{
+                         background: '#dc2626',
+                         color: 'white',
+                         border: 'none',
+                         outline: 'none',
+                         padding: '10px 20px',
+                         'border-radius': '8px',
+                         cursor: 'pointer',
+                         'font-weight': '500'
+                       }}
+                     >
+                       Stop
+                     </button>
+                   </Show>
+                 </div>
 
                 {/* Quick timer presets */}
                 <div style={{ 'margin-top': '20px' }}>
@@ -408,9 +420,12 @@ export function TimerModal() {
                     {[5, 10, 15, 20, 30].map(minutes => (
                        <button
                          onClick={() => {
+                           // Stop timer if running and set new time
+                           if (app.timer().isRunning) {
+                             app.resetTimer();
+                           }
                            setCustomMinutes(minutes);
                            setCustomSeconds(0);
-                           app.startTimer(minutes);
                          }}
                         style={{
                           background: 'var(--color-background)',
