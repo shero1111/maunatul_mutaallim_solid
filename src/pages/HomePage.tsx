@@ -147,18 +147,8 @@ function StudentDashboard(props: { user: Student }) {
       console.log('🎯 Status filtered students:', filtered.length, 'from', beforeFilter, 'with status:', statusFilter());
     }
     
-    // Sort: Favorites first (within filtered results), then by name
-    filtered.sort((a, b) => {
-      const aIsFavorite = user().favorites.includes(a.id);
-      const bIsFavorite = user().favorites.includes(b.id);
-      
-      // Favorites come first
-      if (aIsFavorite && !bIsFavorite) return -1;
-      if (!aIsFavorite && bIsFavorite) return 1;
-      
-      // Within same favorite status, sort by name
-      return a.name.localeCompare(b.name, 'ar');
-    });
+    // Sort by name only
+    filtered.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
     
     console.log('📋 Final filtered and sorted students:', filtered.length);
     console.log('📋 Final students:', filtered.map(s => ({ name: s.name, status: s.status })));
@@ -197,16 +187,7 @@ function StudentDashboard(props: { user: Student }) {
     }, 100);
   };
   
-  const toggleFavorite = (studentId: string) => {
-    console.log('⭐ Toggling favorite for student:', studentId);
-    const newFavorites = user().favorites.includes(studentId)
-      ? user().favorites.filter(id => id !== studentId)
-      : [...user().favorites, studentId];
-    
-    const updatedUser = { ...user(), favorites: newFavorites };
-    app.updateUser(updatedUser);
-    console.log('✅ Favorites updated:', newFavorites);
-  };
+
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -518,8 +499,6 @@ function StudentDashboard(props: { user: Student }) {
                 isActive: true
               }}
               students={getFilteredStudents(allStudents())}
-              userFavorites={user().favorites}
-              onToggleFavorite={toggleFavorite}
               formatDate={formatDate}
               getStatusInfo={getStatusInfo}
               isSearchResults={true}
@@ -535,11 +514,9 @@ function StudentDashboard(props: { user: Student }) {
               {(halaqa, index) => (
                 <HalaqaSection 
                   halaqa={halaqa}
-                  students={getStudentsInHalaqa(halaqa.id)}
-                  userFavorites={user().favorites}
-                  onToggleFavorite={toggleFavorite}
-                  formatDate={formatDate}
-                  getStatusInfo={getStatusInfo}
+                                     students={getStudentsInHalaqa(halaqa.id)}
+                   formatDate={formatDate}
+                   getStatusInfo={getStatusInfo}
                   isConnected={true}
                   isLast={index() === userHalaqat().length - 1}
                 />
@@ -601,7 +578,7 @@ function StudentDashboard(props: { user: Student }) {
 
 // Halaqa Section Component
 function HalaqaSection(props: any) {
-  const { halaqa, students, userFavorites, onToggleFavorite, formatDate, getStatusInfo, isConnected = false, isLast = false } = props;
+  const { halaqa, students, formatDate, getStatusInfo, isConnected = false, isLast = false } = props;
   const [isExpanded, setIsExpanded] = createSignal(true);
   
   const getHalaqaTypeText = (type: string) => {
@@ -690,62 +667,28 @@ function HalaqaSection(props: any) {
                 'align-items': 'center'
               }}>
                 <div style={{ flex: '1' }}>
-                  <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-                    <h5 style={{
-                      color: 'var(--color-text)',
-                      margin: '0',
-                      'font-size': '1rem',
-                      'font-weight': '600'
-                    }}>
-                      {student.name}
-                      {userFavorites.includes(student.id) && (
-                        <span style={{ color: '#f59e0b', 'margin-left': '5px' }}>⭐</span>
-                      )}
-                    </h5>
-                  </div>
-                  
-                  <div style={{ 
-                    display: 'flex', 
-                    'align-items': 'center', 
-                    gap: '10px',
-                    'margin-top': '5px'
+                  <h5 style={{
+                    color: 'var(--color-text)',
+                    margin: '0',
+                    'font-size': '1rem',
+                    'font-weight': '600'
                   }}>
-                    <div style={{
-                      display: 'inline-flex',
-                      'align-items': 'center',
-                      background: getStatusInfo(student.status).color,
-                      color: 'white',
-                      padding: '3px 8px',
-                      'border-radius': '12px',
-                      'font-size': '0.75rem',
-                      'font-weight': '600'
-                    }}>
-                      {getStatusInfo(student.status).icon} {getStatusInfo(student.status).text}
-                    </div>
-                    
-                    <span style={{ 
-                      color: 'var(--color-text-secondary)', 
-                      'font-size': '0.75rem' 
-                    }}>
-                      {formatDate(student.status_changed_at)}
-                    </span>
-                  </div>
+                    {student.name}
+                  </h5>
                 </div>
                 
-                <button
-                  onClick={() => onToggleFavorite(student.id)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-              outline: 'none',
-                    cursor: 'pointer',
-                    'font-size': '1.2rem',
-                    padding: '5px',
-                    color: userFavorites.includes(student.id) ? '#f59e0b' : 'var(--color-text-secondary)'
-                  }}
-                >
-                  ⭐
-                </button>
+                <div style={{
+                  display: 'inline-flex',
+                  'align-items': 'center',
+                  background: getStatusInfo(student.status).color,
+                  color: 'white',
+                  padding: '4px 10px',
+                  'border-radius': '12px',
+                  'font-size': '0.75rem',
+                  'font-weight': '600'
+                }}>
+                  {getStatusInfo(student.status).icon} {getStatusInfo(student.status).text}
+                </div>
               </div>
             )}
           </For>
@@ -801,18 +744,8 @@ function TeacherDashboard(props: { user: Teacher }) {
       filtered = filtered.filter(s => s.status === statusFilter());
     }
     
-    // Sort: Favorites first (within filtered results), then by name
-    filtered.sort((a, b) => {
-      const aIsFavorite = user.favorites.includes(a.id);
-      const bIsFavorite = user.favorites.includes(b.id);
-      
-      // Favorites come first
-      if (aIsFavorite && !bIsFavorite) return -1;
-      if (!aIsFavorite && bIsFavorite) return 1;
-      
-      // Within same favorite status, sort by name
-      return a.name.localeCompare(b.name, 'ar');
-    });
+    // Sort by name only
+    filtered.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
     
     return filtered;
   };
@@ -830,14 +763,7 @@ function TeacherDashboard(props: { user: Teacher }) {
     }
   };
   
-  const toggleFavorite = (studentId: string) => {
-    const newFavorites = user.favorites.includes(studentId)
-      ? user.favorites.filter(id => id !== studentId)
-      : [...user.favorites, studentId];
-    
-    const updatedUser = { ...user, favorites: newFavorites };
-    app.updateUser(updatedUser);
-  };
+
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -1042,8 +968,6 @@ function TeacherDashboard(props: { user: Teacher }) {
                isActive: true
             }}
             students={getFilteredStudents(allStudents())}
-            userFavorites={user.favorites}
-            onToggleFavorite={toggleFavorite}
             formatDate={formatDate}
             getStatusInfo={getStatusInfo}
             isSearchResults={true}
@@ -1057,8 +981,6 @@ function TeacherDashboard(props: { user: Teacher }) {
             <HalaqaSection 
               halaqa={halaqa}
               students={getStudentsInHalaqa(halaqa.id)}
-              userFavorites={user.favorites}
-              onToggleFavorite={toggleFavorite}
               formatDate={formatDate}
               getStatusInfo={getStatusInfo}
             />
