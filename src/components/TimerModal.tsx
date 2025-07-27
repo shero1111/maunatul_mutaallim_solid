@@ -7,7 +7,7 @@ export function TimerModal() {
   const [activeTab, setActiveTab] = createSignal<'timer' | 'stopwatch'>('timer');
   const [stopwatchTime, setStopwatchTime] = createSignal(0);
   const [isStopwatchRunning, setIsStopwatchRunning] = createSignal(false);
-  const [customMinutes, setCustomMinutes] = createSignal(25);
+  const [customMinutes, setCustomMinutes] = createSignal(10);
   const [customSeconds, setCustomSeconds] = createSignal(0);
 
   // Show timer FAB only on specific pages
