@@ -17,8 +17,8 @@ export function UsersPage() {
     const currentUser = app.currentUser();
     
     // Hide admins from leaders (only admins can see other admins)
-    if (currentUser?.role === 'leader') {
-      users = users.filter(u => u.role !== 'admin');
+    if (currentUser?.role === 'leitung') {
+      users = users.filter(u => u.role !== 'superuser');
     }
     
     // Filter by role
@@ -42,11 +42,11 @@ export function UsersPage() {
   // Role options depend on current user's role
   const roles = createMemo(() => {
     const currentUser = app.currentUser();
-    if (currentUser?.role === 'leader') {
+    if (currentUser?.role === 'leitung') {
       // Leaders don't see admin option
-      return ['all', 'student', 'teacher', 'leader'];
+      return ['all', 'student', 'lehrer', 'leitung'];
     }
-    return ['all', 'student', 'teacher', 'leader', 'admin'];
+    return ['all', 'student', 'lehrer', 'leitung', 'superuser'];
   });
   
   // Function to get search results text
@@ -280,53 +280,46 @@ export function UsersPage() {
           >
             <div style={{
               display: 'flex',
-              'justify-content': 'space-between',
-              'align-items': 'center'
+              'align-items': 'center',
+              gap: '12px'
             }}>
-              <div style={{ flex: '1' }}>
+              {/* Role Tag on the left */}
+              <span style={{
+                ...roleTagStyle(user.role),
+                'font-size': '11px',
+                padding: '4px 10px',
+                'min-width': 'fit-content',
+                'flex-shrink': '0'
+              }}>
+                {app.translate(user.role)}
+              </span>
+              
+              {/* User Name */}
+              <div style={{ flex: '1', 'min-width': '0' }}>
                 <div style={{
                   'font-size': '16px',
                   'font-weight': '600',
                   color: 'var(--color-text)',
-                  'margin-bottom': '4px'
+                  'white-space': 'nowrap',
+                  overflow: 'hidden',
+                  'text-overflow': 'ellipsis'
                 }}>
                   {user.name}
                 </div>
-                <div style={{
-                  display: 'flex',
-                  'align-items': 'center',
-                  gap: '8px'
-                }}>
-                  <span style={{
-                    ...roleTagStyle(user.role),
-                    'font-size': '11px',
-                    padding: '3px 8px'
-                  }}>
-                    {app.translate(user.role)}
-                  </span>
-                  <Show when={user.isActive !== undefined}>
-                    <div style={{
-                      display: 'flex',
-                      'align-items': 'center',
-                      gap: '4px'
-                    }}>
-                      <div style={{
-                        width: '8px',
-                        height: '8px',
-                        'border-radius': '50%',
-                        'background-color': user.isActive ? 'var(--color-success)' : 'var(--color-error)'
-                      }} />
-                      <span style={{
-                        'font-size': '12px',
-                        color: 'var(--color-text-secondary)',
-                        'font-weight': '500'
-                      }}>
-                        {user.isActive ? app.translate('active') : app.translate('inactive')}
-                      </span>
-                    </div>
-                  </Show>
-                </div>
               </div>
+              
+              {/* Activity Indicator on the right */}
+              <Show when={user.isActive !== undefined}>
+                <div style={{
+                  width: '12px',
+                  height: '12px',
+                  'border-radius': '50%',
+                  'background-color': user.isActive ? 'var(--color-success)' : 'var(--color-border)',
+                  'flex-shrink': '0',
+                  border: user.isActive ? 'none' : '2px solid var(--color-border)',
+                  'box-shadow': user.isActive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none'
+                }} />
+              </Show>
             </div>
           </div>
         )}
@@ -352,6 +345,7 @@ export function UsersPage() {
         user={selectedUser()}
         isOpen={isModalOpen()}
         onClose={handleModalClose}
+        isViewMode={true}
       />
     </div>
   );

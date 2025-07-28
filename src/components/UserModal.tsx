@@ -6,6 +6,7 @@ interface UserModalProps {
   user: User | null;
   isOpen: boolean;
   onClose: () => void;
+  isViewMode?: boolean; // New prop to show view-only mode
 }
 
 export function UserModal(props: UserModalProps) {
@@ -80,10 +81,20 @@ export function UserModal(props: UserModalProps) {
 
   const availableRoles = () => {
     const currentUser = app.currentUser();
-    if (currentUser?.role === 'leader') {
-      return ['student', 'teacher', 'leader'];
+    if (currentUser?.role === 'leitung') {
+      return ['student', 'lehrer', 'leitung'];
     }
-    return ['student', 'teacher', 'leader', 'admin'];
+    return ['student', 'lehrer', 'leitung', 'superuser'];
+  };
+
+  const canEdit = () => {
+    const currentUser = app.currentUser();
+    return (currentUser?.role === 'superuser' || currentUser?.role === 'leitung') && !props.isViewMode;
+  };
+
+  const canView = () => {
+    const currentUser = app.currentUser();
+    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
   const modalOverlayStyle = {
@@ -156,6 +167,10 @@ export function UserModal(props: UserModalProps) {
     color: 'white'
   };
 
+  if (!canView()) {
+    return null;
+  }
+
   return (
     <Show when={props.isOpen && props.user}>
       <div style={modalOverlayStyle} onClick={props.onClose}>
@@ -167,8 +182,198 @@ export function UserModal(props: UserModalProps) {
             'margin-bottom': '20px',
             'text-align': 'center'
           }}>
-            {app.translate('editUser')}
+            {props.isViewMode ? 'تفاصيل المستخدم' : app.translate('editUser')}
           </h2>
+
+          {/* View Mode - Display user info */}
+          <Show when={props.isViewMode}>
+            <div style={{ 'margin-bottom': '24px' }}>
+              {/* User Avatar/Icon */}
+              <div style={{
+                'text-align': 'center',
+                'margin-bottom': '20px'
+              }}>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  'border-radius': '50%',
+                  background: 'linear-gradient(135deg, var(--color-primary), #3b82f6)',
+                  display: 'flex',
+                  'align-items': 'center',
+                  'justify-content': 'center',
+                  margin: '0 auto',
+                  'font-size': '2rem',
+                  color: 'white',
+                  'font-weight': '600'
+                }}>
+                  {props.user?.name?.charAt(0)?.toUpperCase() || '👤'}
+                </div>
+              </div>
+
+              {/* User Details Grid */}
+              <div style={{
+                display: 'grid',
+                gap: '16px'
+              }}>
+                <div style={{
+                  padding: '12px 16px',
+                  background: 'var(--color-surface)',
+                  'border-radius': '8px',
+                  border: '1px solid var(--color-border)'
+                }}>
+                  <div style={{
+                    'font-size': '12px',
+                    color: 'var(--color-text-secondary)',
+                    'margin-bottom': '4px',
+                    'font-weight': '500'
+                  }}>
+                    {app.translate('fullName')}
+                  </div>
+                  <div style={{
+                    'font-size': '16px',
+                    color: 'var(--color-text)',
+                    'font-weight': '600'
+                  }}>
+                    {props.user?.name}
+                  </div>
+                </div>
+
+                <div style={{
+                  padding: '12px 16px',
+                  background: 'var(--color-surface)',
+                  'border-radius': '8px',
+                  border: '1px solid var(--color-border)'
+                }}>
+                  <div style={{
+                    'font-size': '12px',
+                    color: 'var(--color-text-secondary)',
+                    'margin-bottom': '4px',
+                    'font-weight': '500'
+                  }}>
+                    {app.translate('userName')}
+                  </div>
+                  <div style={{
+                    'font-size': '16px',
+                    color: 'var(--color-text)',
+                    'font-weight': '600'
+                  }}>
+                    @{props.user?.username}
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  'grid-template-columns': '1fr 1fr',
+                  gap: '12px'
+                }}>
+                  <div style={{
+                    padding: '12px 16px',
+                    background: 'var(--color-surface)',
+                    'border-radius': '8px',
+                    border: '1px solid var(--color-border)'
+                  }}>
+                    <div style={{
+                      'font-size': '12px',
+                      color: 'var(--color-text-secondary)',
+                      'margin-bottom': '4px',
+                      'font-weight': '500'
+                    }}>
+                      {app.translate('role')}
+                    </div>
+                    <span style={{
+                      ...roleTagStyle(props.user?.role || ''),
+                      'font-size': '12px',
+                      padding: '4px 8px'
+                    }}>
+                      {app.translate(props.user?.role || '')}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    padding: '12px 16px',
+                    background: 'var(--color-surface)',
+                    'border-radius': '8px',
+                    border: '1px solid var(--color-border)'
+                  }}>
+                    <div style={{
+                      'font-size': '12px',
+                      color: 'var(--color-text-secondary)',
+                      'margin-bottom': '4px',
+                      'font-weight': '500'
+                    }}>
+                      الحالة
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      'align-items': 'center',
+                      gap: '6px'
+                    }}>
+                      <div style={{
+                        width: '10px',
+                        height: '10px',
+                        'border-radius': '50%',
+                        'background-color': props.user?.isActive ? 'var(--color-success)' : 'var(--color-border)',
+                        border: props.user?.isActive ? 'none' : '2px solid var(--color-border)'
+                      }} />
+                      <span style={{
+                        'font-size': '14px',
+                        color: 'var(--color-text)',
+                        'font-weight': '500'
+                      }}>
+                        {props.user?.isActive ? 'نشط' : 'غير نشط'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{
+                  padding: '12px 16px',
+                  background: 'var(--color-surface)',
+                  'border-radius': '8px',
+                  border: '1px solid var(--color-border)'
+                }}>
+                  <div style={{
+                    'font-size': '12px',
+                    color: 'var(--color-text-secondary)',
+                    'margin-bottom': '4px',
+                    'font-weight': '500'
+                  }}>
+                    تاريخ الإنشاء
+                  </div>
+                  <div style={{
+                    'font-size': '14px',
+                    color: 'var(--color-text)'
+                  }}>
+                    {props.user?.created_at ? new Date(props.user.created_at).toLocaleDateString('ar-SA') : 'غير محدد'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Edit Button for admins/leaders */}
+              <Show when={canEdit()}>
+                <div style={{
+                  'margin-top': '20px',
+                  'text-align': 'center'
+                }}>
+                  <button
+                    style={{
+                      ...primaryButtonStyle,
+                      width: '100%'
+                    }}
+                    onClick={() => {
+                      // Switch to edit mode - this would need to be handled by parent component
+                      props.onClose();
+                    }}
+                  >
+                    ✏️ تحرير المستخدم
+                  </button>
+                </div>
+              </Show>
+            </div>
+          </Show>
+
+          {/* Edit Mode - Show form inputs */}
+          <Show when={!props.isViewMode}>
 
           <div style={{ 'margin-bottom': '16px' }}>
             <label style={{
@@ -306,6 +511,22 @@ export function UserModal(props: UserModalProps) {
               {isLoading() ? '...' : app.translate('save')}
             </button>
           </div>
+          </Show>
+
+          {/* Close Button for View Mode */}
+          <Show when={props.isViewMode}>
+            <div style={{
+              'text-align': 'center',
+              'margin-top': '20px'
+            }}>
+              <button
+                style={secondaryButtonStyle}
+                onClick={props.onClose}
+              >
+                إغلاق
+              </button>
+            </div>
+          </Show>
         </div>
       </div>
 
