@@ -211,12 +211,48 @@ export function NewsModal(props: NewsModalProps) {
             style={modalContentStyle} 
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close X Button */}
+            <button
+              onClick={props.onClose}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                'font-size': '24px',
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                padding: '4px',
+                'border-radius': '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                'align-items': 'center',
+                'justify-content': 'center',
+                transition: 'all 0.2s ease',
+                'z-index': '10'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-border)';
+                e.currentTarget.style.color = 'var(--color-text)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }}
+              title="إغلاق"
+            >
+              ✕
+            </button>
+
             <h2 style={{
               'font-size': '20px',
               'font-weight': '600',
               color: 'var(--color-text)',
               'margin-bottom': '20px',
-              'text-align': 'center'
+              'text-align': 'center',
+              'padding-right': '40px' // Space for X button
             }}>
               {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
             </h2>
@@ -335,6 +371,41 @@ export function NewsModal(props: NewsModalProps) {
             ...modalContentStyle,
             'max-width': '400px'
           }} onClick={(e) => e.stopPropagation()}>
+            {/* Close X Button for Delete Confirmation */}
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                'font-size': '20px',
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                padding: '4px',
+                'border-radius': '50%',
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                'align-items': 'center',
+                'justify-content': 'center',
+                transition: 'all 0.2s ease',
+                'z-index': '10'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-border)';
+                e.currentTarget.style.color = 'var(--color-text)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }}
+              title="إغلاق"
+            >
+              ✕
+            </button>
+
             <h3 style={{
               'font-size': '18px',
               'font-weight': '600',
