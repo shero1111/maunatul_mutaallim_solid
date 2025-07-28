@@ -35,22 +35,37 @@ export function TimerModal() {
   const [customMinutes, setCustomMinutes] = createSignal(10);
   const [customSeconds, setCustomSeconds] = createSignal(0);
 
-  // Show timer FAB only on specific pages and when audio player is not visible
+  // Show timer FAB based on user role and page
   const shouldShowTimer = () => {
     const currentPage = app.currentPage();
-    const isOnCorrectPage = currentPage === 'home' || currentPage === 'mutuun';
+    const currentUser = app.currentUser();
+    
+    if (!currentUser) return false;
+    
+    // Define which pages each role can see timer on
+    let allowedPages: string[] = [];
+    
+    if (currentUser.role === 'student') {
+      // Students: timer on home and mutuun pages
+      allowedPages = ['home', 'mutuun'];
+    } else if (['teacher', 'leader', 'admin'].includes(currentUser.role)) {
+      // Teachers, leaders, admins: timer only on mutuun page
+      allowedPages = ['mutuun'];
+    }
+    
+    const isOnAllowedPage = allowedPages.includes(currentPage);
     
     // Hide timer if audio player is visible (has title or matnId)
     const audioPlayerVisible = !!(app.audioPlayer().title || app.audioPlayer().matnId);
     
-    const shouldShow = isOnCorrectPage && !audioPlayerVisible;
+    const shouldShow = isOnAllowedPage && !audioPlayerVisible;
     
     // Debug logging
     console.log('🎛️ Timer FAB visibility check:', {
       currentPage,
-      isOnCorrectPage,
-      audioPlayerTitle: app.audioPlayer().title,
-      audioPlayerMatnId: app.audioPlayer().matnId,
+      userRole: currentUser.role,
+      allowedPages,
+      isOnAllowedPage,
       audioPlayerVisible,
       shouldShow
     });
