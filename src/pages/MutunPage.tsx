@@ -404,44 +404,84 @@ export function MutunPage() {
                       return (
                         <div 
                           style={{ 
-                            background: 'var(--color-surface)', 
-                            'border-radius': '16px', 
-                            padding: '20px', 
-                            border: 'none',
-                            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+                            background: 'var(--color-surface)',
+                            'background-image': `linear-gradient(135deg, 
+                              var(--color-surface) 0%, 
+                              rgba(255, 255, 255, 0.8) 30%,
+                              rgba(248, 250, 252, 0.9) 70%,
+                              rgba(240, 245, 251, 0.95) 100%)`,
+                            'border-radius': '20px', 
+                            padding: '24px', 
+                            border: '1px solid rgba(59, 130, 246, 0.15)',
+                            'box-shadow': `
+                              0 8px 32px rgba(0, 0, 0, 0.12), 
+                              0 2px 8px rgba(0, 0, 0, 0.08),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                            `,
                             transition: 'all 0.3s ease',
                             position: 'relative' as const,
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            'backdrop-filter': 'blur(10px)'
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-4px)';
-                            e.currentTarget.style.boxShadow = '0 12px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1)';
+                            e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)';
+                            e.currentTarget.style.boxShadow = `
+                              0 16px 64px rgba(0, 0, 0, 0.2), 
+                              0 8px 24px rgba(0, 0, 0, 0.15),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                            `;
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0px)';
-                            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)';
+                            e.currentTarget.style.transform = 'translateY(0px) scale(1)';
+                            e.currentTarget.style.boxShadow = `
+                              0 8px 32px rgba(0, 0, 0, 0.12), 
+                              0 2px 8px rgba(0, 0, 0, 0.08),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                            `;
                           }}
                         >
-                          {/* Subtle Status Indicator */}
+                          {/* Enhanced Status Indicator */}
                           <div style={{
                             position: 'absolute',
                             top: '0',
                             right: '0',
-                            width: '4px',
+                            width: '6px',
                             height: '100%',
-                            background: getMatnColor(matn.status),
-                            'border-radius': '0 16px 16px 0',
-                            opacity: '0.6'
+                            background: `linear-gradient(135deg, 
+                              ${getMatnColor(matn.status)} 0%, 
+                              ${getMatnColor(matn.status)}dd 50%,
+                              ${getMatnColor(matn.status)}bb 100%)`,
+                            'border-radius': '0 20px 20px 0',
+                            opacity: '0.8',
+                            'box-shadow': `inset -2px 0 4px rgba(0,0,0,0.1)`
                           }} />
                           
-                          {/* Title - Centered at Top */}
+                          {/* Subtle decorative gradient overlay */}
+                          <div style={{
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            right: '0',
+                            height: '2px',
+                            background: `linear-gradient(90deg, 
+                              transparent 0%, 
+                              rgba(59, 130, 246, 0.1) 50%, 
+                              transparent 100%)`,
+                            'border-radius': '20px 20px 0 0'
+                          }} />
+                          
+                          {/* Enhanced Title */}
                           <h3 style={{ 
                             color: 'var(--color-text)', 
-                            'font-size': '1.3rem', 
-                            margin: '0 0 16px 0',
+                            'font-size': '1.35rem', 
+                            margin: '0 0 18px 0',
                             'text-align': 'center',
                             'font-weight': '700',
-                            'line-height': '1.4'
+                            'line-height': '1.4',
+                            'text-shadow': '0 1px 2px rgba(0,0,0,0.1)',
+                            'letter-spacing': '0.3px',
+                            position: 'relative' as const,
+                            'z-index': '1'
                           }}>
                             {matn.name}
                           </h3>
