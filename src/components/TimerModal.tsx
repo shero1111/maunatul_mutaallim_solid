@@ -1,6 +1,31 @@
 import { createSignal, Show, onMount, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 
+// Media Control Icons - Updated with Standard Icons
+const PlayIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M8 5v14l11-7z"/>
+  </svg>
+);
+
+const PauseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+  </svg>
+);
+
+const StopIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M6 6h12v12H6z"/>
+  </svg>
+);
+
+const ResetIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+  </svg>
+);
+
 export function TimerModal() {
   const app = useApp();
   const [isModalOpen, setIsModalOpen] = createSignal(false);
@@ -25,7 +50,7 @@ export function TimerModal() {
     setCustomSeconds(seconds);
   };
   
-  let stopwatchInterval: number | null = null;
+  let stopwatchInterval: ReturnType<typeof setInterval> | null = null;
 
   // Stopwatch functions
   const startStopwatch = () => {
@@ -370,9 +395,13 @@ export function TimerModal() {
                          padding: '10px 20px',
                          'border-radius': '8px',
                          cursor: 'pointer',
-                         'font-weight': '500'
+                         'font-weight': '500',
+                         display: 'flex',
+                         'align-items': 'center',
+                         gap: '8px'
                        }}
                      >
+                       <PlayIcon />
                        {app.language() === 'ar' ? 'ابدأ' : 'Start'}
                      </button>
                    </Show>
@@ -391,9 +420,13 @@ export function TimerModal() {
                          padding: '10px 20px',
                          'border-radius': '8px',
                          cursor: 'pointer',
-                         'font-weight': '500'
+                         'font-weight': '500',
+                         display: 'flex',
+                         'align-items': 'center',
+                         gap: '8px'
                        }}
                                             >
+                         <PauseIcon />
                          {app.language() === 'ar' ? 'توقف' : 'Pause'}
                        </button>
                      
@@ -407,9 +440,13 @@ export function TimerModal() {
                            padding: '10px 20px',
                            'border-radius': '8px',
                            cursor: 'pointer',
-                           'font-weight': '500'
+                           'font-weight': '500',
+                           display: 'flex',
+                           'align-items': 'center',
+                           gap: '8px'
                          }}
                        >
+                         <StopIcon />
                          {app.language() === 'ar' ? 'إيقاف' : 'Stop'}
                        </button>
                    </Show>
@@ -478,9 +515,13 @@ export function TimerModal() {
                         'border-radius': '8px',
                         cursor: 'pointer',
                         'font-weight': '500',
-                        'font-size': '1rem'
+                        'font-size': '1rem',
+                        display: 'flex',
+                        'align-items': 'center',
+                        gap: '8px'
                       }}
                     >
+                      <PlayIcon />
                       {app.language() === 'ar' ? 'ابدأ' : 'Start'}
                     </button>
                   </Show>
@@ -497,9 +538,13 @@ export function TimerModal() {
                         'border-radius': '8px',
                         cursor: 'pointer',
                         'font-weight': '500',
-                        'font-size': '1rem'
+                        'font-size': '1rem',
+                        display: 'flex',
+                        'align-items': 'center',
+                        gap: '8px'
                       }}
                     >
+                      <StopIcon />
                       {app.language() === 'ar' ? 'إيقاف' : 'Stop'}
                     </button>
                   </Show>
@@ -515,9 +560,13 @@ export function TimerModal() {
                       'border-radius': '8px',
                       cursor: 'pointer',
                       'font-weight': '500',
-                      'font-size': '1rem'
+                      'font-size': '1rem',
+                      display: 'flex',
+                      'align-items': 'center',
+                      gap: '8px'
                     }}
                   >
+                    <ResetIcon />
                     {app.language() === 'ar' ? 'إعادة تعيين' : 'Reset'}
                   </button>
                 </div>
