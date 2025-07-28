@@ -59,10 +59,25 @@ export function NewsModal(props: NewsModalProps) {
           created_at: new Date().toISOString(),
           ...newsData
         };
-        console.log('Creating news:', newNewsData);
-        app.createNews(newNewsData);
+        console.log('🆕 Creating new news:', newNewsData);
+        console.log('📱 App.createNews function:', typeof app.createNews);
+        
+        if (typeof app.createNews === 'function') {
+          app.createNews(newNewsData);
+          console.log('✅ createNews called successfully');
+          
+          // Small delay to see the news being added
+          setTimeout(() => {
+            console.log('🔄 Current news count after delay:', app.news().length);
+          }, 100);
+        } else {
+          console.error('❌ app.createNews is not a function!');
+          alert('Fehler: News-Funktion nicht verfügbar');
+          return;
+        }
       }
       
+      console.log('🔄 News count before closing:', app.news().length);
       props.onClose();
     } catch (error) {
       console.error('Error saving news:', error);
@@ -110,12 +125,14 @@ export function NewsModal(props: NewsModalProps) {
   const modalContentStyle = {
     background: 'var(--color-background)',
     'border-radius': '16px',
-    padding: '24px',
+    padding: '20px',
     width: '100%',
     'max-width': '600px',
     'max-height': '90vh',
     'overflow-y': 'auto' as const,
-    'box-shadow': '0 10px 30px rgba(0,0,0,0.3)'
+    'box-shadow': '0 10px 30px rgba(0,0,0,0.3)',
+    margin: '20px',
+    position: 'relative' as const
   };
 
   const inputStyle = {
@@ -171,18 +188,38 @@ export function NewsModal(props: NewsModalProps) {
   }
 
   return (
-    <Show when={props.isOpen}>
-      <div style={modalOverlayStyle} onClick={props.onClose}>
-        <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-          <h2 style={{
-            'font-size': '20px',
-            'font-weight': '600',
-            color: 'var(--color-text)',
-            'margin-bottom': '20px',
-            'text-align': 'center'
-          }}>
-            {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
-          </h2>
+    <>
+      <style>
+        {`
+          @media (max-width: 640px) {
+            .news-modal-content {
+              width: 100vw !important;
+              height: 100vh !important;
+              max-width: none !important;
+              max-height: none !important;
+              margin: 0 !important;
+              border-radius: 0 !important;
+              padding: 20px !important;
+            }
+          }
+        `}
+      </style>
+      <Show when={props.isOpen}>
+        <div style={modalOverlayStyle} onClick={props.onClose}>
+          <div 
+            class="news-modal-content"
+            style={modalContentStyle} 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{
+              'font-size': '20px',
+              'font-weight': '600',
+              color: 'var(--color-text)',
+              'margin-bottom': '20px',
+              'text-align': 'center'
+            }}>
+              {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
+            </h2>
 
           <div style={{ 'margin-bottom': '16px' }}>
             <label style={{
@@ -249,8 +286,14 @@ export function NewsModal(props: NewsModalProps) {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Fixed at bottom */}
           <div style={{
+            position: 'sticky',
+            bottom: '0',
+            'background-color': 'var(--color-background)',
+            padding: '16px 0 0 0',
+            'margin-top': '20px',
+            'border-top': '1px solid var(--color-border)',
             display: 'flex',
             gap: '12px',
             'justify-content': props.isEdit ? 'space-between' : 'flex-end'
@@ -333,6 +376,7 @@ export function NewsModal(props: NewsModalProps) {
           </div>
         </div>
       </Show>
-    </Show>
+      </Show>
+    </>
   );
 }
