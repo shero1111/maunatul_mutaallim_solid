@@ -506,19 +506,33 @@ export function MutunPage() {
                         <div 
                           style={{ 
                             background: 'var(--color-surface)',
-                            'background-image': `linear-gradient(135deg, 
-                              var(--color-surface) 0%, 
-                              rgba(255, 255, 255, 0.8) 30%,
-                              rgba(248, 250, 252, 0.9) 70%,
-                              rgba(240, 245, 251, 0.95) 100%)`,
+                            'background-image': app.theme() === 'dark' 
+                              ? `linear-gradient(135deg, 
+                                  var(--color-surface) 0%, 
+                                  rgba(55, 65, 81, 0.8) 30%,
+                                  rgba(75, 85, 99, 0.6) 70%,
+                                  rgba(107, 114, 128, 0.4) 100%)`
+                              : `linear-gradient(135deg, 
+                                  var(--color-surface) 0%, 
+                                  rgba(255, 255, 255, 0.8) 30%,
+                                  rgba(248, 250, 252, 0.9) 70%,
+                                  rgba(240, 245, 251, 0.95) 100%)`,
                             'border-radius': '20px', 
                             padding: '24px', 
-                            border: '1px solid rgba(59, 130, 246, 0.15)',
-                            'box-shadow': `
-                              0 8px 32px rgba(0, 0, 0, 0.12), 
-                              0 2px 8px rgba(0, 0, 0, 0.08),
-                              inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                            `,
+                            border: app.theme() === 'dark' 
+                              ? '1px solid rgba(99, 102, 241, 0.2)'
+                              : '1px solid rgba(59, 130, 246, 0.15)',
+                            'box-shadow': app.theme() === 'dark'
+                              ? `
+                                0 8px 32px rgba(0, 0, 0, 0.3), 
+                                0 2px 8px rgba(0, 0, 0, 0.2),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                              `
+                              : `
+                                0 8px 32px rgba(0, 0, 0, 0.12), 
+                                0 2px 8px rgba(0, 0, 0, 0.08),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                              `,
                             transition: 'all 0.3s ease',
                             position: 'relative' as const,
                             overflow: 'hidden',
@@ -526,19 +540,31 @@ export function MutunPage() {
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'translateY(-6px) scale(1.02)';
-                            e.currentTarget.style.boxShadow = `
-                              0 16px 64px rgba(0, 0, 0, 0.2), 
-                              0 8px 24px rgba(0, 0, 0, 0.15),
-                              inset 0 1px 0 rgba(255, 255, 255, 0.2)
-                            `;
+                            e.currentTarget.style.boxShadow = app.theme() === 'dark'
+                              ? `
+                                0 16px 64px rgba(0, 0, 0, 0.4), 
+                                0 8px 24px rgba(0, 0, 0, 0.3),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                              `
+                              : `
+                                0 16px 64px rgba(0, 0, 0, 0.2), 
+                                0 8px 24px rgba(0, 0, 0, 0.15),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                              `;
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.transform = 'translateY(0px) scale(1)';
-                            e.currentTarget.style.boxShadow = `
-                              0 8px 32px rgba(0, 0, 0, 0.12), 
-                              0 2px 8px rgba(0, 0, 0, 0.08),
-                              inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                            `;
+                            e.currentTarget.style.boxShadow = app.theme() === 'dark'
+                              ? `
+                                0 8px 32px rgba(0, 0, 0, 0.3), 
+                                0 2px 8px rgba(0, 0, 0, 0.2),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.05)
+                              `
+                              : `
+                                0 8px 32px rgba(0, 0, 0, 0.12), 
+                                0 2px 8px rgba(0, 0, 0, 0.08),
+                                inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                              `;
                           }}
                         >
                           {/* Enhanced Status Indicator */}
@@ -564,10 +590,15 @@ export function MutunPage() {
                             left: '0',
                             right: '0',
                             height: '2px',
-                            background: `linear-gradient(90deg, 
-                              transparent 0%, 
-                              rgba(59, 130, 246, 0.1) 50%, 
-                              transparent 100%)`,
+                            background: app.theme() === 'dark'
+                              ? `linear-gradient(90deg, 
+                                  transparent 0%, 
+                                  rgba(99, 102, 241, 0.2) 50%, 
+                                  transparent 100%)`
+                              : `linear-gradient(90deg, 
+                                  transparent 0%, 
+                                  rgba(59, 130, 246, 0.1) 50%, 
+                                  transparent 100%)`,
                             'border-radius': '20px 20px 0 0'
                           }} />
                           
