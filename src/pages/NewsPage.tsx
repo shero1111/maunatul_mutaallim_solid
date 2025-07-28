@@ -328,31 +328,29 @@ export function NewsPage() {
                   position: 'absolute',
                   top: '8px',
                   left: '8px',
-                  'background-color': 'rgba(0,0,0,0.7)',
-                  color: 'white',
+                  'background-color': 'transparent',
+                  color: 'var(--color-text-secondary)',
                   border: 'none',
-                  width: '20px',
-                  height: '20px',
-                  'border-radius': '4px',
-                  display: 'flex',
-                  'align-items': 'center',
-                  'justify-content': 'center',
-                  'font-size': '12px',
+                  padding: '4px',
+                  'font-size': '18px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  'z-index': '2'
+                  'z-index': '2',
+                  'border-radius': '50%'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
-                  e.currentTarget.style.transform = 'scale(1.1)';
+                  e.currentTarget.style.color = 'var(--color-primary)';
+                  e.currentTarget.style.transform = 'scale(1.2)';
+                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.1)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
                   e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }}
                 title={app.translate('editNews')}
               >
-                ⚙️
+                ✏️
               </button>
             </Show>
 
