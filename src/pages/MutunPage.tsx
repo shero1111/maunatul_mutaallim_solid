@@ -1,4 +1,4 @@
-import { createSignal, createMemo, For, Show } from 'solid-js';
+import { createSignal, createMemo, For, Show, onMount } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { Matn } from '../types';
 import { getStatusColor } from '../styles/themes';
@@ -74,12 +74,14 @@ export function MutunPage() {
     const updatedMatn = {
       ...matn,
       status: nextStatus,
-      lastChange_date: new Date().toISOString(),
-      // Reset days_since_last_revision when status becomes green (completed)
-      days_since_last_revision: nextStatus === 'green' ? 0 : matn.days_since_last_revision
+      // Only update lastChange_date when going from orange to green (completing revision)
+      lastChange_date: (matn.status === 'orange' && nextStatus === 'green') 
+        ? new Date().toISOString() 
+        : matn.lastChange_date
     };
 
     console.log('✅ Updated matn:', updatedMatn);
+    console.log('📅 LastChange_date updated?', matn.status === 'orange' && nextStatus === 'green');
     app.updateMatn(updatedMatn);
   };
 
@@ -101,7 +103,7 @@ export function MutunPage() {
     }
   };
 
-  // Calculate days since last change and handle threshold logic
+  // Calculate days since last change (simple and correct)
   const calculateDaysSinceLastChange = (matn: Matn) => {
     if (!matn.lastChange_date) {
       console.log('❌ No lastChange_date for', matn.name, '- returning 0');
@@ -109,54 +111,60 @@ export function MutunPage() {
     }
     
     const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+    
     // Handle both full ISO strings and date-only strings
     let lastChangeDate: Date;
     if (matn.lastChange_date.includes('T')) {
-      // Full ISO string (e.g., "2024-01-26T14:30:00.000Z")
-      lastChangeDate = new Date(matn.lastChange_date);
+      const lastChangeDateTime = new Date(matn.lastChange_date);
+      lastChangeDate = new Date(lastChangeDateTime.getFullYear(), lastChangeDateTime.getMonth(), lastChangeDateTime.getDate());
     } else {
-      // Date-only string (e.g., "2024-01-26") - treat as start of day
       lastChangeDate = new Date(matn.lastChange_date + 'T00:00:00.000Z');
+      lastChangeDate = new Date(lastChangeDate.getFullYear(), lastChangeDate.getMonth(), lastChangeDate.getDate());
     }
     
-    const diffTime = now.getTime() - lastChangeDate.getTime();
+    const diffTime = today.getTime() - lastChangeDate.getTime();
     const daysSince = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     console.log('📅 Days calculation for', matn.name, ':', {
       lastChange: matn.lastChange_date,
-      lastChangeParsed: lastChangeDate.toISOString(),
-      now: now.toISOString(),
-      diffTime: diffTime,
-      diffHours: diffTime / (1000 * 60 * 60),
+      lastChangeDate: lastChangeDate.toISOString(),
+      today: today.toISOString(),
       daysSince: daysSince,
       status: matn.status
     });
     
-    // Special case: If status is green and it was just changed today (same day)
-    if (matn.status === 'green' && daysSince === 0) {
-      console.log('✅ Status is green and same day - returning 0 days');
-      return 0;
-    }
-    
-    // For all other cases, calculate normally
-    const finalDays = Math.max(0, daysSince);
-    console.log('📊 Final days for', matn.name, ':', finalDays, 'Status:', matn.status);
-    
-    // Auto-change from green to red if threshold exceeded (only for green status)
-    if (matn.status === 'green' && finalDays >= (matn.threshold || 7)) {
-      console.log('⏰ Auto-changing matn', matn.name, 'from green to red (threshold exceeded)');
-      const updatedMatn = {
-        ...matn,
-        status: 'red' as const,
-        lastChange_date: new Date().toISOString(),
-        days_since_last_revision: finalDays
-      };
-      // Delayed update to avoid infinite loops
-      setTimeout(() => app.updateMatn(updatedMatn), 100);
-    }
-    
-    return finalDays;
+    return Math.max(0, daysSince);
   };
+
+  // Check and update threshold exceeded Mutun (run on page load)
+  const checkThresholdExceeded = () => {
+    console.log('🔍 Checking threshold exceeded for all Mutun...');
+    
+    userMutun().forEach(matn => {
+      if (matn.status === 'green' && matn.lastChange_date) {
+        const daysSince = calculateDaysSinceLastChange(matn);
+        const threshold = matn.threshold || 7;
+        
+        if (daysSince >= threshold) {
+          console.log(`⏰ Threshold exceeded for ${matn.name}: ${daysSince} days >= ${threshold} threshold`);
+          const updatedMatn = {
+            ...matn,
+            status: 'red' as const
+          };
+          app.updateMatn(updatedMatn);
+        }
+      }
+    });
+  };
+
+  // Run threshold check on component mount
+  onMount(() => {
+    // Small delay to ensure data is loaded
+    setTimeout(() => {
+      checkThresholdExceeded();
+    }, 500);
+  });
 
   // Note State
   const [noteTexts, setNoteTexts] = createSignal<Record<string, string>>({});
