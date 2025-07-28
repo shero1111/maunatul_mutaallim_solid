@@ -175,9 +175,9 @@ export function NewsModal(props: NewsModalProps) {
             right: 0;
             background: var(--color-background);
             border-radius: 20px 20px 0 0;
-            height: 75vh;
-            max-height: 650px;
-            min-height: 500px;
+            height: 60vh;
+            max-height: 500px;
+            min-height: 350px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
@@ -343,11 +343,12 @@ export function NewsModal(props: NewsModalProps) {
             <div style={{
               'flex-shrink': '0',
               padding: '12px 20px 16px 20px',
-              'border-top': '1px solid var(--color-border)',
-              'background-color': 'var(--color-background)',
+              'border-top': '2px solid red',
+              'background-color': 'yellow',
               display: 'flex',
               gap: '12px',
-              'justify-content': props.isEdit ? 'space-between' : 'flex-end'
+              'justify-content': props.isEdit ? 'space-between' : 'flex-end',
+              'min-height': '60px'
             }}>
               <Show when={props.isEdit}>
                 <button
