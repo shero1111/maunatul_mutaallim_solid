@@ -137,17 +137,44 @@ export function MutunPage() {
     return Math.max(0, daysSince);
   };
 
-  // Check and update threshold exceeded Mutun (run on page load)
+  // Check and update threshold exceeded Mutun (comprehensive check)
   const checkThresholdExceeded = () => {
-    console.log('🔍 Checking threshold exceeded for all Mutun...');
+    console.log('🔍 Comprehensive threshold check for all Mutun...');
     
     userMutun().forEach(matn => {
+      // Only check green status Mutun that have a lastChange_date
       if (matn.status === 'green' && matn.lastChange_date) {
-        const daysSince = calculateDaysSinceLastChange(matn);
         const threshold = matn.threshold || 7;
         
-        if (daysSince >= threshold) {
-          console.log(`⏰ Threshold exceeded for ${matn.name}: ${daysSince} days >= ${threshold} threshold`);
+        // Parse the lastChange_date
+        let lastChangeDate: Date;
+        if (matn.lastChange_date.includes('T')) {
+          lastChangeDate = new Date(matn.lastChange_date);
+        } else {
+          lastChangeDate = new Date(matn.lastChange_date + 'T00:00:00.000Z');
+        }
+        
+        // Calculate threshold deadline: lastChange_date + threshold days
+        const thresholdDeadline = new Date(lastChangeDate);
+        thresholdDeadline.setDate(thresholdDeadline.getDate() + threshold);
+        
+        // Current date
+        const now = new Date();
+        
+        // Check if threshold is exceeded: (lastChange_date + threshold days) < current date
+        const isThresholdExceeded = thresholdDeadline < now;
+        
+        console.log(`📊 Threshold check for ${matn.name}:`, {
+          lastChange: matn.lastChange_date,
+          lastChangeDate: lastChangeDate.toISOString(),
+          threshold: threshold,
+          thresholdDeadline: thresholdDeadline.toISOString(),
+          currentDate: now.toISOString(),
+          isExceeded: isThresholdExceeded
+        });
+        
+        if (isThresholdExceeded) {
+          console.log(`⏰ THRESHOLD EXCEEDED for ${matn.name}! Changing status to RED`);
           const updatedMatn = {
             ...matn,
             status: 'red' as const
@@ -158,12 +185,30 @@ export function MutunPage() {
     });
   };
 
-  // Run threshold check on component mount
+  // Run threshold check on component mount and when data changes
   onMount(() => {
-    // Small delay to ensure data is loaded
+    console.log('🔧 MutunPage mounted, scheduling threshold check...');
+    // Multiple checks to ensure reliability
     setTimeout(() => {
+      console.log('⏰ Running initial threshold check...');
       checkThresholdExceeded();
-    }, 500);
+    }, 100);
+    
+    // Additional check after data is fully loaded
+    setTimeout(() => {
+      console.log('⏰ Running secondary threshold check...');
+      checkThresholdExceeded();
+    }, 1000);
+  });
+
+  // Also run check when filter changes (reactive)
+  createMemo(() => {
+    if (userMutun().length > 0) {
+      setTimeout(() => {
+        console.log('⏰ Running reactive threshold check due to data change...');
+        checkThresholdExceeded();
+      }, 50);
+    }
   });
 
   // Note State
