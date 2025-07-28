@@ -208,9 +208,9 @@ export function NewsModal(props: NewsModalProps) {
             right: 0;
             background: var(--color-background);
             border-radius: 20px 20px 0 0;
-            max-height: 90vh;
-            min-height: 50vh;
-            height: auto;
+            height: 80vh;
+            max-height: 600px;
+            min-height: 400px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
@@ -223,6 +223,7 @@ export function NewsModal(props: NewsModalProps) {
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            min-height: 0;
           }
 
           .modal-handle {
