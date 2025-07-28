@@ -236,28 +236,28 @@ export function NewsPage() {
                 }}
                 style={{
                   position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  'background-color': 'rgba(0,0,0,0.7)',
+                  top: '8px',
+                  left: '8px',
+                  'background-color': 'rgba(0,0,0,0.6)',
                   color: 'white',
                   border: 'none',
-                  width: '32px',
-                  height: '32px',
+                  width: '24px',
+                  height: '24px',
                   'border-radius': '50%',
                   display: 'flex',
                   'align-items': 'center',
                   'justify-content': 'center',
-                  'font-size': '14px',
+                  'font-size': '11px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   'z-index': '2'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
-                  e.currentTarget.style.transform = 'scale(1.1)';
+                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.6)';
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
                 title={app.translate('editNews')}
