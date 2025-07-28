@@ -8,6 +8,10 @@ export function NewsPage() {
   const [selectedNews, setSelectedNews] = createSignal<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = createSignal(false);
   const [isEdit, setIsEdit] = createSignal(false);
+  const [showContextMenu, setShowContextMenu] = createSignal(false);
+  const [contextMenuNews, setContextMenuNews] = createSignal<NewsItem | null>(null);
+  const [contextMenuPosition, setContextMenuPosition] = createSignal({ x: 0, y: 0 });
+  const [longPressTimer, setLongPressTimer] = createSignal<number | null>(null);
   
   // Filter and sort news based on user role and publish date
   const filteredNews = createMemo(() => {
@@ -199,25 +203,12 @@ export function NewsPage() {
           <article style={{
             ...newsCardStyle,
             position: 'relative' as const,
-            cursor: canEditNews() ? 'pointer' : 'default',
+            cursor: 'default',
             ...(isFutureNews(newsItem) && canEditNews() ? {
               border: '2px solid var(--color-warning)',
               'background-color': 'rgba(245, 158, 11, 0.05)'
             } : {})
           }}
-          onClick={canEditNews() ? () => handleEditNews(newsItem) : undefined}
-          onMouseEnter={canEditNews() ? (e) => {
-            if (!isFutureNews(newsItem)) {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            }
-          } : undefined}
-          onMouseLeave={canEditNews() ? (e) => {
-            if (!isFutureNews(newsItem)) {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-            }
-          } : undefined}
           >
             {/* Future News Indicator */}
             <Show when={isFutureNews(newsItem) && canEditNews()}>
