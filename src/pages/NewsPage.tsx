@@ -229,26 +229,41 @@ export function NewsPage() {
 
             {/* Edit Icon */}
             <Show when={canEditNews()}>
-              <div 
-                class="edit-icon"
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditNews(newsItem);
+                }}
                 style={{
                   position: 'absolute',
                   top: '12px',
                   left: '12px',
                   'background-color': 'rgba(0,0,0,0.7)',
                   color: 'white',
-                  width: '28px',
-                  height: '28px',
+                  border: 'none',
+                  width: '32px',
+                  height: '32px',
                   'border-radius': '50%',
                   display: 'flex',
                   'align-items': 'center',
                   'justify-content': 'center',
-                  'font-size': '12px',
-                  transition: 'opacity 0.2s ease'
+                  'font-size': '14px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  'z-index': '2'
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                title={app.translate('editNews')}
               >
                 ✏️
-              </div>
+              </button>
             </Show>
 
             <h2 style={newsTitleStyle}>

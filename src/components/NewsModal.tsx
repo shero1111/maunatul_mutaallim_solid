@@ -210,11 +210,19 @@ export function NewsModal(props: NewsModalProps) {
             border-radius: 20px 20px 0 0;
             max-height: 90vh;
             min-height: 50vh;
+            height: auto;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             animation: slideUp 0.3s ease-out forwards;
+          }
+          
+          .news-modal-content .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
           }
 
           .modal-handle {
@@ -290,11 +298,11 @@ export function NewsModal(props: NewsModalProps) {
             </div>
 
             {/* Modal Content - Scrollable */}
-            <div style={{
-              'flex': '1',
-              'overflow-y': 'auto',
-              padding: '16px 20px'
-            }}>
+            <div 
+              class="scrollable-content"
+              style={{
+                padding: '16px 20px'
+              }}>
 
           <div style={{ 'margin-bottom': '16px' }}>
             <label style={{
