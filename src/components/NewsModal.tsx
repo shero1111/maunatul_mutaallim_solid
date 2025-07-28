@@ -220,6 +220,41 @@ export function NewsModal(props: NewsModalProps) {
               'border-bottom': '1px solid var(--color-border)',
               position: 'relative'
             }}>
+              {/* Save Button - Top Left */}
+              <button
+                onClick={handleSave}
+                disabled={isLoading() || !title().trim() || !description().trim()}
+                style={{
+                  position: 'absolute',
+                  top: '8px',
+                  left: '16px',
+                  'background-color': 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  'font-size': '12px',
+                  'font-weight': '500',
+                  cursor: isLoading() || !title().trim() || !description().trim() ? 'not-allowed' : 'pointer',
+                  padding: '6px 12px',
+                  'border-radius': '6px',
+                  transition: 'all 0.2s ease',
+                  'z-index': '10',
+                  opacity: isLoading() || !title().trim() || !description().trim() ? '0.5' : '1'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isLoading() && title().trim() && description().trim()) {
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.3)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                title={app.translate('save')}
+              >
+                {isLoading() ? '...' : app.translate('save')}
+              </button>
+
               {/* Close X Button */}
               <button
                 onClick={props.onClose}
@@ -259,7 +294,7 @@ export function NewsModal(props: NewsModalProps) {
                 'font-size': '18px',
                 'font-weight': '600',
                 color: 'var(--color-text)',
-                'margin': '0 40px 0 0',
+                'margin': '0 50px 0 80px',
                 'text-align': 'center'
               }}>
                 {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
@@ -339,18 +374,16 @@ export function NewsModal(props: NewsModalProps) {
               </div>
             </div>
 
-            {/* Modal Footer - Fixed at bottom */}
-            <div style={{
-              'flex-shrink': '0',
-              padding: '12px 20px 16px 20px',
-              'border-top': '2px solid red',
-              'background-color': 'yellow',
-              display: 'flex',
-              gap: '12px',
-              'justify-content': props.isEdit ? 'space-between' : 'flex-end',
-              'min-height': '60px'
-            }}>
-              <Show when={props.isEdit}>
+            {/* Optional Delete Button Footer - Only for Edit Mode */}
+            <Show when={props.isEdit}>
+              <div style={{
+                'flex-shrink': '0',
+                padding: '12px 20px 16px 20px',
+                'border-top': '1px solid var(--color-border)',
+                'background-color': 'var(--color-background)',
+                display: 'flex',
+                'justify-content': 'center'
+              }}>
                 <button
                   style={dangerButtonStyle}
                   onClick={() => setShowDeleteConfirm(true)}
@@ -358,25 +391,8 @@ export function NewsModal(props: NewsModalProps) {
                 >
                   {app.translate('deleteNews')}
                 </button>
-              </Show>
-              
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                  style={secondaryButtonStyle}
-                  onClick={props.onClose}
-                  disabled={isLoading()}
-                >
-                  {app.translate('cancel')}
-                </button>
-                <button
-                  style={primaryButtonStyle}
-                  onClick={handleSave}
-                  disabled={isLoading() || !title().trim() || !description().trim()}
-                >
-                  {isLoading() ? '...' : app.translate('save')}
-                </button>
               </div>
-            </div>
+            </Show>
           </div>
         </div>
       </Show>
