@@ -6,6 +6,8 @@ export function HalaqatPage() {
   
   // Track which halaqat have expanded student lists
   const [expandedHalaqat, setExpandedHalaqat] = createSignal<Record<string, boolean>>({});
+  // Track search terms for each halaqa
+  const [searchTerms, setSearchTerms] = createSignal<Record<string, string>>({});
   
   const toggleStudentList = (halaqaId: string) => {
     setExpandedHalaqat(prev => ({
@@ -241,6 +243,27 @@ export function HalaqatPage() {
       return student?.name || 'Unknown';
     });
   };
+
+  const getFilteredStudentNames = (studentIds: string[], halaqaId: string): string[] => {
+    const searchTerm = searchTerms()[halaqaId]?.toLowerCase() || '';
+    const students = getStudentNames(studentIds);
+    
+    if (!searchTerm) return students;
+    
+    return students.filter(name => 
+      name.toLowerCase().includes(searchTerm)
+    );
+  };
+
+  const handleEditHalaqa = (halaqaId: string) => {
+    // Placeholder for edit functionality
+    alert(`Edit Halaqa ${halaqaId} - Functionality to be implemented`);
+  };
+
+  const canEditHalaqat = () => {
+    const currentUser = app.currentUser();
+    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+  };
   
   const getHalaqaTypeTranslation = (type: string): string => {
     switch (type) {
@@ -306,8 +329,9 @@ export function HalaqatPage() {
                   </div>
                   <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
                     {/* Edit Button - only for leaders and admins */}
-                    <Show when={app.currentUser()?.role === 'leitung' || app.currentUser()?.role === 'superuser'}>
+                    <Show when={canEditHalaqat()}>
                       <button
+                        onClick={() => handleEditHalaqa(halaqa.id)}
                         style={{
                           background: 'var(--color-surface)',
                           border: '1px solid var(--color-border)',
@@ -331,9 +355,16 @@ export function HalaqatPage() {
                         ✏️
                       </button>
                     </Show>
-                    <div style={statusBadgeStyle(halaqa.isActive)}>
-                      {halaqa.isActive ? app.translate('active') : app.translate('inactive')}
-                    </div>
+                    
+                    {/* Active Indicator */}
+                    <div style={{
+                      width: '10px',
+                      height: '10px',
+                      'border-radius': '50%',
+                      'background-color': halaqa.is_active ? '#10b981' : '#6b7280',
+                      'box-shadow': halaqa.is_active ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
+                      transition: 'all 0.2s ease'
+                                         }} title={halaqa.is_active ? 'نشط' : 'غير نشط'} />
                   </div>
                 </div>
                 
@@ -397,32 +428,83 @@ export function HalaqatPage() {
                       'letter-spacing': '0.1px',
                       display: 'flex',
                       'align-items': 'center',
-                      gap: '6px'
+                      'justify-content': 'space-between'
                     }}>
-                      <span>👥</span>
-                      <span>قائمة الطلاب</span>
+                      <div style={{ display: 'flex', 'align-items': 'center', gap: '6px' }}>
+                        <span>👥</span>
+                        <span>قائمة الطلاب ({getFilteredStudentNames(halaqa.student_ids, halaqa.id).length})</span>
+                      </div>
+                      
+                      {/* Search Input */}
+                      <Show when={halaqa.student_ids.length > 3}>
+                        <input
+                          type="text"
+                          placeholder="البحث في الطلاب..."
+                          value={searchTerms()[halaqa.id] || ''}
+                          onInput={(e) => {
+                            setSearchTerms(prev => ({
+                              ...prev,
+                              [halaqa.id]: e.currentTarget.value
+                            }));
+                          }}
+                          style={{
+                            padding: '4px 8px',
+                            border: '1px solid var(--color-border)',
+                            'border-radius': '6px',
+                            'font-size': '12px',
+                            width: '120px',
+                            'background-color': 'var(--color-background)'
+                          }}
+                        />
+                      </Show>
                     </div>
-                    <div style={{ display: 'flex', 'flex-wrap': 'wrap', gap: '8px' }}>
-                      <For each={getStudentNames(halaqa.student_ids)}>
-                        {(studentName) => (
-                          <span style={{
-                            display: 'inline-flex',
+                    
+                    {/* Student List - Row by Row */}
+                    <div style={{ display: 'flex', 'flex-direction': 'column', gap: '6px' }}>
+                      <For each={getFilteredStudentNames(halaqa.student_ids, halaqa.id)}>
+                        {(studentName, index) => (
+                          <div style={{
+                            display: 'flex',
                             'align-items': 'center',
-                            padding: '6px 12px',
-                            background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                            color: 'white',
-                            'border-radius': '16px',
-                            'font-size': '0.8rem',
-                            'font-weight': '600',
-                            'letter-spacing': '0.1px',
-                            'box-shadow': '0 2px 8px var(--color-primary)25',
+                            padding: '8px 12px',
+                            background: 'var(--color-background)',
+                            'border-radius': '8px',
+                            border: '1px solid var(--color-border)',
+                            'font-size': '0.85rem',
+                            'font-weight': '500',
                             transition: 'all 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--color-primary)10';
+                            e.currentTarget.style.borderColor = 'var(--color-primary)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--color-background)';
+                            e.currentTarget.style.borderColor = 'var(--color-border)';
                           }}>
-                            {studentName}
-                          </span>
+                            <span style={{ 'margin-right': '8px', color: 'var(--color-text-secondary)' }}>
+                              {index() + 1}.
+                            </span>
+                            <span style={{ color: 'var(--color-text)' }}>
+                              {studentName}
+                            </span>
+                          </div>
                         )}
                       </For>
                     </div>
+                    
+                    {/* No results message */}
+                    <Show when={getFilteredStudentNames(halaqa.student_ids, halaqa.id).length === 0 && searchTerms()[halaqa.id]}>
+                      <div style={{
+                        'text-align': 'center',
+                        padding: '16px',
+                        color: 'var(--color-text-secondary)',
+                        'font-style': 'italic',
+                        'font-size': '0.85rem'
+                      }}>
+                        لا توجد نتائج للبحث "{searchTerms()[halaqa.id]}"
+                      </div>
+                    </Show>
                   </div>
                 </Show>
                 
