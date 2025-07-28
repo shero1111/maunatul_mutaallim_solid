@@ -6,6 +6,7 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { TimerModal } from './components/TimerModal';
 import { HomePage } from './pages/HomePage';
 import { MutunPage } from './pages/MutunPage';
+import { RecitingPage } from './pages/RecitingPage';
 import { HalaqatPage } from './pages/HalaqatPage';
 import { UsersPage } from './pages/UsersPage';
 import { NewsPage } from './pages/NewsPage';
@@ -19,6 +20,7 @@ export default function App() {
     switch (app.currentPage()) {
       case 'home': return <HomePage />;
       case 'mutuun': return <MutunPage />;
+      case 'reciting': return <RecitingPage />;
       case 'halaqat': return <HalaqatPage />;
       case 'users': return <UsersPage />;
       case 'news': return <NewsPage />;

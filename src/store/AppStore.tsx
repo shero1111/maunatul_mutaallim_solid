@@ -1,5 +1,5 @@
 import { createContext, useContext, createSignal, createMemo, JSX, onMount, onCleanup } from 'solid-js';
-import { User, Student, Teacher, Halaqa, Matn, NewsItem, Theme, Language, Page, AudioPlayerState, TimerState } from '../types';
+import { User, Student, Teacher, Halaqa, Matn, NewsItem, Theme, Language, Page, AudioPlayerState, TimerState, AudioRecording, ExchangePost } from '../types';
 import { demoUsers, demoHalaqat, demoMutun, demoNews, generatePersonalMutun } from '../data/demo-data';
 import { themeColors, setCSSVariables } from '../styles/themes';
 import { translations } from '../i18n/translations';
@@ -27,6 +27,8 @@ export interface AppState {
   halaqat: () => Halaqa[];
   mutun: () => Matn[];
   news: () => NewsItem[];
+  recordings: () => AudioRecording[];
+  exchangePosts: () => ExchangePost[];
   
   // Audio Player
   audioPlayer: () => AudioPlayerState;
@@ -51,6 +53,16 @@ export interface AppState {
   createNews: (newsData: Omit<NewsItem, 'id'>) => void;
   updateNews: (news: NewsItem) => void;
   deleteNews: (newsId: string) => void;
+  
+  // Recording functions
+  addRecording: (recording: AudioRecording) => void;
+  updateRecording: (recordingId: string, updates: Partial<AudioRecording>) => void;
+  deleteRecording: (recordingId: string) => void;
+  
+  // Exchange Post functions
+  addExchangePost: (post: ExchangePost) => void;
+  updateExchangePost: (post: ExchangePost) => void;
+  deleteExchangePost: (postId: string) => void;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -78,6 +90,8 @@ export function AppProvider(props: { children: JSX.Element }) {
   const [halaqat, setHalaqat] = createSignal<Halaqa[]>(demoHalaqat);
   const [mutun, setMutun] = createSignal<Matn[]>(demoMutun);
   const [news, setNews] = createSignal<NewsItem[]>(demoNews);
+  const [recordings, setRecordings] = createSignal<AudioRecording[]>([]);
+  const [exchangePosts, setExchangePosts] = createSignal<ExchangePost[]>([]);
   const [searchTerm, setSearchTerm] = createSignal('');
   
   // Audio Player State
@@ -121,6 +135,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     const savedMutunData = localStorage.getItem('mutunData');
     const savedUsersData = localStorage.getItem('usersData');
     const savedNewsData = localStorage.getItem('newsData');
+    const savedRecordingsData = localStorage.getItem('recordingsData');
+    const savedExchangePostsData = localStorage.getItem('exchangePostsData');
     const savedCurrentPage = localStorage.getItem('currentPage') as Page;
     const savedAudioProgress = localStorage.getItem('audioProgress');
     
@@ -201,6 +217,26 @@ export function AppProvider(props: { children: JSX.Element }) {
         setNews(newsData);
       } catch (e) {
         console.error('Error parsing saved news:', e);
+      }
+    }
+
+    if (savedRecordingsData) {
+      try {
+        const recordingsData = JSON.parse(savedRecordingsData);
+        setRecordings(recordingsData);
+        console.log('🎙️ Recordings loaded:', recordingsData.length, 'items');
+      } catch (e) {
+        console.error('Error parsing saved recordings:', e);
+      }
+    }
+
+    if (savedExchangePostsData) {
+      try {
+        const exchangePostsData = JSON.parse(savedExchangePostsData);
+        setExchangePosts(exchangePostsData);
+        console.log('🔄 Exchange posts loaded:', exchangePostsData.length, 'items');
+      } catch (e) {
+        console.error('Error parsing saved exchange posts:', e);
       }
     }
     
@@ -525,6 +561,76 @@ export function AppProvider(props: { children: JSX.Element }) {
     console.log('✅ News deleted, remaining:', newNewsData.length);
   };
 
+  // Recording CRUD functions
+  const addRecording = (recording: AudioRecording) => {
+    console.log('🎙️ AppStore.addRecording called with:', recording);
+    const currentRecordings = recordings();
+    const newRecordings = [...currentRecordings, recording];
+    setRecordings(newRecordings);
+    
+    // Save to localStorage
+    localStorage.setItem('recordingsData', JSON.stringify(newRecordings));
+    console.log('✅ Recording added and saved:', recording);
+  };
+
+  const updateRecording = (recordingId: string, updates: Partial<AudioRecording>) => {
+    console.log('📝 AppStore.updateRecording called with ID:', recordingId, 'updates:', updates);
+    const currentRecordings = recordings();
+    const newRecordings = currentRecordings.map(r => 
+      r.id === recordingId ? { ...r, ...updates } : r
+    );
+    setRecordings(newRecordings);
+    
+    // Save to localStorage
+    localStorage.setItem('recordingsData', JSON.stringify(newRecordings));
+    console.log('✅ Recording updated and saved');
+  };
+
+  const deleteRecording = (recordingId: string) => {
+    console.log('🗑️ AppStore.deleteRecording called with ID:', recordingId);
+    const currentRecordings = recordings();
+    const newRecordings = currentRecordings.filter(r => r.id !== recordingId);
+    setRecordings(newRecordings);
+    
+    // Save to localStorage
+    localStorage.setItem('recordingsData', JSON.stringify(newRecordings));
+    console.log('✅ Recording deleted, remaining:', newRecordings.length);
+  };
+
+  // Exchange Post CRUD functions
+  const addExchangePost = (post: ExchangePost) => {
+    console.log('📝 AppStore.addExchangePost called with:', post);
+    const currentPosts = exchangePosts();
+    const newPosts = [...currentPosts, post];
+    setExchangePosts(newPosts);
+    
+    // Save to localStorage
+    localStorage.setItem('exchangePostsData', JSON.stringify(newPosts));
+    console.log('✅ Exchange post added and saved:', post);
+  };
+
+  const updateExchangePost = (updatedPost: ExchangePost) => {
+    console.log('📝 AppStore.updateExchangePost called with:', updatedPost);
+    const currentPosts = exchangePosts();
+    const newPosts = currentPosts.map(p => p.id === updatedPost.id ? updatedPost : p);
+    setExchangePosts(newPosts);
+    
+    // Save to localStorage
+    localStorage.setItem('exchangePostsData', JSON.stringify(newPosts));
+    console.log('✅ Exchange post updated and saved:', updatedPost);
+  };
+
+  const deleteExchangePost = (postId: string) => {
+    console.log('🗑️ AppStore.deleteExchangePost called with ID:', postId);
+    const currentPosts = exchangePosts();
+    const newPosts = currentPosts.filter(p => p.id !== postId);
+    setExchangePosts(newPosts);
+    
+    // Save to localStorage
+    localStorage.setItem('exchangePostsData', JSON.stringify(newPosts));
+    console.log('✅ Exchange post deleted, remaining:', newPosts.length);
+  };
+
   const playAudio = (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => {
     // Stop current audio if playing
     if (audioElement) {
@@ -754,6 +860,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     halaqat,
     mutun,
     news,
+    recordings,
+    exchangePosts,
     audioPlayer,
     audioProgress,
     timer,
@@ -793,6 +901,12 @@ export function AppProvider(props: { children: JSX.Element }) {
     createNews,
     updateNews,
     deleteNews,
+    addRecording,
+    updateRecording,
+    deleteRecording,
+    addExchangePost,
+    updateExchangePost,
+    deleteExchangePost,
     playAudio,
     pauseAudio,
     stopAudio,

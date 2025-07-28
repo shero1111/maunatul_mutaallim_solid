@@ -12,6 +12,7 @@ export function BottomNavigation() {
   const navigationItems = [
     { page: 'home' as Page, icon: '🏠', label: app.translate('home') },
     { page: 'mutuun' as Page, icon: '📚', label: app.translate('mutuun') },
+    { page: 'reciting' as Page, icon: '🎙️', label: app.translate('reciting') },
     { page: 'halaqat' as Page, icon: '👥', label: app.translate('halaqat') },
     { page: 'users' as Page, icon: '👤', label: app.translate('users') },
     { page: 'news' as Page, icon: '📰', label: app.translate('news') },
@@ -80,7 +81,7 @@ export function BottomNavigation() {
           );
         case 'student':
           return navigationItems.filter(item => 
-            ['home', 'mutuun', 'news', 'more'].includes(item.page)
+            ['home', 'mutuun', 'reciting', 'news', 'more'].includes(item.page)
           );
         default:
           console.warn('⚠️ Unknown user role:', user.role);

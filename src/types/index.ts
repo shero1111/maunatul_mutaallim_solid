@@ -88,4 +88,29 @@ export interface TimerState {
 
 export type Theme = 'light' | 'dark';
 export type Language = 'ar' | 'en';
-export type Page = 'home' | 'mutuun' | 'halaqat' | 'users' | 'news' | 'more' | 'about-us';
+export type Page = 'home' | 'mutuun' | 'reciting' | 'halaqat' | 'users' | 'news' | 'more' | 'about-us';
+
+// Audio Recording Interface
+export interface AudioRecording {
+  id: string;
+  name: string;
+  url: string;
+  duration: number; // in seconds
+  created_at: string;
+  user_id: string;
+  size: number; // in bytes
+}
+
+// Exchange Post Interface
+export interface ExchangePost {
+  id: string;
+  type: 'offer' | 'request'; // Angebot oder Nachfrage
+  title: string;
+  description: string;
+  matn_name?: string; // Optional specific Matn
+  level?: string; // Optional specific level
+  author_id: string;
+  author_name: string;
+  created_at: string;
+  is_active: boolean;
+}
