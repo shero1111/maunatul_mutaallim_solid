@@ -91,7 +91,7 @@ export function NewsModal(props: NewsModalProps) {
 
   const canEdit = () => {
     const currentUser = app.currentUser();
-    return currentUser?.role === 'admin' || currentUser?.role === 'leader';
+    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
   const modalOverlayStyle = {

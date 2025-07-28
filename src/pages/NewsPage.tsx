@@ -17,7 +17,7 @@ export function NewsPage() {
     let newsItems = [...app.news()];
     
     // Filter based on publish date and user role
-    if (currentUser?.role === 'student' || currentUser?.role === 'teacher') {
+    if (currentUser?.role === 'student' || currentUser?.role === 'lehrer') {
       // Students and teachers only see news with publish_date <= now
       newsItems = newsItems.filter(item => {
         const publishDate = new Date(item.publish_date || item.created_at);
@@ -109,7 +109,7 @@ export function NewsPage() {
 
   const canEditNews = () => {
     const currentUser = app.currentUser();
-    return currentUser?.role === 'admin' || currentUser?.role === 'leader';
+    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
   const handleAddNews = () => {

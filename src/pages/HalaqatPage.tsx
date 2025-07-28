@@ -306,7 +306,7 @@ export function HalaqatPage() {
                   </div>
                   <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
                     {/* Edit Button - only for leaders and admins */}
-                    <Show when={app.currentUser()?.role === 'leader' || app.currentUser()?.role === 'admin'}>
+                    <Show when={app.currentUser()?.role === 'leitung' || app.currentUser()?.role === 'superuser'}>
                       <button
                         style={{
                           background: 'var(--color-surface)',

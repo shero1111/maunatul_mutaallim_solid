@@ -1051,7 +1051,7 @@ function LeadershipDashboard(props: { user: User }) {
   
   const users = app.users();
   const students = users.filter(u => u.role === 'student') as Student[];
-  const teachers = users.filter(u => u.role === 'teacher');
+  const teachers = users.filter(u => u.role === 'lehrer');
   const halaqat = app.halaqat();
   
   // Student status statistics
@@ -1102,7 +1102,7 @@ function LeadershipDashboard(props: { user: User }) {
           'margin-bottom': '4px'
         }}>
           <span style={{ 'font-size': '1.5rem' }}>
-            {props.user.role === 'admin' ? '👑' : '👥'}
+            {props.user.role === 'superuser' ? '👑' : '👥'}
           </span>
           <h3 style={{
             margin: '0',
@@ -1113,7 +1113,7 @@ function LeadershipDashboard(props: { user: User }) {
           </h3>
         </div>
         <p style={{ margin: '0', 'font-size': '0.8rem', opacity: '0.9' }}>
-          {props.user.role === 'admin' ? 'مطور النظام' : 'قائد الحلقات'}
+          {props.user.role === 'superuser' ? 'مطور النظام' : 'قائد الحلقات'}
         </p>
       </div>
 
@@ -1200,7 +1200,7 @@ function LeadershipDashboard(props: { user: User }) {
           </div>
         </div>
 
-        <Show when={props.user.role === 'admin'}>
+        <Show when={props.user.role === 'superuser'}>
           <div 
             style={statCardStyle}
             onMouseEnter={(e) => handleStatCardHover(e, true)}
