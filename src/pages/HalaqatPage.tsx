@@ -1,8 +1,18 @@
-import { createMemo, For, Show } from 'solid-js';
+import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
 
 export function HalaqatPage() {
   const app = useApp();
+  
+  // Track which halaqat have expanded student lists
+  const [expandedHalaqat, setExpandedHalaqat] = createSignal<Record<string, boolean>>({});
+  
+  const toggleStudentList = (halaqaId: string) => {
+    setExpandedHalaqat(prev => ({
+      ...prev,
+      [halaqaId]: !prev[halaqaId]
+    }));
+  };
   
   const userHalaqat = createMemo(() => {
     const currentUser = app.currentUser();
@@ -70,10 +80,10 @@ export function HalaqatPage() {
   
   const halaqaCardStyle = {
     background: 'linear-gradient(135deg, var(--color-background) 0%, var(--color-surface) 100%)',
-    'border-radius': '20px',
-    padding: '24px',
-    'margin-bottom': '20px',
-    'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.12)',
+    'border-radius': '16px',
+    padding: '20px',
+    'margin-bottom': '16px',
+    'box-shadow': '0 4px 20px rgba(0, 0, 0, 0.08)',
     border: '1px solid var(--color-border)',
     position: 'relative' as const,
     overflow: 'hidden' as const,
@@ -82,9 +92,20 @@ export function HalaqatPage() {
   
   const halaqaCardHoverStyle = `
     .halaqa-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
       border-color: var(--color-primary)40;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   `;
   
@@ -92,7 +113,7 @@ export function HalaqatPage() {
     display: 'flex',
     'justify-content': 'space-between',
     'align-items': 'flex-start',
-    'margin-bottom': '20px'
+    'margin-bottom': '16px'
   };
   
   const halaqaNameStyle = {
@@ -275,7 +296,7 @@ export function HalaqatPage() {
                 }} />
                 
                 <div style={halaqaHeaderStyle}>
-                  <div>
+                  <div style={{ flex: '1' }}>
                     <h3 style={halaqaNameStyle}>
                       {getTypeIcon(halaqa.type)} {halaqa.name}
                     </h3>
@@ -283,8 +304,36 @@ export function HalaqatPage() {
                       {getHalaqaTypeTranslation(halaqa.type)}
                     </div>
                   </div>
-                  <div style={statusBadgeStyle(halaqa.isActive)}>
-                    {halaqa.isActive ? app.translate('active') : app.translate('inactive')}
+                  <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
+                    {/* Edit Button - only for leaders and admins */}
+                    <Show when={app.currentUser()?.role === 'leader' || app.currentUser()?.role === 'admin'}>
+                      <button
+                        style={{
+                          background: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          'border-radius': '8px',
+                          padding: '8px',
+                          cursor: 'pointer',
+                          'font-size': '16px',
+                          color: 'var(--color-text-secondary)',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'var(--color-primary)';
+                          e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'var(--color-surface)';
+                          e.currentTarget.style.color = 'var(--color-text-secondary)';
+                        }}
+                        title="تحرير الحلقة"
+                      >
+                        ✏️
+                      </button>
+                    </Show>
+                    <div style={statusBadgeStyle(halaqa.isActive)}>
+                      {halaqa.isActive ? app.translate('active') : app.translate('inactive')}
+                    </div>
                   </div>
                 </div>
                 
@@ -299,27 +348,81 @@ export function HalaqatPage() {
                     <span style={valueStyle}>#{halaqa.internal_number}</span>
                   </div>
                   
+                  {/* Students Section with Dropdown */}
                   <div style={infoRowStyle}>
                     <span style={labelStyle}>👥 {app.translate('students')}</span>
-                    <span style={valueStyle}>
-                      {halaqa.student_ids.length} {halaqa.student_ids.length === 1 ? 'طالب' : 'طلاب'}
-                    </span>
+                    <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
+                      <span style={valueStyle}>
+                        {halaqa.student_ids.length} {halaqa.student_ids.length === 1 ? 'طالب' : 'طلاب'}
+                      </span>
+                      <Show when={halaqa.student_ids.length > 0}>
+                        <button
+                          onClick={() => toggleStudentList(halaqa.id)}
+                          style={{
+                            background: 'var(--color-primary)',
+                            color: 'white',
+                            border: 'none',
+                            'border-radius': '6px',
+                            padding: '4px 8px',
+                            cursor: 'pointer',
+                            'font-size': '12px',
+                            'font-weight': '600',
+                            transition: 'all 0.2s ease',
+                            transform: expandedHalaqat()[halaqa.id] ? 'rotate(180deg)' : 'rotate(0deg)'
+                          }}
+                          title={expandedHalaqat()[halaqa.id] ? 'إخفاء القائمة' : 'عرض القائمة'}
+                        >
+                          ▼
+                        </button>
+                      </Show>
+                    </div>
                   </div>
                 </div>
                 
-                <Show when={halaqa.student_ids.length > 0}>
-                  <div style={studentSectionStyle}>
-                    <div style={studentSectionHeaderStyle}>
+                {/* Expandable Student List */}
+                <Show when={halaqa.student_ids.length > 0 && expandedHalaqat()[halaqa.id]}>
+                  <div style={{
+                    'margin-top': '16px',
+                    padding: '16px',
+                    background: 'var(--color-primary)05',
+                    'border-radius': '12px',
+                    border: '1px solid var(--color-primary)15',
+                    'animation': 'slideDown 0.3s ease'
+                  }}>
+                    <div style={{
+                      color: 'var(--color-text)',
+                      'font-weight': '600',
+                      'margin-bottom': '12px',
+                      'font-size': '0.9rem',
+                      'letter-spacing': '0.1px',
+                      display: 'flex',
+                      'align-items': 'center',
+                      gap: '6px'
+                    }}>
                       <span>👥</span>
                       <span>قائمة الطلاب</span>
                     </div>
-                    <For each={getStudentNames(halaqa.student_ids)}>
-                      {(studentName) => (
-                        <span style={studentChipStyle}>
-                          {studentName}
-                        </span>
-                      )}
-                    </For>
+                    <div style={{ display: 'flex', 'flex-wrap': 'wrap', gap: '8px' }}>
+                      <For each={getStudentNames(halaqa.student_ids)}>
+                        {(studentName) => (
+                          <span style={{
+                            display: 'inline-flex',
+                            'align-items': 'center',
+                            padding: '6px 12px',
+                            background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                            color: 'white',
+                            'border-radius': '16px',
+                            'font-size': '0.8rem',
+                            'font-weight': '600',
+                            'letter-spacing': '0.1px',
+                            'box-shadow': '0 2px 8px var(--color-primary)25',
+                            transition: 'all 0.2s ease'
+                          }}>
+                            {studentName}
+                          </span>
+                        )}
+                      </For>
+                    </div>
                   </div>
                 </Show>
                 
