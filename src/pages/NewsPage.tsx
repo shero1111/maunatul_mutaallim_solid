@@ -1,6 +1,7 @@
 import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { NewsModal } from '../components/NewsModal';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 import { NewsItem } from '../types';
 
 export function NewsPage() {

@@ -1,6 +1,7 @@
 import { createSignal, createMemo, For, Show, onMount, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { AudioRecording, ExchangePost } from '../types';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 
 export function RecitingPage() {
   const app = useApp();
@@ -20,6 +21,19 @@ export function RecitingPage() {
   const [newRecordingName, setNewRecordingName] = createSignal('');
   const [audioElement, setAudioElement] = createSignal<HTMLAudioElement | null>(null);
   
+  // Confirmation Modal State
+  const [showConfirmModal, setShowConfirmModal] = createSignal(false);
+  const [confirmModalProps, setConfirmModalProps] = createSignal<{
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    type?: 'warning' | 'danger' | 'info';
+  }>({
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
+  
   // Exchange Center State
   const [exchangeFilter, setExchangeFilter] = createSignal<'all' | 'offers' | 'requests' | 'my'>('all');
   const [showCreatePost, setShowCreatePost] = createSignal(false);
@@ -29,6 +43,21 @@ export function RecitingPage() {
   const [postMatn, setPostMatn] = createSignal('');
   const [postLevel, setPostLevel] = createSignal('');
   const [postType, setPostType] = createSignal<'offer' | 'request'>('request');
+
+  // Helper function for confirmations
+  const showConfirmation = (title: string, message: string, onConfirm: () => void, type: 'warning' | 'danger' | 'info' = 'warning') => {
+    setConfirmModalProps({
+      title,
+      message,
+      onConfirm,
+      type
+    });
+    setShowConfirmModal(true);
+  };
+
+  const hideConfirmation = () => {
+    setShowConfirmModal(false);
+  };
   
   // Allow all authenticated users to access this page
   const canAccess = createMemo(() => {
@@ -113,7 +142,14 @@ export function RecitingPage() {
       
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      alert(app.translate('microphoneAccess'));
+      showConfirmation(
+        app.translate('microphoneAccess'),
+        app.language() === 'ar'
+          ? 'لا يمكن الوصول إلى الميكروفون. تأكد من السماح بالوصول للميكروفون في المتصفح.'
+          : 'Cannot access microphone. Please allow microphone access in your browser.',
+        () => {},
+        'warning'
+      );
     }
   };
   
@@ -164,7 +200,14 @@ export function RecitingPage() {
     
     if (audioBlob.size === 0) {
       console.error('❌ Recording failed: Empty audio blob');
-      alert(app.translate('recordingFailed') + ': No audio data recorded');
+      showConfirmation(
+        app.translate('recordingFailed'),
+        app.language() === 'ar'
+          ? 'فشل في التسجيل: لم يتم تسجيل أي بيانات صوتية'
+          : 'Recording failed: No audio data recorded',
+        () => {},
+        'danger'
+      );
       return;
     }
     
@@ -200,9 +243,18 @@ export function RecitingPage() {
   };
   
   const deleteRecording = (id: string) => {
-    if (confirm(app.translate('deleteRecording') + '?')) {
-      app.deleteRecording(id);
-    }
+    const recording = app.recordings().find(r => r.id === id);
+    showConfirmation(
+      app.translate('deleteRecording'),
+      app.language() === 'ar'
+        ? `هل أنت متأكد من حذف التسجيل "${recording?.name}"؟`
+        : `Are you sure you want to delete the recording "${recording?.name}"?`,
+      () => {
+        app.deleteRecording(id);
+        hideConfirmation();
+      },
+      'danger'
+    );
   };
   
   const renameRecording = (id: string, newName: string) => {
@@ -250,23 +302,77 @@ export function RecitingPage() {
         
         audio.onerror = (e) => {
           console.error('❌ Audio playback error:', e);
-          alert('Error playing recording. Please try again.');
+          showConfirmation(
+            app.translate('recordingFailed'),
+            app.language() === 'ar'
+              ? 'خطأ في تشغيل التسجيل. حاول مرة أخرى.'
+              : 'Error playing recording. Please try again.',
+            () => {},
+            'danger'
+          );
           setPlayingRecording(null);
           setAudioElement(null);
         };
         
         setAudioElement(audio);
-        audio.play().catch(error => {
-          console.error('❌ Failed to play audio:', error);
-          alert('Failed to play recording. Browser may have blocked audio playback.');
-          setPlayingRecording(null);
-          setAudioElement(null);
-        });
         
-      } catch (error) {
-        console.error('❌ Error creating audio element:', error);
-        alert('Error playing recording. The audio file may be corrupted.');
-      }
+        // Try to play with user gesture fallback
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            console.log('✅ Audio playback started successfully');
+          }).catch(error => {
+            console.error('❌ Failed to play audio:', error);
+            
+            // Show user-friendly message for autoplay issues
+            if (error.name === 'NotAllowedError') {
+              showConfirmation(
+                app.translate('playRecording'),
+                app.language() === 'ar' 
+                  ? 'يتطلب تشغيل الصوت تفاعل المستخدم. اضغط على تشغيل مرة أخرى.'
+                  : 'Audio playback requires user interaction. Please click play again.',
+                () => {
+                  // Retry playback after user confirmation
+                  const retryAudio = new Audio(recording.url);
+                  retryAudio.volume = 1.0;
+                  retryAudio.onplay = () => setPlayingRecording(id);
+                  retryAudio.onended = () => {
+                    setPlayingRecording(null);
+                    setAudioElement(null);
+                  };
+                  setAudioElement(retryAudio);
+                  retryAudio.play();
+                },
+                'info'
+              );
+            } else {
+              showConfirmation(
+                app.translate('recordingFailed'),
+                app.language() === 'ar'
+                  ? 'فشل في تشغيل التسجيل. قد يكون الملف تالفاً.'
+                  : 'Failed to play recording. The audio file may be corrupted.',
+                () => {},
+                'danger'
+              );
+            }
+            
+            setPlayingRecording(null);
+            setAudioElement(null);
+          });
+        }
+        
+              } catch (error) {
+          console.error('❌ Error creating audio element:', error);
+          showConfirmation(
+            app.translate('recordingFailed'),
+            app.language() === 'ar'
+              ? 'خطأ في تشغيل التسجيل. قد يكون الملف تالفاً.'
+              : 'Error playing recording. The audio file may be corrupted.',
+            () => {},
+            'danger'
+          );
+        }
     }
   };
   
@@ -319,9 +425,18 @@ export function RecitingPage() {
   };
   
   const deletePost = (id: string) => {
-    if (confirm(app.translate('deletePost') + '?')) {
-      app.deleteExchangePost(id);
-    }
+    const post = app.exchangePosts().find(p => p.id === id);
+    showConfirmation(
+      app.translate('deletePost'),
+      app.language() === 'ar'
+        ? `هل أنت متأكد من حذف المنشور "${post?.title}"؟`
+        : `Are you sure you want to delete the post "${post?.title}"?`,
+      () => {
+        app.deleteExchangePost(id);
+        hideConfirmation();
+      },
+      'danger'
+    );
   };
   
   const resetPostForm = () => {
@@ -1220,6 +1335,19 @@ export function RecitingPage() {
           </Show>
         </div>
       </Show>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmModal()}
+        title={confirmModalProps().title}
+        message={confirmModalProps().message}
+        onConfirm={() => {
+          confirmModalProps().onConfirm();
+          hideConfirmation();
+        }}
+        onCancel={hideConfirmation}
+        type={confirmModalProps().type}
+      />
     </div>
   );
 }
