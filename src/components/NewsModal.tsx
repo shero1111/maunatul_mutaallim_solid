@@ -119,22 +119,36 @@ export function NewsModal(props: NewsModalProps) {
     'align-items': 'center',
     'justify-content': 'center',
     'z-index': '1000',
-    padding: '20px'
+    padding: '10px'
   };
 
   const modalContentStyle = {
     background: 'var(--color-background)',
     'border-radius': '16px',
-    width: '100%',
-    'max-width': '600px',
-    height: '80vh',
-    'max-height': '600px',
+    width: '90vw',
+    'max-width': '500px',
+    height: '85vh',
+    'max-height': '650px',
+    'min-height': '400px',
     'box-shadow': '0 10px 30px rgba(0,0,0,0.3)',
-    margin: '20px',
+    margin: 'auto',
     position: 'relative' as const,
     display: 'flex',
     'flex-direction': 'column' as const,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    '@media (max-width: 768px)': {
+      width: '95vw',
+      height: '90vh',
+      'max-height': 'none',
+      'border-radius': '12px'
+    },
+    '@media (max-width: 480px)': {
+      width: '100vw',
+      height: '100vh',
+      'max-height': 'none',
+      'border-radius': '0',
+      margin: '0'
+    }
   };
 
   const inputStyle = {
@@ -193,7 +207,15 @@ export function NewsModal(props: NewsModalProps) {
     <>
       <style>
         {`
-          @media (max-width: 640px) {
+          @media (max-width: 768px) {
+            .news-modal-content {
+              width: 95vw !important;
+              height: 90vh !important;
+              max-height: none !important;
+              border-radius: 12px !important;
+            }
+          }
+          @media (max-width: 480px) {
             .news-modal-content {
               width: 100vw !important;
               height: 100vh !important;
@@ -201,7 +223,6 @@ export function NewsModal(props: NewsModalProps) {
               max-height: none !important;
               margin: 0 !important;
               border-radius: 0 !important;
-              padding: 20px !important;
             }
           }
         `}
@@ -216,7 +237,7 @@ export function NewsModal(props: NewsModalProps) {
             {/* Modal Header */}
             <div style={{
               'flex-shrink': '0',
-              padding: '20px 20px 0 20px',
+              padding: '16px 20px',
               'border-bottom': '1px solid var(--color-border)',
               position: 'relative'
             }}>
@@ -256,10 +277,10 @@ export function NewsModal(props: NewsModalProps) {
               </button>
 
               <h2 style={{
-                'font-size': '20px',
+                'font-size': '18px',
                 'font-weight': '600',
                 color: 'var(--color-text)',
-                'margin': '0 40px 20px 0',
+                'margin': '0 40px 0 0',
                 'text-align': 'center'
               }}>
                 {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
@@ -270,7 +291,7 @@ export function NewsModal(props: NewsModalProps) {
             <div style={{
               'flex': '1',
               'overflow-y': 'auto',
-              padding: '20px'
+              padding: '16px 20px'
             }}>
 
           <div style={{ 'margin-bottom': '16px' }}>
@@ -342,7 +363,7 @@ export function NewsModal(props: NewsModalProps) {
             {/* Modal Footer - Fixed at bottom */}
             <div style={{
               'flex-shrink': '0',
-              padding: '16px 20px 20px 20px',
+              padding: '12px 20px 16px 20px',
               'border-top': '1px solid var(--color-border)',
               'background-color': 'var(--color-background)',
               display: 'flex',
