@@ -266,13 +266,28 @@ export function NewsPage() {
               </button>
             </Show>
 
-            <h2 style={newsTitleStyle}>
-              {newsItem.title}
-            </h2>
+            <Show when={newsItem.title?.trim()}>
+              <h2 style={newsTitleStyle}>
+                {newsItem.title}
+              </h2>
+            </Show>
             
-            <p style={newsDescriptionStyle}>
-              {newsItem.description}
-            </p>
+            <Show when={newsItem.description?.trim()}>
+              <p style={newsDescriptionStyle}>
+                {newsItem.description}
+              </p>
+            </Show>
+            
+            {/* Fallback when only one field is present */}
+            <Show when={!newsItem.title?.trim() && newsItem.description?.trim()}>
+              <h2 style={{
+                ...newsTitleStyle,
+                'font-size': '1.1rem',
+                'line-height': '1.4'
+              }}>
+                {newsItem.description}
+              </h2>
+            </Show>
             
             <div style={newsMetaStyle}>
               <div style={{

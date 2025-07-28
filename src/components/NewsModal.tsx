@@ -34,7 +34,8 @@ export function NewsModal(props: NewsModalProps) {
   });
 
   const handleSave = async () => {
-    if (!title().trim() || !description().trim()) return;
+    // At least one field (title or description) must be filled
+    if (!title().trim() && !description().trim()) return;
     
     setIsLoading(true);
     try {
@@ -223,7 +224,7 @@ export function NewsModal(props: NewsModalProps) {
               {/* Save Button - Top Left */}
               <button
                 onClick={handleSave}
-                disabled={isLoading() || !title().trim() || !description().trim()}
+                disabled={isLoading() || (!title().trim() && !description().trim())}
                 style={{
                   position: 'absolute',
                   top: '8px',
@@ -233,15 +234,15 @@ export function NewsModal(props: NewsModalProps) {
                   border: 'none',
                   'font-size': '12px',
                   'font-weight': '500',
-                  cursor: isLoading() || !title().trim() || !description().trim() ? 'not-allowed' : 'pointer',
+                  cursor: isLoading() || (!title().trim() && !description().trim()) ? 'not-allowed' : 'pointer',
                   padding: '6px 12px',
                   'border-radius': '6px',
                   transition: 'all 0.2s ease',
                   'z-index': '10',
-                  opacity: isLoading() || !title().trim() || !description().trim() ? '0.5' : '1'
+                  opacity: isLoading() || (!title().trim() && !description().trim()) ? '0.5' : '1'
                 }}
                 onMouseEnter={(e) => {
-                  if (!isLoading() && title().trim() && description().trim()) {
+                  if (!isLoading() && (title().trim() || description().trim())) {
                     e.currentTarget.style.transform = 'scale(1.05)';
                     e.currentTarget.style.boxShadow = '0 2px 8px rgba(59, 130, 246, 0.3)';
                   }
@@ -345,7 +346,7 @@ export function NewsModal(props: NewsModalProps) {
                 />
               </div>
 
-              <div style={{ 'margin-bottom': '24px' }}>
+              <div style={{ 'margin-bottom': '16px' }}>
                 <label style={{
                   display: 'block',
                   'font-size': '14px',
@@ -371,6 +372,22 @@ export function NewsModal(props: NewsModalProps) {
                     app.language() === 'ar' ? 'سيكون هذا الخبر مرئياً للجميع' : 'This news will be visible to everyone'
                   }
                 </div>
+              </div>
+
+              {/* Validation hint */}
+              <div style={{
+                'font-size': '12px',
+                color: !title().trim() && !description().trim() ? 'var(--color-error)' : 'var(--color-text-secondary)',
+                'margin-bottom': '8px',
+                padding: '8px 12px',
+                'background-color': !title().trim() && !description().trim() ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
+                'border-radius': '6px',
+                'text-align': 'center'
+              }}>
+                {app.language() === 'ar' 
+                  ? 'يجب ملء العنوان أو الوصف على الأقل'
+                  : 'At least title or description must be filled'
+                }
               </div>
             </div>
 
