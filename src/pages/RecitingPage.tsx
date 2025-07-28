@@ -252,23 +252,37 @@ export function RecitingPage() {
   };
   
   const saveRecording = (audioBlob: Blob) => {
-    console.log('💾 Saving recording with blob size:', audioBlob.size);
+    console.log('💾 Saving recording...');
+    console.log('📊 Blob details:', {
+      size: audioBlob.size,
+      type: audioBlob.type
+    });
     
     if (audioBlob.size === 0) {
       console.error('❌ Recording failed: Empty audio blob');
-      showConfirmation(
-        app.translate('recordingFailed'),
+      showErrorSnackbar(
         app.language() === 'ar'
-          ? 'فشل في التسجيل: لم يتم تسجيل أي بيانات صوتية'
-          : 'Recording failed: No audio data recorded',
-        () => {},
-        'danger'
+          ? 'فشل في التسجيل: لا توجد بيانات صوتية'
+          : 'Recording failed: No audio data'
       );
       return;
     }
     
+    // Create object URL for the blob
     const url = URL.createObjectURL(audioBlob);
     console.log('🔗 Created object URL:', url);
+    
+    // Test the URL immediately
+    console.log('🧪 Testing blob URL...');
+    const testAudio = new Audio();
+    testAudio.src = url;
+    testAudio.addEventListener('canplaythrough', () => {
+      console.log('✅ Blob URL is valid and audio can play');
+    });
+    testAudio.addEventListener('error', (e) => {
+      console.error('❌ Blob URL test failed:', e);
+    });
+    testAudio.load();
     
     const recording: AudioRecording = {
       id: Date.now().toString(),
@@ -280,22 +294,9 @@ export function RecitingPage() {
       size: audioBlob.size
     };
     
-    console.log('✅ Recording saved:', recording);
+    console.log('✅ Recording object created:', recording);
     app.addRecording(recording);
     setRecordingTime(0);
-    
-    // Test playback immediately
-    setTimeout(() => {
-      console.log('🎵 Testing immediate playback...');
-      const testAudio = new Audio(url);
-      testAudio.volume = 0.1; // Low volume for test
-      testAudio.play().then(() => {
-        console.log('✅ Immediate playback test successful');
-        testAudio.pause();
-      }).catch(error => {
-        console.error('❌ Immediate playback test failed:', error);
-      });
-    }, 500);
   };
   
   const deleteRecording = (id: string) => {
@@ -319,7 +320,7 @@ export function RecitingPage() {
     setNewRecordingName('');
   };
   
-  const playRecording = (id: string) => {
+    const playRecording = (id: string) => {
     const recording = app.recordings().find(r => r.id === id);
     if (!recording) {
       showErrorSnackbar(
@@ -330,86 +331,109 @@ export function RecitingPage() {
       return;
     }
 
+    console.log('🎵 Play recording:', recording);
+    console.log('🔗 Audio URL:', recording.url);
+
     // Stop any currently playing audio
     const currentAudio = audioElement();
     if (currentAudio) {
+      console.log('⏹️ Stopping current audio');
       currentAudio.pause();
       currentAudio.currentTime = 0;
+      currentAudio.src = '';
     }
 
     if (playingRecording() === id) {
       // Stop playback
+      console.log('⏸️ Stopping playback');
       setPlayingRecording(null);
       setAudioElement(null);
       return;
     }
 
-    // Start playback
-    try {
-      console.log('🎵 Starting playback for:', recording.url);
-      const audio = new Audio();
-      
-      // Set up event handlers first
-      audio.onloadstart = () => console.log('📥 Loading audio...');
-      audio.oncanplay = () => console.log('✅ Audio ready to play');
-      
-      audio.onplay = () => {
-        console.log('🎵 Audio playback started');
-        setPlayingRecording(id);
-      };
-      
-      audio.onpause = () => {
-        console.log('⏸️ Audio paused');
-        setPlayingRecording(null);
-      };
-      
-      audio.onended = () => {
-        console.log('✅ Audio ended');
-        setPlayingRecording(null);
-        setAudioElement(null);
-      };
-      
-             audio.onerror = (e) => {
-         console.error('❌ Audio error:', e);
-         showErrorSnackbar(
-           app.language() === 'ar' 
-             ? 'خطأ في تشغيل التسجيل' 
-             : 'Error playing recording'
-         );
-         setPlayingRecording(null);
-         setAudioElement(null);
-       };
-      
-      // Set source and load
-      audio.src = recording.url;
-      audio.load();
-      
-      setAudioElement(audio);
-      
-      // Try to play
-      const playPromise = audio.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error('❌ Play failed:', error);
+    // Create new audio element
+    console.log('🆕 Creating new audio element');
+    const audio = new Audio();
+    
+    // Set up event handlers
+    audio.addEventListener('loadstart', () => {
+      console.log('📥 Audio loading started');
+    });
+    
+    audio.addEventListener('canplaythrough', () => {
+      console.log('✅ Audio can play through');
+    });
+    
+    audio.addEventListener('play', () => {
+      console.log('▶️ Audio started playing');
+      setPlayingRecording(id);
+    });
+    
+    audio.addEventListener('pause', () => {
+      console.log('⏸️ Audio paused');
+      setPlayingRecording(null);
+    });
+    
+    audio.addEventListener('ended', () => {
+      console.log('🏁 Audio ended');
+      setPlayingRecording(null);
+      setAudioElement(null);
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error('❌ Audio error event:', e);
+      console.error('❌ Audio error details:', {
+        error: audio.error,
+        networkState: audio.networkState,
+        readyState: audio.readyState,
+        src: audio.src
+      });
+      showErrorSnackbar(
+        app.language() === 'ar' 
+          ? 'فشل تشغيل التسجيل' 
+          : 'Failed to play recording'
+      );
+      setPlayingRecording(null);
+      setAudioElement(null);
+    });
+
+    // Set the source
+    audio.src = recording.url;
+    audio.preload = 'auto';
+    
+    setAudioElement(audio);
+    
+    // Try to play immediately
+    console.log('▶️ Attempting to play audio...');
+    audio.play()
+      .then(() => {
+        console.log('✅ Audio playback started successfully');
+      })
+      .catch(error => {
+        console.error('❌ Play promise rejected:', error);
+        console.error('❌ Error details:', {
+          name: error.name,
+          message: error.message,
+          code: error.code
+        });
+        
+        // Try a different approach - user interaction required
+        if (error.name === 'NotAllowedError') {
           showErrorSnackbar(
             app.language() === 'ar' 
-              ? 'فشل تشغيل الصوت. اضغط مرة أخرى.' 
-              : 'Audio playback failed. Try again.'
+              ? 'اضغط مرة أخرى لتشغيل الصوت' 
+              : 'Click again to play audio'
           );
-          setPlayingRecording(null);
-          setAudioElement(null);
-        });
-      }
-      
-    } catch (error) {
-      console.error('❌ Error creating audio element:', error);
-      showErrorSnackbar(
-        app.language() === 'ar'
-          ? 'خطأ في تشغيل التسجيل'
-          : 'Error playing recording'
-      );
-    }
+        } else {
+          showErrorSnackbar(
+            app.language() === 'ar' 
+              ? 'فشل تشغيل الصوت' 
+              : 'Audio playback failed'
+          );
+        }
+        setPlayingRecording(null);
+        setAudioElement(null);
+      });
   };
   
   // Exchange post functions
