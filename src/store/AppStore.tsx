@@ -48,6 +48,9 @@ export interface AppState {
   setLanguage: (language: Language) => void;
   updateMatn: (matn: Matn) => void;
   updateUser: (user: User) => void;
+  createNews: (newsData: Omit<NewsItem, 'id'>) => void;
+  updateNews: (news: NewsItem) => void;
+  deleteNews: (newsId: string) => void;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -478,11 +481,50 @@ export function AppProvider(props: { children: JSX.Element }) {
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
     }
     
-    // Save to localStorage  
+        // Save to localStorage  
     localStorage.setItem('usersData', JSON.stringify(newUsersData));
     console.log('💾 Saved to localStorage');
   };
-  
+
+  // News CRUD operations
+  const createNews = (newsData: Omit<NewsItem, 'id'>) => {
+    console.log('📰 AppStore.createNews called with:', newsData);
+    const newNewsItem: NewsItem = {
+      id: Date.now().toString(),
+      ...newsData
+    };
+    
+    const currentNews = news();
+    const newNewsData = [...currentNews, newNewsItem];
+    setNews(newNewsData);
+    
+    // Save to localStorage
+    localStorage.setItem('newsData', JSON.stringify(newNewsData));
+    console.log('✅ News created and saved:', newNewsItem);
+  };
+
+  const updateNews = (updatedNews: NewsItem) => {
+    console.log('📝 AppStore.updateNews called with:', updatedNews);
+    const currentNews = news();
+    const newNewsData = currentNews.map(n => n.id === updatedNews.id ? updatedNews : n);
+    setNews(newNewsData);
+    
+    // Save to localStorage
+    localStorage.setItem('newsData', JSON.stringify(newNewsData));
+    console.log('✅ News updated and saved:', updatedNews);
+  };
+
+  const deleteNews = (newsId: string) => {
+    console.log('🗑️ AppStore.deleteNews called with ID:', newsId);
+    const currentNews = news();
+    const newNewsData = currentNews.filter(n => n.id !== newsId);
+    setNews(newNewsData);
+    
+    // Save to localStorage
+    localStorage.setItem('newsData', JSON.stringify(newNewsData));
+    console.log('✅ News deleted, remaining:', newNewsData.length);
+  };
+
   const playAudio = (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => {
     // Stop current audio if playing
     if (audioElement) {
@@ -748,6 +790,9 @@ export function AppProvider(props: { children: JSX.Element }) {
     },
     updateMatn,
     updateUser,
+    createNews,
+    updateNews,
+    deleteNews,
     playAudio,
     pauseAudio,
     stopAudio,

@@ -52,16 +52,15 @@ export function NewsModal(props: NewsModalProps) {
           ...newsData
         };
         console.log('Updating news:', updatedNews);
-        // Here you would call app.updateNews(updatedNews)
+        app.updateNews(updatedNews);
       } else {
         // Create new news
-        const newNews: NewsItem = {
-          id: Date.now().toString(), // Temporary ID
+        const newNewsData = {
           created_at: new Date().toISOString(),
           ...newsData
         };
-        console.log('Creating news:', newNews);
-        // Here you would call app.createNews(newNews)
+        console.log('Creating news:', newNewsData);
+        app.createNews(newNewsData);
       }
       
       props.onClose();
@@ -78,7 +77,7 @@ export function NewsModal(props: NewsModalProps) {
     setIsLoading(true);
     try {
       console.log('Deleting news:', props.newsItem.id);
-      // Here you would call app.deleteNews(props.newsItem.id)
+      app.deleteNews(props.newsItem.id);
       
       setShowDeleteConfirm(false);
       props.onClose();

@@ -255,6 +255,7 @@ export const demoNews: NewsItem[] = [
     title: 'افتتاح حلقة جديدة للتحفيظ',
     description: 'نعلن عن افتتاح حلقة جديدة لتحفيظ القرآن الكريم للمبتدئين',
     created_at: '2024-01-15T10:00:00Z',
+    publish_date: '2024-01-15T10:00:00Z',
     author_id: 'admin'
   },
   {
@@ -262,6 +263,7 @@ export const demoNews: NewsItem[] = [
     title: 'مسابقة الحفظ السنوية',
     description: 'تعلن إدارة المعهد عن بدء التسجيل في مسابقة الحفظ السنوية',
     created_at: '2024-01-10T14:30:00Z',
+    publish_date: '2024-01-10T14:30:00Z',
     author_id: 'leiter'
   }
 ];
