@@ -137,6 +137,32 @@ export function MutunPage() {
     return Math.max(0, daysSince);
   };
 
+  // Ensure data integrity: every Matn must have a lastChange_date
+  const ensureDataIntegrity = () => {
+    console.log('🔍 Checking data integrity for all Mutun...');
+    
+    let updatesNeeded = 0;
+    userMutun().forEach(matn => {
+      if (!matn.lastChange_date || matn.lastChange_date.trim() === '') {
+        console.log(`⚠️ Missing or empty lastChange_date for ${matn.name}, setting to current date`);
+        const updatedMatn = {
+          ...matn,
+          lastChange_date: new Date().toISOString()
+        };
+        app.updateMatn(updatedMatn);
+        updatesNeeded++;
+      } else {
+        console.log(`✅ ${matn.name} already has valid lastChange_date: ${matn.lastChange_date}`);
+      }
+    });
+    
+    if (updatesNeeded > 0) {
+      console.log(`📝 Data integrity check completed: ${updatesNeeded} Mutun were updated with missing lastChange_date`);
+    } else {
+      console.log(`✅ Data integrity check passed: All Mutun have valid lastChange_date`);
+    }
+  };
+
   // Check and update threshold exceeded Mutun (comprehensive check)
   const checkThresholdExceeded = () => {
     console.log('🔍 Comprehensive threshold check for all Mutun...');
@@ -185,28 +211,41 @@ export function MutunPage() {
     });
   };
 
-  // Run threshold check on component mount and when data changes
+  // Run data integrity and threshold checks on component mount and when data changes
   onMount(() => {
-    console.log('🔧 MutunPage mounted, scheduling threshold check...');
-    // Multiple checks to ensure reliability
+    console.log('🔧 MutunPage mounted, scheduling data integrity and threshold checks...');
+    
+    // Initial data integrity and threshold check
     setTimeout(() => {
-      console.log('⏰ Running initial threshold check...');
-      checkThresholdExceeded();
+      console.log('🔍 Running initial data integrity check...');
+      ensureDataIntegrity();
+      setTimeout(() => {
+        console.log('⏰ Running initial threshold check...');
+        checkThresholdExceeded();
+      }, 200); // Small delay after data integrity check
     }, 100);
     
     // Additional check after data is fully loaded
     setTimeout(() => {
-      console.log('⏰ Running secondary threshold check...');
-      checkThresholdExceeded();
+      console.log('🔍 Running secondary data integrity check...');
+      ensureDataIntegrity();
+      setTimeout(() => {
+        console.log('⏰ Running secondary threshold check...');
+        checkThresholdExceeded();
+      }, 200);
     }, 1000);
   });
 
-  // Also run check when filter changes (reactive)
+  // Also run checks when data changes (reactive)
   createMemo(() => {
     if (userMutun().length > 0) {
       setTimeout(() => {
-        console.log('⏰ Running reactive threshold check due to data change...');
-        checkThresholdExceeded();
+        console.log('🔍 Running reactive data integrity check...');
+        ensureDataIntegrity();
+        setTimeout(() => {
+          console.log('⏰ Running reactive threshold check due to data change...');
+          checkThresholdExceeded();
+        }, 100);
       }, 50);
     }
   });
