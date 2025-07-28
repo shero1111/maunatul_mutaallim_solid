@@ -125,14 +125,16 @@ export function NewsModal(props: NewsModalProps) {
   const modalContentStyle = {
     background: 'var(--color-background)',
     'border-radius': '16px',
-    padding: '20px',
     width: '100%',
     'max-width': '600px',
-    'max-height': '90vh',
-    'overflow-y': 'auto' as const,
+    height: '80vh',
+    'max-height': '600px',
     'box-shadow': '0 10px 30px rgba(0,0,0,0.3)',
     margin: '20px',
-    position: 'relative' as const
+    position: 'relative' as const,
+    display: 'flex',
+    'flex-direction': 'column' as const,
+    overflow: 'hidden'
   };
 
   const inputStyle = {
@@ -211,51 +213,65 @@ export function NewsModal(props: NewsModalProps) {
             style={modalContentStyle} 
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close X Button */}
-            <button
-              onClick={props.onClose}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'transparent',
-                border: 'none',
-                'font-size': '24px',
-                color: 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                padding: '4px',
-                'border-radius': '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                'align-items': 'center',
-                'justify-content': 'center',
-                transition: 'all 0.2s ease',
-                'z-index': '10'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--color-border)';
-                e.currentTarget.style.color = 'var(--color-text)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
-              }}
-              title="إغلاق"
-            >
-              ✕
-            </button>
-
-            <h2 style={{
-              'font-size': '20px',
-              'font-weight': '600',
-              color: 'var(--color-text)',
-              'margin-bottom': '20px',
-              'text-align': 'center',
-              'padding-right': '40px' // Space for X button
+            {/* Modal Header */}
+            <div style={{
+              'flex-shrink': '0',
+              padding: '20px 20px 0 20px',
+              'border-bottom': '1px solid var(--color-border)',
+              position: 'relative'
             }}>
-              {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
-            </h2>
+              {/* Close X Button */}
+              <button
+                onClick={props.onClose}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: '16px',
+                  background: 'transparent',
+                  border: 'none',
+                  'font-size': '24px',
+                  color: 'var(--color-text-secondary)',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  'border-radius': '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  'align-items': 'center',
+                  'justify-content': 'center',
+                  transition: 'all 0.2s ease',
+                  'z-index': '10'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-border)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-text-secondary)';
+                }}
+                title="إغلاق"
+              >
+                ✕
+              </button>
+
+              <h2 style={{
+                'font-size': '20px',
+                'font-weight': '600',
+                color: 'var(--color-text)',
+                'margin': '0 40px 20px 0',
+                'text-align': 'center'
+              }}>
+                {props.isEdit ? app.translate('editNews') : app.translate('addNews')}
+              </h2>
+            </div>
+
+            {/* Modal Content - Scrollable */}
+            <div style={{
+              'flex': '1',
+              'overflow-y': 'auto',
+              padding: '20px'
+            }}>
 
           <div style={{ 'margin-bottom': '16px' }}>
             <label style={{
@@ -321,47 +337,46 @@ export function NewsModal(props: NewsModalProps) {
               }
             </div>
           </div>
+            </div>
 
-          {/* Action Buttons - Fixed at bottom */}
-          <div style={{
-            position: 'sticky',
-            bottom: '0',
-            'background-color': 'var(--color-background)',
-            padding: '16px 0 0 0',
-            'margin-top': '20px',
-            'border-top': '1px solid var(--color-border)',
-            display: 'flex',
-            gap: '12px',
-            'justify-content': props.isEdit ? 'space-between' : 'flex-end'
-          }}>
-            <Show when={props.isEdit}>
-              <button
-                style={dangerButtonStyle}
-                onClick={() => setShowDeleteConfirm(true)}
-                disabled={isLoading()}
-              >
-                {app.translate('deleteNews')}
-              </button>
-            </Show>
-            
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button
-                style={secondaryButtonStyle}
-                onClick={props.onClose}
-                disabled={isLoading()}
-              >
-                {app.translate('cancel')}
-              </button>
-              <button
-                style={primaryButtonStyle}
-                onClick={handleSave}
-                disabled={isLoading() || !title().trim() || !description().trim()}
-              >
-                {isLoading() ? '...' : app.translate('save')}
-              </button>
+            {/* Modal Footer - Fixed at bottom */}
+            <div style={{
+              'flex-shrink': '0',
+              padding: '16px 20px 20px 20px',
+              'border-top': '1px solid var(--color-border)',
+              'background-color': 'var(--color-background)',
+              display: 'flex',
+              gap: '12px',
+              'justify-content': props.isEdit ? 'space-between' : 'flex-end'
+            }}>
+              <Show when={props.isEdit}>
+                <button
+                  style={dangerButtonStyle}
+                  onClick={() => setShowDeleteConfirm(true)}
+                  disabled={isLoading()}
+                >
+                  {app.translate('deleteNews')}
+                </button>
+              </Show>
+              
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  style={secondaryButtonStyle}
+                  onClick={props.onClose}
+                  disabled={isLoading()}
+                >
+                  {app.translate('cancel')}
+                </button>
+                <button
+                  style={primaryButtonStyle}
+                  onClick={handleSave}
+                  disabled={isLoading() || !title().trim() || !description().trim()}
+                >
+                  {isLoading() ? '...' : app.translate('save')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
