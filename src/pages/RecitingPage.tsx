@@ -43,6 +43,30 @@ export function RecitingPage() {
   const [postMatn, setPostMatn] = createSignal('');
   const [postLevel, setPostLevel] = createSignal('');
   const [postType, setPostType] = createSignal<'offer' | 'request'>('request');
+  const [customMatn, setCustomMatn] = createSignal('');
+  const [showCustomMatn, setShowCustomMatn] = createSignal(false);
+
+  // Level options for exchange posts
+  const levelOptions = [
+    { value: '', label: app.translate('level') + ' (' + app.translate('optional') + ')' },
+    { value: 'beginner', label: app.language() === 'ar' ? 'مبتدئ' : 'Beginner' },
+    { value: 'intermediate', label: app.language() === 'ar' ? 'متوسط' : 'Intermediate' },
+    { value: 'advanced', label: app.language() === 'ar' ? 'متقدم' : 'Advanced' },
+    { value: 'memorization', label: app.language() === 'ar' ? 'تحفيظ' : 'Memorization' },
+    { value: 'explanation', label: app.language() === 'ar' ? 'شرح' : 'Explanation' }
+  ];
+
+  // Common Matn options
+  const matnOptions = [
+    { value: '', label: app.translate('matnName') + ' (' + app.translate('optional') + ')' },
+    { value: 'quran', label: app.language() === 'ar' ? 'القرآن الكريم' : 'Holy Quran' },
+    { value: 'bukhari', label: app.language() === 'ar' ? 'صحيح البخاري' : 'Sahih Bukhari' },
+    { value: 'muslim', label: app.language() === 'ar' ? 'صحيح مسلم' : 'Sahih Muslim' },
+    { value: 'nawawi', label: app.language() === 'ar' ? 'الأربعون النووية' : 'Forty Hadith Nawawi' },
+    { value: 'tawheed', label: app.language() === 'ar' ? 'كتاب التوحيد' : 'Kitab at-Tawheed' },
+    { value: 'aqeedah', label: app.language() === 'ar' ? 'العقيدة الواسطية' : 'Al-Aqeedah al-Wasitiyyah' },
+    { value: 'other', label: app.language() === 'ar' ? 'أخرى...' : 'Other...' }
+  ];
 
   // Helper function for confirmations
   const showConfirmation = (title: string, message: string, onConfirm: () => void, type: 'warning' | 'danger' | 'info' = 'warning') => {
@@ -380,13 +404,18 @@ export function RecitingPage() {
   const createPost = () => {
     if (!postTitle().trim() || !postDescription().trim()) return;
     
+    // Get the actual matn name (either selected or custom)
+    const finalMatnName = postMatn() === 'other' 
+      ? customMatn().trim() 
+      : (postMatn() ? matnOptions.find(opt => opt.value === postMatn())?.label : undefined);
+    
     const post: ExchangePost = {
       id: Date.now().toString(),
       type: postType(),
       title: postTitle().trim(),
       description: postDescription().trim(),
-      matn_name: postMatn().trim() || undefined,
-      level: postLevel().trim() || undefined,
+      matn_name: finalMatnName || undefined,
+      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined,
       author_id: app.currentUser()?.id || '',
       author_name: app.currentUser()?.name || '',
       created_at: new Date().toISOString(),
@@ -402,8 +431,27 @@ export function RecitingPage() {
     setPostType(post.type);
     setPostTitle(post.title);
     setPostDescription(post.description);
-    setPostMatn(post.matn_name || '');
-    setPostLevel(post.level || '');
+    
+    // Find matching level
+    const levelOption = levelOptions.find(opt => opt.label === post.level);
+    setPostLevel(levelOption?.value || '');
+    
+    // Find matching matn or set as custom
+    const matnOption = matnOptions.find(opt => opt.label === post.matn_name);
+    if (matnOption && matnOption.value !== 'other') {
+      setPostMatn(matnOption.value);
+      setCustomMatn('');
+      setShowCustomMatn(false);
+    } else if (post.matn_name) {
+      setPostMatn('other');
+      setCustomMatn(post.matn_name);
+      setShowCustomMatn(true);
+    } else {
+      setPostMatn('');
+      setCustomMatn('');
+      setShowCustomMatn(false);
+    }
+    
     setShowCreatePost(true);
   };
   
@@ -411,13 +459,18 @@ export function RecitingPage() {
     const post = editingPost();
     if (!post || !postTitle().trim() || !postDescription().trim()) return;
     
+    // Get the actual matn name (either selected or custom)
+    const finalMatnName = postMatn() === 'other' 
+      ? customMatn().trim() 
+      : (postMatn() ? matnOptions.find(opt => opt.value === postMatn())?.label : undefined);
+    
     const updatedPost: ExchangePost = {
       ...post,
       type: postType(),
       title: postTitle().trim(),
       description: postDescription().trim(),
-      matn_name: postMatn().trim() || undefined,
-      level: postLevel().trim() || undefined
+      matn_name: finalMatnName || undefined,
+      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined
     };
     
     app.updateExchangePost(updatedPost);
@@ -447,6 +500,8 @@ export function RecitingPage() {
     setPostMatn('');
     setPostLevel('');
     setPostType('request');
+    setCustomMatn('');
+    setShowCustomMatn(false);
   };
   
   const formatTime = (seconds: number): string => {
@@ -1109,61 +1164,104 @@ export function RecitingPage() {
                   />
                 </div>
                 
-                <div style={{
-                  display: 'grid',
-                  'grid-template-columns': '1fr 1fr',
-                  gap: '12px',
-                  'margin-bottom': '20px'
-                }}>
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '6px',
-                      'font-weight': '500',
+                {/* Level Selection */}
+                <div style={{ 'margin-bottom': '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    'margin-bottom': '8px',
+                    'font-weight': '500',
+                    color: 'var(--color-text)',
+                    'font-size': '14px'
+                  }}>
+                    📊 {app.translate('level')}
+                  </label>
+                  <select
+                    value={postLevel()}
+                    onChange={(e) => setPostLevel(e.currentTarget.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid var(--color-border)',
+                      'border-radius': '8px',
+                      'font-size': '14px',
+                      'background-color': 'var(--color-surface)',
                       color: 'var(--color-text)',
-                      'font-size': '14px'
-                    }}>
-                      {app.translate('matnName')} ({app.translate('optional')})
-                    </label>
-                    <input
-                      type="text"
-                      value={postMatn()}
-                      onInput={(e) => setPostMatn(e.currentTarget.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '6px',
-                        'font-size': '14px',
-                        'box-sizing': 'border-box'
-                      }}
-                    />
-                  </div>
+                      'box-sizing': 'border-box',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <For each={levelOptions}>
+                      {(option) => (
+                        <option value={option.value}>
+                          {option.label}
+                        </option>
+                      )}
+                    </For>
+                  </select>
+                </div>
+
+                {/* Matn Selection */}
+                <div style={{ 'margin-bottom': '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    'margin-bottom': '8px',
+                    'font-weight': '500',
+                    color: 'var(--color-text)',
+                    'font-size': '14px'
+                  }}>
+                    📖 {app.translate('matnName')} ({app.translate('optional')})
+                  </label>
+                  <select
+                    value={postMatn()}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value;
+                      setPostMatn(value);
+                      setShowCustomMatn(value === 'other');
+                      if (value !== 'other') {
+                        setCustomMatn('');
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      border: '1px solid var(--color-border)',
+                      'border-radius': '8px',
+                      'font-size': '14px',
+                      'background-color': 'var(--color-surface)',
+                      color: 'var(--color-text)',
+                      'box-sizing': 'border-box',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <For each={matnOptions}>
+                      {(option) => (
+                        <option value={option.value}>
+                          {option.label}
+                        </option>
+                      )}
+                    </For>
+                  </select>
                   
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '6px',
-                      'font-weight': '500',
-                      color: 'var(--color-text)',
-                      'font-size': '14px'
-                    }}>
-                      {app.translate('level')} ({app.translate('optional')})
-                    </label>
+                  {/* Custom Matn Input */}
+                  <Show when={showCustomMatn()}>
                     <input
                       type="text"
-                      value={postLevel()}
-                      onInput={(e) => setPostLevel(e.currentTarget.value)}
+                      value={customMatn()}
+                      onInput={(e) => setCustomMatn(e.currentTarget.value)}
+                      placeholder={app.language() === 'ar' ? 'اكتب اسم المتن...' : 'Enter Matn name...'}
                       style={{
                         width: '100%',
                         padding: '10px',
                         border: '1px solid var(--color-border)',
                         'border-radius': '6px',
                         'font-size': '14px',
-                        'box-sizing': 'border-box'
+                        'background-color': 'var(--color-background)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box',
+                        'margin-top': '8px'
                       }}
                     />
-                  </div>
+                  </Show>
                 </div>
                 
                 {/* Submit Button */}
