@@ -144,10 +144,17 @@ export function MutunPage() {
     let updatesNeeded = 0;
     userMutun().forEach(matn => {
       if (!matn.lastChange_date || matn.lastChange_date.trim() === '') {
-        console.log(`⚠️ Missing or empty lastChange_date for ${matn.name}, setting to current date`);
+        // Set date to threshold + 1 days ago to ensure it shows as needing review
+        // This is correct behavior: if we don't know when it was last reviewed,
+        // it should appear as needing review (red status)
+        const targetDate = new Date();
+        const daysAgo = (matn.threshold || 7) + 1;
+        targetDate.setDate(targetDate.getDate() - daysAgo);
+        
+        console.log(`⚠️ Missing lastChange_date for ${matn.name}, setting to ${daysAgo} days ago (exceeds threshold)`);
         const updatedMatn = {
           ...matn,
-          lastChange_date: new Date().toISOString()
+          lastChange_date: targetDate.toISOString()
         };
         app.updateMatn(updatedMatn);
         updatesNeeded++;
@@ -157,7 +164,7 @@ export function MutunPage() {
     });
     
     if (updatesNeeded > 0) {
-      console.log(`📝 Data integrity check completed: ${updatesNeeded} Mutun were updated with missing lastChange_date`);
+      console.log(`📝 Data integrity check completed: ${updatesNeeded} Mutun were updated with past dates (will trigger threshold checks)`);
     } else {
       console.log(`✅ Data integrity check passed: All Mutun have valid lastChange_date`);
     }
