@@ -254,7 +254,7 @@ export function NewsPage() {
                 }}
                 title={app.translate('editNews')}
               >
-                ✏️
+                ⚙️
               </button>
             </Show>
 
