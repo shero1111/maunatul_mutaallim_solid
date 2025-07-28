@@ -612,7 +612,7 @@ function HalaqaSection(props: any) {
       <div 
         style={{
           background: 'var(--color-surface)',
-          padding: '15px 20px',
+          padding: '12px 16px',
           'border-bottom': '1px solid var(--color-border)',
           cursor: 'pointer',
           display: 'flex',
@@ -621,27 +621,31 @@ function HalaqaSection(props: any) {
         }}
         onClick={() => setIsExpanded(!isExpanded())}
       >
-        <div>
-          <h4 style={{
+        <div style={{
+          display: 'flex',
+          'align-items': 'center',
+          gap: '8px'
+        }}>
+          <span style={{
             color: 'var(--color-text)',
-            margin: '0 0 5px 0',
-            'font-size': '1.1rem',
+            'font-size': '1rem',
             'font-weight': '600'
           }}>
             {getHalaqaTypeText(halaqa.type)}
-          </h4>
-          <p style={{
+          </span>
+          <span style={{
             color: 'var(--color-text-secondary)',
-            margin: '0',
-            'font-size': '0.85rem'
+            'font-size': '0.9rem',
+            'font-weight': '400'
           }}>
-            {students.length} طالب
-          </p>
+            ({students.length} طالب)
+          </span>
         </div>
         <div style={{
           transform: isExpanded() ? 'rotate(180deg)' : 'rotate(0deg)',
           transition: 'transform 0.2s ease',
-          'font-size': '1.2rem'
+          'font-size': '1.1rem',
+          color: 'var(--color-text-secondary)'
         }}>
           ▼
         </div>
