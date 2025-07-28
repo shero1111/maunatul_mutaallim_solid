@@ -16,6 +16,7 @@ export function NewsModal(props: NewsModalProps) {
   const [publishDate, setPublishDate] = createSignal('');
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [isLoading, setIsLoading] = createSignal(false);
+  const [showValidationSnackbar, setShowValidationSnackbar] = createSignal(false);
 
   // Initialize form when modal opens or newsItem changes
   createEffect(() => {
@@ -35,7 +36,11 @@ export function NewsModal(props: NewsModalProps) {
 
   const handleSave = async () => {
     // At least one field (title or description) must be filled
-    if (!title().trim() && !description().trim()) return;
+    if (!title().trim() && !description().trim()) {
+      setShowValidationSnackbar(true);
+      setTimeout(() => setShowValidationSnackbar(false), 3000);
+      return;
+    }
     
     setIsLoading(true);
     try {
@@ -176,9 +181,9 @@ export function NewsModal(props: NewsModalProps) {
             right: 0;
             background: var(--color-background);
             border-radius: 20px 20px 0 0;
-            height: 45vh;
-            max-height: 400px;
-            min-height: 280px;
+            height: 70vh;
+            max-height: 70vh;
+            min-height: 60vh;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
@@ -202,6 +207,33 @@ export function NewsModal(props: NewsModalProps) {
             margin: 12px auto 8px auto;
             opacity: 0.5;
           }
+
+          .validation-snackbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--color-error);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1001;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideUpSnackbar 0.3s ease-out;
+          }
+
+          @keyframes slideUpSnackbar {
+            from {
+              transform: translateX(-50%) translateY(100px);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(-50%) translateY(0);
+              opacity: 1;
+            }
+          }
         `}
       </style>
 
@@ -224,7 +256,7 @@ export function NewsModal(props: NewsModalProps) {
               {/* Save Button - Top Left */}
               <button
                 onClick={handleSave}
-                disabled={isLoading() || (!title().trim() && !description().trim())}
+                disabled={isLoading()}
                 style={{
                   position: 'absolute',
                   top: '8px',
@@ -374,21 +406,7 @@ export function NewsModal(props: NewsModalProps) {
                 </div>
               </div>
 
-              {/* Validation hint */}
-              <div style={{
-                'font-size': '12px',
-                color: !title().trim() && !description().trim() ? 'var(--color-error)' : 'var(--color-text-secondary)',
-                'margin-bottom': '8px',
-                padding: '8px 12px',
-                'background-color': !title().trim() && !description().trim() ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)',
-                'border-radius': '6px',
-                'text-align': 'center'
-              }}>
-                {app.language() === 'ar' 
-                  ? 'يجب ملء العنوان أو الوصف على الأقل'
-                  : 'At least title or description must be filled'
-                }
-              </div>
+
             </div>
 
             {/* Optional Delete Button Footer - Only for Edit Mode */}
@@ -471,6 +489,16 @@ export function NewsModal(props: NewsModalProps) {
               </button>
             </div>
           </div>
+        </div>
+      </Show>
+
+      {/* Validation Snackbar */}
+      <Show when={showValidationSnackbar()}>
+        <div class="validation-snackbar">
+          {app.language() === 'ar' 
+            ? 'يجب ملء العنوان أو الوصف على الأقل'
+            : 'At least title or description must be filled'
+          }
         </div>
       </Show>
     </>
