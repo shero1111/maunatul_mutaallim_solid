@@ -66,6 +66,7 @@ export interface NewsItem {
   title: string;
   description: string;
   created_at: string;
+  publish_date: string; // Date when news should be published
   author_id: string;
 }
 

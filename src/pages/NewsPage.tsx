@@ -1,14 +1,37 @@
-import { createMemo, For, Show } from 'solid-js';
+import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
+import { NewsModal } from '../components/NewsModal';
+import { NewsItem } from '../types';
 
 export function NewsPage() {
   const app = useApp();
+  const [selectedNews, setSelectedNews] = createSignal<NewsItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = createSignal(false);
+  const [isEdit, setIsEdit] = createSignal(false);
   
-  // Sort news by date (newest first)
-  const sortedNews = createMemo(() => {
-    return [...app.news()].sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
+  // Filter and sort news based on user role and publish date
+  const filteredNews = createMemo(() => {
+    const currentUser = app.currentUser();
+    const now = new Date();
+    
+    let newsItems = [...app.news()];
+    
+    // Filter based on publish date and user role
+    if (currentUser?.role === 'student' || currentUser?.role === 'teacher') {
+      // Students and teachers only see news with publish_date <= now
+      newsItems = newsItems.filter(item => {
+        const publishDate = new Date(item.publish_date || item.created_at);
+        return publishDate <= now;
+      });
+    }
+    // Admins and leaders see all news regardless of publish date
+    
+    // Sort by publish_date (newest first)
+    return newsItems.sort((a, b) => {
+      const dateA = new Date(a.publish_date || a.created_at);
+      const dateB = new Date(b.publish_date || b.created_at);
+      return dateB.getTime() - dateA.getTime();
+    });
   });
   
   const containerStyle = {
@@ -83,20 +106,160 @@ export function NewsPage() {
       return date.toLocaleDateString();
     }
   };
+
+  const canEditNews = () => {
+    const currentUser = app.currentUser();
+    return currentUser?.role === 'admin' || currentUser?.role === 'leader';
+  };
+
+  const handleAddNews = () => {
+    setSelectedNews(null);
+    setIsEdit(false);
+    setIsModalOpen(true);
+  };
+
+  const handleEditNews = (newsItem: NewsItem) => {
+    setSelectedNews(newsItem);
+    setIsEdit(true);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedNews(null);
+    setIsEdit(false);
+  };
+
+  const isFutureNews = (newsItem: NewsItem) => {
+    const publishDate = new Date(newsItem.publish_date || newsItem.created_at);
+    return publishDate > new Date();
+  };
   
 
   
   return (
-    <div style={containerStyle}>
+    <>
+      <style>
+        {`
+          article:hover .edit-icon {
+            opacity: 1 !important;
+          }
+          .edit-icon {
+            opacity: 0;
+          }
+        `}
+      </style>
+      <div style={containerStyle}>
       <div style={headerStyle}>
-        <h1 style={titleStyle}>
-          {app.translate('news')}
-        </h1>
+        <div style={{
+          display: 'flex',
+          'justify-content': 'space-between',
+          'align-items': 'center',
+          'margin-bottom': '16px'
+        }}>
+          <h1 style={titleStyle}>
+            {app.translate('news')}
+          </h1>
+          
+          <Show when={canEditNews()}>
+            <button
+              onClick={handleAddNews}
+              style={{
+                'background-color': 'var(--color-primary)',
+                color: 'white',
+                border: 'none',
+                padding: '10px 16px',
+                'border-radius': '8px',
+                'font-size': '14px',
+                'font-weight': '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                'align-items': 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <span style={{ 'font-size': '16px' }}>+</span>
+              {app.translate('addNews')}
+            </button>
+          </Show>
+        </div>
       </div>
       
-      <For each={sortedNews()}>
+      <For each={filteredNews()}>
         {(newsItem) => (
-          <article style={newsCardStyle}>
+          <article style={{
+            ...newsCardStyle,
+            position: 'relative' as const,
+            cursor: canEditNews() ? 'pointer' : 'default',
+            ...(isFutureNews(newsItem) && canEditNews() ? {
+              border: '2px solid var(--color-warning)',
+              'background-color': 'rgba(245, 158, 11, 0.05)'
+            } : {})
+          }}
+          onClick={canEditNews() ? () => handleEditNews(newsItem) : undefined}
+          onMouseEnter={canEditNews() ? (e) => {
+            if (!isFutureNews(newsItem)) {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }
+          } : undefined}
+          onMouseLeave={canEditNews() ? (e) => {
+            if (!isFutureNews(newsItem)) {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            }
+          } : undefined}
+          >
+            {/* Future News Indicator */}
+            <Show when={isFutureNews(newsItem) && canEditNews()}>
+              <div style={{
+                position: 'absolute',
+                top: '8px',
+                right: '8px',
+                'background-color': 'var(--color-warning)',
+                color: 'white',
+                padding: '4px 8px',
+                'border-radius': '12px',
+                'font-size': '10px',
+                'font-weight': '600'
+              }}>
+                {app.language() === 'ar' ? 'مجدول' : 'SCHEDULED'}
+              </div>
+            </Show>
+
+            {/* Edit Icon */}
+            <Show when={canEditNews()}>
+              <div 
+                class="edit-icon"
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  'background-color': 'rgba(0,0,0,0.7)',
+                  color: 'white',
+                  width: '28px',
+                  height: '28px',
+                  'border-radius': '50%',
+                  display: 'flex',
+                  'align-items': 'center',
+                  'justify-content': 'center',
+                  'font-size': '12px',
+                  transition: 'opacity 0.2s ease'
+                }}
+              >
+                ✏️
+              </div>
+            </Show>
+
             <h2 style={newsTitleStyle}>
               {newsItem.title}
             </h2>
@@ -106,13 +269,28 @@ export function NewsPage() {
             </p>
             
             <div style={newsMetaStyle}>
-              <span>{formatDate(newsItem.created_at)}</span>
+              <div style={{
+                display: 'flex',
+                'align-items': 'center',
+                gap: '8px'
+              }}>
+                <span>{formatDate(newsItem.publish_date || newsItem.created_at)}</span>
+                <Show when={isFutureNews(newsItem) && canEditNews()}>
+                  <span style={{
+                    'font-size': '10px',
+                    color: 'var(--color-warning)',
+                    'font-weight': '600'
+                  }}>
+                    • {app.language() === 'ar' ? 'سينشر في' : 'Will publish on'} {new Date(newsItem.publish_date).toLocaleDateString()}
+                  </span>
+                </Show>
+              </div>
             </div>
           </article>
         )}
       </For>
       
-      <Show when={sortedNews().length === 0}>
+      <Show when={filteredNews().length === 0}>
         <div style={{
           'text-align': 'center',
           padding: '40px 20px',
@@ -122,6 +300,14 @@ export function NewsPage() {
           <div>{app.translate('noNews')}</div>
         </div>
       </Show>
-    </div>
+
+      <NewsModal
+        newsItem={selectedNews()}
+        isOpen={isModalOpen()}
+        onClose={handleModalClose}
+        isEdit={isEdit()}
+      />
+      </div>
+    </>
   );
 }
