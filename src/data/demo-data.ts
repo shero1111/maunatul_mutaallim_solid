@@ -241,7 +241,7 @@ export const demoHalaqat: Halaqa[] = [
     teacher_id: 'lehrer',
     student_ids: ['student2'],
     internal_number: 2,
-    isActive: true
+    isActive: false
   }
 ];
 

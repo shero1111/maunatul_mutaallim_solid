@@ -356,15 +356,15 @@ export function HalaqatPage() {
                       </button>
                     </Show>
                     
-                    {/* Active Indicator */}
-                    <div style={{
-                      width: '10px',
-                      height: '10px',
-                      'border-radius': '50%',
-                      'background-color': halaqa.is_active ? '#10b981' : '#6b7280',
-                      'box-shadow': halaqa.is_active ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
-                      transition: 'all 0.2s ease'
-                                         }} title={halaqa.is_active ? 'نشط' : 'غير نشط'} />
+                                         {/* Active Indicator */}
+                     <div style={{
+                       width: '10px',
+                       height: '10px',
+                       'border-radius': '50%',
+                       'background-color': halaqa.isActive ? '#10b981' : '#6b7280',
+                       'box-shadow': halaqa.isActive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
+                       transition: 'all 0.2s ease'
+                     }} title={halaqa.isActive ? 'نشط' : 'غير نشط'} />
                   </div>
                 </div>
                 
