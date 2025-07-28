@@ -81,11 +81,11 @@ export function HalaqatPage() {
   };
   
   const halaqaCardStyle = {
-    background: 'linear-gradient(135deg, var(--color-background) 0%, var(--color-surface) 100%)',
-    'border-radius': '16px',
-    padding: '20px',
-    'margin-bottom': '16px',
-    'box-shadow': '0 4px 20px rgba(0, 0, 0, 0.08)',
+    background: 'var(--color-surface)',
+    'border-radius': '12px',
+    padding: '16px',
+    'margin-bottom': '12px',
+    'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.06)',
     border: '1px solid var(--color-border)',
     position: 'relative' as const,
     overflow: 'hidden' as const,
@@ -306,48 +306,65 @@ export function HalaqatPage() {
           
           <For each={userHalaqat()}>
             {(halaqa) => (
-              <div class="halaqa-card" style={halaqaCardStyle}>
-                {/* Subtle card decoration */}
+              <div class="halaqa-card" style={halaqaCardStyle}>                
+                {/* Compact Header */}
                 <div style={{
-                  position: 'absolute',
-                  top: '0',
-                  right: '0',
-                  width: '100px',
-                  height: '100px',
-                  background: `radial-gradient(circle, var(--color-primary)08 0%, transparent 70%)`,
-                  'pointer-events': 'none'
-                }} />
-                
-                <div style={halaqaHeaderStyle}>
+                  display: 'flex',
+                  'justify-content': 'space-between',
+                  'align-items': 'flex-start',
+                  'margin-bottom': '12px'
+                }}>
                   <div style={{ flex: '1' }}>
-                    <h3 style={halaqaNameStyle}>
+                    <h3 style={{
+                      margin: '0 0 4px 0',
+                      'font-size': '1.1rem',
+                      'font-weight': 'bold',
+                      color: 'var(--color-text)',
+                      'line-height': '1.3'
+                    }}>
                       {getTypeIcon(halaqa.type)} {halaqa.name}
                     </h3>
-                    <div style={halaqaTypeStyle}>
+                    <div style={{
+                      'font-size': '0.85rem',
+                      color: 'var(--color-text-secondary)',
+                      'margin-bottom': '8px'
+                    }}>
                       {getHalaqaTypeTranslation(halaqa.type)}
                     </div>
                   </div>
+                  
+                  {/* Top Right Controls */}
                   <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
-                    {/* Edit Button - only for leaders and admins */}
+                    {/* Active Indicator */}
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      'border-radius': '50%',
+                      'background-color': halaqa.isActive ? '#10b981' : '#6b7280',
+                      'box-shadow': halaqa.isActive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
+                      transition: 'all 0.2s ease'
+                    }} title={halaqa.isActive ? 'نشط' : 'غير نشط'} />
+                    
+                    {/* Edit Button */}
                     <Show when={canEditHalaqat()}>
                       <button
                         onClick={() => handleEditHalaqa(halaqa.id)}
                         style={{
-                          background: 'var(--color-surface)',
-                          border: '1px solid var(--color-border)',
-                          'border-radius': '8px',
-                          padding: '8px',
+                          background: 'transparent',
+                          border: 'none',
+                          padding: '4px',
                           cursor: 'pointer',
-                          'font-size': '16px',
+                          'font-size': '14px',
                           color: 'var(--color-text-secondary)',
-                          transition: 'all 0.2s ease'
+                          transition: 'all 0.2s ease',
+                          'border-radius': '4px'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--color-primary)';
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.background = 'var(--color-primary)10';
+                          e.currentTarget.style.color = 'var(--color-primary)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'var(--color-surface)';
+                          e.currentTarget.style.background = 'transparent';
                           e.currentTarget.style.color = 'var(--color-text-secondary)';
                         }}
                         title="تحرير الحلقة"
@@ -355,170 +372,187 @@ export function HalaqatPage() {
                         ✏️
                       </button>
                     </Show>
-                    
-                                         {/* Active Indicator */}
-                     <div style={{
-                       width: '10px',
-                       height: '10px',
-                       'border-radius': '50%',
-                       'background-color': halaqa.isActive ? '#10b981' : '#6b7280',
-                       'box-shadow': halaqa.isActive ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
-                       transition: 'all 0.2s ease'
-                     }} title={halaqa.isActive ? 'نشط' : 'غير نشط'} />
                   </div>
                 </div>
                 
-                <div style={infoSectionStyle}>
-                  <div style={infoRowStyle}>
-                    <span style={labelStyle}>👨‍🏫 {app.translate('teacher')}</span>
-                    <span style={valueStyle}>{getTeacherName(halaqa.teacher_id)}</span>
+                {/* Compact Info Grid */}
+                <div style={{
+                  display: 'grid',
+                  'grid-template-columns': '1fr 1fr',
+                  gap: '8px',
+                  'margin-bottom': '12px'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    'align-items': 'center',
+                    gap: '6px',
+                    'font-size': '0.85rem'
+                  }}>
+                    <span>👨‍🏫</span>
+                    <span style={{ color: 'var(--color-text-secondary)' }}>
+                      {getTeacherName(halaqa.teacher_id)}
+                    </span>
                   </div>
                   
-                  <div style={infoRowStyle}>
-                    <span style={labelStyle}>🔢 Internal Number</span>
-                    <span style={valueStyle}>#{halaqa.internal_number}</span>
-                  </div>
-                  
-                  {/* Students Section with Dropdown */}
-                  <div style={infoRowStyle}>
-                    <span style={labelStyle}>👥 {app.translate('students')}</span>
-                    <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
-                      <span style={valueStyle}>
-                        {halaqa.student_ids.length} {halaqa.student_ids.length === 1 ? 'طالب' : 'طلاب'}
-                      </span>
-                      <Show when={halaqa.student_ids.length > 0}>
-                        <button
-                          onClick={() => toggleStudentList(halaqa.id)}
-                          style={{
-                            background: 'var(--color-primary)',
-                            color: 'white',
-                            border: 'none',
-                            'border-radius': '6px',
-                            padding: '4px 8px',
-                            cursor: 'pointer',
-                            'font-size': '12px',
-                            'font-weight': '600',
-                            transition: 'all 0.2s ease',
-                            transform: expandedHalaqat()[halaqa.id] ? 'rotate(180deg)' : 'rotate(0deg)'
-                          }}
-                          title={expandedHalaqat()[halaqa.id] ? 'إخفاء القائمة' : 'عرض القائمة'}
-                        >
-                          ▼
-                        </button>
-                      </Show>
-                    </div>
+                  <div style={{
+                    display: 'flex',
+                    'align-items': 'center',
+                    gap: '6px',
+                    'font-size': '0.85rem'
+                  }}>
+                    <span>🔢</span>
+                    <span style={{ color: 'var(--color-text-secondary)' }}>
+                      #{halaqa.internal_number}
+                    </span>
                   </div>
                 </div>
+                
+                {/* Students Dropdown */}
+                <div style={{
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  overflow: 'hidden'
+                }}>
+                  <button
+                    onClick={() => toggleStudentList(halaqa.id)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: 'var(--color-surface)',
+                      border: 'none',
+                      display: 'flex',
+                      'justify-content': 'space-between',
+                      'align-items': 'center',
+                      cursor: 'pointer',
+                      'font-size': '0.9rem',
+                      color: 'var(--color-text)',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'var(--color-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'var(--color-surface)';
+                    }}
+                  >
+                    <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
+                      <span>👥</span>
+                      <span>Show Students ({halaqa.student_ids.length})</span>
+                    </div>
+                    <span style={{
+                      transform: expandedHalaqat()[halaqa.id] ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease'
+                    }}>
+                      ▼
+                    </span>
+                  </button>
+                  </div>
                 
                 {/* Expandable Student List */}
                 <Show when={halaqa.student_ids.length > 0 && expandedHalaqat()[halaqa.id]}>
                   <div style={{
-                    'margin-top': '16px',
-                    padding: '16px',
-                    background: 'var(--color-primary)05',
-                    'border-radius': '12px',
-                    border: '1px solid var(--color-primary)15',
+                    'border-top': '1px solid var(--color-border)',
+                    background: 'var(--color-background)',
                     'animation': 'slideDown 0.3s ease'
                   }}>
+                    {/* Search Header */}
                     <div style={{
-                      color: 'var(--color-text)',
-                      'font-weight': '600',
-                      'margin-bottom': '12px',
-                      'font-size': '0.9rem',
-                      'letter-spacing': '0.1px',
-                      display: 'flex',
-                      'align-items': 'center',
-                      'justify-content': 'space-between'
+                      padding: '12px',
+                      'border-bottom': '1px solid var(--color-border)'
                     }}>
-                      <div style={{ display: 'flex', 'align-items': 'center', gap: '6px' }}>
-                        <span>👥</span>
-                        <span>قائمة الطلاب ({getFilteredStudentNames(halaqa.student_ids, halaqa.id).length})</span>
-                      </div>
-                      
-                      {/* Search Input */}
-                      <Show when={halaqa.student_ids.length > 3}>
-                        <input
-                          type="text"
-                          placeholder="البحث في الطلاب..."
-                          value={searchTerms()[halaqa.id] || ''}
-                          onInput={(e) => {
-                            setSearchTerms(prev => ({
-                              ...prev,
-                              [halaqa.id]: e.currentTarget.value
-                            }));
-                          }}
-                          style={{
-                            padding: '4px 8px',
-                            border: '1px solid var(--color-border)',
-                            'border-radius': '6px',
-                            'font-size': '12px',
-                            width: '120px',
-                            'background-color': 'var(--color-background)'
-                          }}
-                        />
-                      </Show>
+                      <input
+                        type="text"
+                        placeholder={app.language() === 'ar' ? 'البحث في الطلاب...' : 'Search students...'}
+                        value={searchTerms()[halaqa.id] || ''}
+                        onInput={(e) => {
+                          setSearchTerms(prev => ({
+                            ...prev,
+                            [halaqa.id]: e.currentTarget.value
+                          }));
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1px solid var(--color-border)',
+                          'border-radius': '6px',
+                          'font-size': '0.85rem',
+                          'background-color': 'var(--color-surface)',
+                          color: 'var(--color-text)',
+                          'box-sizing': 'border-box'
+                        }}
+                      />
                     </div>
                     
                     {/* Student List - Row by Row */}
-                    <div style={{ display: 'flex', 'flex-direction': 'column', gap: '6px' }}>
+                    <div style={{
+                      'max-height': '200px',
+                      'overflow-y': 'auto',
+                      padding: '8px 0'
+                    }}>
                       <For each={getFilteredStudentNames(halaqa.student_ids, halaqa.id)}>
                         {(studentName, index) => (
                           <div style={{
                             display: 'flex',
                             'align-items': 'center',
                             padding: '8px 12px',
-                            background: 'var(--color-background)',
-                            'border-radius': '8px',
-                            border: '1px solid var(--color-border)',
+                            'border-bottom': index() === getFilteredStudentNames(halaqa.student_ids, halaqa.id).length - 1 
+                              ? 'none' 
+                              : '1px solid var(--color-border)',
                             'font-size': '0.85rem',
-                            'font-weight': '500',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            cursor: 'default'
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'var(--color-primary)10';
-                            e.currentTarget.style.borderColor = 'var(--color-primary)';
+                            e.currentTarget.style.backgroundColor = 'var(--color-hover)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                            e.currentTarget.style.borderColor = 'var(--color-border)';
+                            e.currentTarget.style.backgroundColor = 'transparent';
                           }}>
-                            <span style={{ 'margin-right': '8px', color: 'var(--color-text-secondary)' }}>
+                            <span style={{ 
+                              'margin-right': '12px', 
+                              color: 'var(--color-text-secondary)',
+                              'font-weight': '500',
+                              'min-width': '20px'
+                            }}>
                               {index() + 1}.
                             </span>
-                            <span style={{ color: 'var(--color-text)' }}>
+                            <span style={{ 
+                              color: 'var(--color-text)',
+                              'font-weight': '500'
+                            }}>
                               {studentName}
                             </span>
                           </div>
                         )}
                       </For>
+                      
+                      {/* No results message */}
+                      <Show when={getFilteredStudentNames(halaqa.student_ids, halaqa.id).length === 0 && searchTerms()[halaqa.id]}>
+                        <div style={{
+                          padding: '16px 12px',
+                          'text-align': 'center',
+                          color: 'var(--color-text-secondary)',
+                          'font-size': '0.85rem'
+                        }}>
+                          {app.language() === 'ar' 
+                            ? `لا توجد نتائج للبحث "${searchTerms()[halaqa.id]}"`
+                            : `No results for "${searchTerms()[halaqa.id]}"`
+                          }
+                        </div>
+                      </Show>
+                      
+                      {/* Empty state when no students */}
+                      <Show when={halaqa.student_ids.length === 0}>
+                        <div style={{
+                          padding: '16px 12px',
+                          'text-align': 'center',
+                          color: 'var(--color-text-secondary)',
+                          'font-size': '0.85rem'
+                        }}>
+                          {app.translate('noStudentsAssigned')}
+                        </div>
+                      </Show>
                     </div>
-                    
-                    {/* No results message */}
-                    <Show when={getFilteredStudentNames(halaqa.student_ids, halaqa.id).length === 0 && searchTerms()[halaqa.id]}>
-                      <div style={{
-                        'text-align': 'center',
-                        padding: '16px',
-                        color: 'var(--color-text-secondary)',
-                        'font-style': 'italic',
-                        'font-size': '0.85rem'
-                      }}>
-                        لا توجد نتائج للبحث "{searchTerms()[halaqa.id]}"
-                      </div>
-                    </Show>
-                  </div>
-                </Show>
-                
-                <Show when={halaqa.student_ids.length === 0}>
-                  <div style={{
-                    'text-align': 'center',
-                    padding: '24px',
-                    color: 'var(--color-text-secondary)',
-                    'font-style': 'italic',
-                    background: 'var(--color-border)20',
-                    'border-radius': '12px',
-                    'font-size': '0.9rem'
-                  }}>
-                    🚫 {app.translate('noStudentsAssigned')}
                   </div>
                 </Show>
               </div>
