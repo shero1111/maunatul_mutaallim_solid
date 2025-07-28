@@ -130,6 +130,98 @@ export function NewsPage() {
     const publishDate = new Date(newsItem.publish_date || newsItem.created_at);
     return publishDate > new Date();
   };
+
+  // Long-press handlers for context menu
+  const handleLongPressStart = (e: MouseEvent | TouchEvent, newsItem: NewsItem) => {
+    e.preventDefault();
+    
+    // Clear any existing timer
+    const currentTimer = longPressTimer();
+    if (currentTimer) {
+      clearTimeout(currentTimer);
+    }
+    
+    // Set position for context menu
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    setContextMenuPosition({ x: clientX, y: clientY });
+    
+    // Start long press timer (500ms)
+    const timer = setTimeout(() => {
+      setContextMenuNews(newsItem);
+      setShowContextMenu(true);
+    }, 500);
+    
+    setLongPressTimer(timer);
+  };
+
+  const handleLongPressEnd = () => {
+    const currentTimer = longPressTimer();
+    if (currentTimer) {
+      clearTimeout(currentTimer);
+      setLongPressTimer(null);
+    }
+  };
+
+  const handleContextMenuAction = (action: 'share' | 'copy' | 'delete') => {
+    const newsItem = contextMenuNews();
+    if (!newsItem) return;
+
+    switch (action) {
+      case 'share':
+        handleShareNews(newsItem);
+        break;
+      case 'copy':
+        handleCopyNews(newsItem);
+        break;
+      case 'delete':
+        handleDeleteNews(newsItem);
+        break;
+    }
+    
+    setShowContextMenu(false);
+    setContextMenuNews(null);
+  };
+
+  const handleShareNews = (newsItem: NewsItem) => {
+    const shareText = `${newsItem.title || ''}\n\n${newsItem.description || ''}\n\n${formatDate(newsItem.publish_date || newsItem.created_at)}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: newsItem.title || '',
+        text: shareText,
+      }).catch(console.error);
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(shareText).then(() => {
+        alert(app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard');
+      }).catch(console.error);
+    }
+  };
+
+  const handleCopyNews = (newsItem: NewsItem) => {
+    const copyText = `${newsItem.title || ''}\n\n${newsItem.description || ''}\n\n${formatDate(newsItem.publish_date || newsItem.created_at)}`;
+    
+    navigator.clipboard.writeText(copyText).then(() => {
+      alert(app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard');
+    }).catch(console.error);
+  };
+
+  const handleDeleteNews = (newsItem: NewsItem) => {
+    const confirmMessage = app.language() === 'ar' 
+      ? 'هل أنت متأكد من حذف هذا الخبر؟'
+      : 'Are you sure you want to delete this news?';
+    
+    if (confirm(confirmMessage)) {
+      app.deleteNews(newsItem.id);
+    }
+  };
+
+  // Close context menu when clicking outside
+  const handleCloseContextMenu = () => {
+    setShowContextMenu(false);
+    setContextMenuNews(null);
+  };
   
 
   
@@ -201,6 +293,12 @@ export function NewsPage() {
               'background-color': 'rgba(245, 158, 11, 0.05)'
             } : {})
           }}
+          onMouseDown={(e) => handleLongPressStart(e, newsItem)}
+          onMouseUp={handleLongPressEnd}
+          onMouseLeave={handleLongPressEnd}
+          onTouchStart={(e) => handleLongPressStart(e, newsItem)}
+          onTouchEnd={handleLongPressEnd}
+          onTouchCancel={handleLongPressEnd}
           >
             {/* Future News Indicator */}
             <Show when={isFutureNews(newsItem) && canEditNews()}>
@@ -320,6 +418,111 @@ export function NewsPage() {
         onClose={handleModalClose}
         isEdit={isEdit()}
       />
+
+      {/* Context Menu */}
+      <Show when={showContextMenu()}>
+        <div 
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '0',
+            'z-index': '1000',
+            'background-color': 'rgba(0, 0, 0, 0.3)'
+          }}
+          onClick={handleCloseContextMenu}
+        >
+          <div 
+            style={{
+              position: 'absolute',
+              left: `${Math.min(contextMenuPosition().x, window.innerWidth - 200)}px`,
+              top: `${Math.min(contextMenuPosition().y, window.innerHeight - 200)}px`,
+              'background-color': 'var(--color-surface)',
+              'border-radius': '12px',
+              'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)',
+              border: '1px solid var(--color-border)',
+              overflow: 'hidden',
+              'min-width': '180px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Show when={canEditNews()}>
+              <button
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: 'none',
+                  'background-color': 'transparent',
+                  color: 'var(--color-text)',
+                  'text-align': 'left',
+                  cursor: 'pointer',
+                  'font-size': '14px',
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                onClick={() => handleContextMenuAction('share')}
+              >
+                <span>📤</span>
+                {app.language() === 'ar' ? 'مشاركة' : 'Share'}
+              </button>
+            </Show>
+            
+            <button
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: 'none',
+                'background-color': 'transparent',
+                color: 'var(--color-text)',
+                'text-align': 'left',
+                cursor: 'pointer',
+                'font-size': '14px',
+                display: 'flex',
+                'align-items': 'center',
+                gap: '8px',
+                transition: 'background-color 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              onClick={() => handleContextMenuAction('copy')}
+            >
+              <span>📋</span>
+              {app.language() === 'ar' ? 'نسخ' : 'Copy'}
+            </button>
+            
+            <Show when={canEditNews()}>
+              <button
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  border: 'none',
+                  'background-color': 'transparent',
+                  color: 'var(--color-error)',
+                  'text-align': 'left',
+                  cursor: 'pointer',
+                  'font-size': '14px',
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s ease',
+                  'border-top': '1px solid var(--color-border)'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                onClick={() => handleContextMenuAction('delete')}
+              >
+                <span>🗑️</span>
+                {app.language() === 'ar' ? 'حذف' : 'Delete'}
+              </button>
+            </Show>
+          </div>
+        </div>
+      </Show>
       </div>
     </>
   );
