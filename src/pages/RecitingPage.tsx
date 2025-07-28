@@ -48,25 +48,36 @@ export function RecitingPage() {
 
   // Level options for exchange posts
   const levelOptions = [
-    { value: '', label: app.translate('level') + ' (' + app.translate('optional') + ')' },
-    { value: 'beginner', label: app.language() === 'ar' ? 'مبتدئ' : 'Beginner' },
-    { value: 'intermediate', label: app.language() === 'ar' ? 'متوسط' : 'Intermediate' },
-    { value: 'advanced', label: app.language() === 'ar' ? 'متقدم' : 'Advanced' },
-    { value: 'memorization', label: app.language() === 'ar' ? 'تحفيظ' : 'Memorization' },
-    { value: 'explanation', label: app.language() === 'ar' ? 'شرح' : 'Explanation' }
+    { value: '', label: app.language() === 'ar' ? 'اختر المستوى' : 'Select Level' },
+    { value: 'all', label: app.language() === 'ar' ? 'الجميع' : 'All' },
+    { value: 'level1', label: app.language() === 'ar' ? 'الأول' : 'First' },
+    { value: 'level2', label: app.language() === 'ar' ? 'الثاني' : 'Second' },
+    { value: 'level3', label: app.language() === 'ar' ? 'الثالث' : 'Third' },
+    { value: 'level4', label: app.language() === 'ar' ? 'الرابع' : 'Fourth' }
   ];
 
-  // Common Matn options
-  const matnOptions = [
-    { value: '', label: app.translate('matnName') + ' (' + app.translate('optional') + ')' },
-    { value: 'quran', label: app.language() === 'ar' ? 'القرآن الكريم' : 'Holy Quran' },
-    { value: 'bukhari', label: app.language() === 'ar' ? 'صحيح البخاري' : 'Sahih Bukhari' },
-    { value: 'muslim', label: app.language() === 'ar' ? 'صحيح مسلم' : 'Sahih Muslim' },
-    { value: 'nawawi', label: app.language() === 'ar' ? 'الأربعون النووية' : 'Forty Hadith Nawawi' },
-    { value: 'tawheed', label: app.language() === 'ar' ? 'كتاب التوحيد' : 'Kitab at-Tawheed' },
-    { value: 'aqeedah', label: app.language() === 'ar' ? 'العقيدة الواسطية' : 'Al-Aqeedah al-Wasitiyyah' },
-    { value: 'other', label: app.language() === 'ar' ? 'أخرى...' : 'Other...' }
-  ];
+  // Get Mutuun for selected level
+  const getMatuunForLevel = createMemo(() => {
+    if (!postLevel() || postLevel() === 'all') return [];
+    
+    const allMutun = app.mutun();
+    const levelNumber = postLevel().replace('level', '');
+    
+    return allMutun
+      .filter(matn => matn.level === parseInt(levelNumber))
+      .map(matn => ({
+        value: matn.id,
+        label: matn.name
+      }));
+  });
+
+  // Matn options with empty option
+  const matnOptions = createMemo(() => {
+    const baseOptions = [
+      { value: '', label: app.language() === 'ar' ? 'اختر المتن' : 'Select Matn' }
+    ];
+    return [...baseOptions, ...getMatuunForLevel()];
+  });
 
   // Helper function for confirmations
   const showConfirmation = (title: string, message: string, onConfirm: () => void, type: 'warning' | 'danger' | 'info' = 'warning') => {
@@ -402,20 +413,22 @@ export function RecitingPage() {
   
   // Exchange post functions
   const createPost = () => {
-    if (!postTitle().trim() || !postDescription().trim()) return;
+    if (!postTitle().trim() || !postDescription().trim() || !postLevel()) return;
     
-    // Get the actual matn name (either selected or custom)
-    const finalMatnName = postMatn() === 'other' 
-      ? customMatn().trim() 
-      : (postMatn() ? matnOptions.find(opt => opt.value === postMatn())?.label : undefined);
+    // Get the actual matn name from the mutun data
+    let finalMatnName: string | undefined = undefined;
+    if (postMatn() && postLevel() !== 'all') {
+      const selectedMatn = app.mutun().find(matn => matn.id === postMatn());
+      finalMatnName = selectedMatn?.name;
+    }
     
     const post: ExchangePost = {
       id: Date.now().toString(),
       type: postType(),
       title: postTitle().trim(),
       description: postDescription().trim(),
-      matn_name: finalMatnName || undefined,
-      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined,
+      matn_name: finalMatnName,
+      level: levelOptions.find(opt => opt.value === postLevel())?.label,
       author_id: app.currentUser()?.id || '',
       author_name: app.currentUser()?.name || '',
       created_at: new Date().toISOString(),
@@ -436,41 +449,37 @@ export function RecitingPage() {
     const levelOption = levelOptions.find(opt => opt.label === post.level);
     setPostLevel(levelOption?.value || '');
     
-    // Find matching matn or set as custom
-    const matnOption = matnOptions.find(opt => opt.label === post.matn_name);
-    if (matnOption && matnOption.value !== 'other') {
-      setPostMatn(matnOption.value);
-      setCustomMatn('');
-      setShowCustomMatn(false);
-    } else if (post.matn_name) {
-      setPostMatn('other');
-      setCustomMatn(post.matn_name);
-      setShowCustomMatn(true);
+    // Find matching matn from actual mutun data
+    if (post.matn_name) {
+      const matchingMatn = app.mutun().find(matn => matn.name === post.matn_name);
+      setPostMatn(matchingMatn?.id || '');
     } else {
       setPostMatn('');
-      setCustomMatn('');
-      setShowCustomMatn(false);
     }
     
+    setCustomMatn('');
+    setShowCustomMatn(false);
     setShowCreatePost(true);
   };
   
   const updatePost = () => {
     const post = editingPost();
-    if (!post || !postTitle().trim() || !postDescription().trim()) return;
+    if (!post || !postTitle().trim() || !postDescription().trim() || !postLevel()) return;
     
-    // Get the actual matn name (either selected or custom)
-    const finalMatnName = postMatn() === 'other' 
-      ? customMatn().trim() 
-      : (postMatn() ? matnOptions.find(opt => opt.value === postMatn())?.label : undefined);
+    // Get the actual matn name from the mutun data
+    let finalMatnName: string | undefined = undefined;
+    if (postMatn() && postLevel() !== 'all') {
+      const selectedMatn = app.mutun().find(matn => matn.id === postMatn());
+      finalMatnName = selectedMatn?.name;
+    }
     
     const updatedPost: ExchangePost = {
       ...post,
       type: postType(),
       title: postTitle().trim(),
       description: postDescription().trim(),
-      matn_name: finalMatnName || undefined,
-      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined
+      matn_name: finalMatnName,
+      level: levelOptions.find(opt => opt.value === postLevel())?.label
     };
     
     app.updateExchangePost(updatedPost);
@@ -1166,18 +1175,14 @@ export function RecitingPage() {
                 
                 {/* Level Selection */}
                 <div style={{ 'margin-bottom': '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    'margin-bottom': '8px',
-                    'font-weight': '500',
-                    color: 'var(--color-text)',
-                    'font-size': '14px'
-                  }}>
-                    📊 {app.translate('level')}
-                  </label>
                   <select
                     value={postLevel()}
-                    onChange={(e) => setPostLevel(e.currentTarget.value)}
+                    onChange={(e) => {
+                      const value = e.currentTarget.value;
+                      setPostLevel(value);
+                      // Reset matn when level changes
+                      setPostMatn('');
+                    }}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -1200,89 +1205,89 @@ export function RecitingPage() {
                   </select>
                 </div>
 
-                {/* Matn Selection */}
-                <div style={{ 'margin-bottom': '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    'margin-bottom': '8px',
-                    'font-weight': '500',
-                    color: 'var(--color-text)',
-                    'font-size': '14px'
-                  }}>
-                    📖 {app.translate('matnName')} ({app.translate('optional')})
-                  </label>
-                  <select
-                    value={postMatn()}
-                    onChange={(e) => {
-                      const value = e.currentTarget.value;
-                      setPostMatn(value);
-                      setShowCustomMatn(value === 'other');
-                      if (value !== 'other') {
-                        setCustomMatn('');
-                      }
-                    }}
+                {/* Matn Selection - Only show if level is selected and not "الجميع" */}
+                <Show when={postLevel() && postLevel() !== 'all' && getMatuunForLevel().length > 0}>
+                  <div style={{ 'margin-bottom': '16px' }}>
+                    <select
+                      value={postMatn()}
+                      onChange={(e) => setPostMatn(e.currentTarget.value)}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--color-border)',
+                        'border-radius': '8px',
+                        'font-size': '14px',
+                        'background-color': 'var(--color-surface)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <For each={matnOptions()}>
+                        {(option) => (
+                          <option value={option.value}>
+                            {option.label}
+                          </option>
+                        )}
+                      </For>
+                    </select>
+                  </div>
+                </Show>
+                
+                {/* Action Buttons */}
+                <div style={{
+                  display: 'flex',
+                  gap: '12px',
+                  'justify-content': 'space-between'
+                }}>
+                  {/* Cancel Button */}
+                  <button
+                    onClick={resetPostForm}
                     style={{
-                      width: '100%',
+                      flex: '1',
                       padding: '12px',
+                      background: 'var(--color-surface)',
+                      color: 'var(--color-text)',
                       border: '1px solid var(--color-border)',
                       'border-radius': '8px',
                       'font-size': '14px',
-                      'background-color': 'var(--color-surface)',
-                      color: 'var(--color-text)',
-                      'box-sizing': 'border-box',
-                      cursor: 'pointer'
+                      'font-weight': '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-surface)';
                     }}
                   >
-                    <For each={matnOptions}>
-                      {(option) => (
-                        <option value={option.value}>
-                          {option.label}
-                        </option>
-                      )}
-                    </For>
-                  </select>
+                    ✕ {app.translate('cancel')}
+                  </button>
                   
-                  {/* Custom Matn Input */}
-                  <Show when={showCustomMatn()}>
-                    <input
-                      type="text"
-                      value={customMatn()}
-                      onInput={(e) => setCustomMatn(e.currentTarget.value)}
-                      placeholder={app.language() === 'ar' ? 'اكتب اسم المتن...' : 'Enter Matn name...'}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '6px',
-                        'font-size': '14px',
-                        'background-color': 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        'box-sizing': 'border-box',
-                        'margin-top': '8px'
-                      }}
-                    />
-                  </Show>
+                  {/* Save Button */}
+                  <button
+                    onClick={editingPost() ? updatePost : createPost}
+                    disabled={!postTitle().trim() || !postDescription().trim() || !postLevel()}
+                    style={{
+                      flex: '2',
+                      padding: '12px',
+                      'background-color': (!postTitle().trim() || !postDescription().trim() || !postLevel()) 
+                        ? 'var(--color-text-secondary)' 
+                        : (postType() === 'offer' ? '#10b981' : '#3b82f6'),
+                      color: 'white',
+                      border: 'none',
+                      'border-radius': '8px',
+                      'font-size': '14px',
+                      'font-weight': '500',
+                      cursor: (!postTitle().trim() || !postDescription().trim() || !postLevel()) ? 'not-allowed' : 'pointer',
+                      opacity: (!postTitle().trim() || !postDescription().trim() || !postLevel()) ? '0.5' : '1',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    💾 {editingPost() ? app.translate('editPost') : app.translate('createPost')}
+                  </button>
                 </div>
-                
-                {/* Submit Button */}
-                <button
-                  onClick={editingPost() ? updatePost : createPost}
-                  disabled={!postTitle().trim() || !postDescription().trim()}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    'background-color': postType() === 'offer' ? '#10b981' : '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    'border-radius': '12px',
-                    'font-size': '16px',
-                    'font-weight': '500',
-                    cursor: !postTitle().trim() || !postDescription().trim() ? 'not-allowed' : 'pointer',
-                    opacity: !postTitle().trim() || !postDescription().trim() ? '0.5' : '1'
-                  }}
-                >
-                  {editingPost() ? app.translate('editPost') : app.translate('createPost')}
-                </button>
               </div>
             </div>
           </Show>
