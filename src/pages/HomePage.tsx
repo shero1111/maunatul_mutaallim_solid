@@ -403,7 +403,7 @@ function StudentDashboard(props: { user: Student }) {
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('all')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('all'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -452,7 +452,7 @@ function StudentDashboard(props: { user: Student }) {
             🔴 {app.translate('not_available')}
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('revising')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('revising'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -474,7 +474,7 @@ function StudentDashboard(props: { user: Student }) {
             🟡 {app.translate('revising')}
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('khatamat')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('khatamat'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -888,7 +888,7 @@ function TeacherDashboard(props: { user: Teacher }) {
         {/* Filter Buttons */}
         <div style={{ display: 'flex', gap: '4px', 'flex-wrap': 'nowrap', 'overflow-x': 'auto', 'padding-bottom': '2px' }}>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('all')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('all'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -910,7 +910,7 @@ function TeacherDashboard(props: { user: Teacher }) {
             {app.translate('allStudents')}
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('not_available')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('not_available'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -932,7 +932,7 @@ function TeacherDashboard(props: { user: Teacher }) {
             🔴 {app.translate('not_available')}
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('revising')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('revising'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
@@ -954,7 +954,7 @@ function TeacherDashboard(props: { user: Teacher }) {
             🟡 {app.translate('revising')}
           </button>
           <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('khatamat')}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setStatusFilter('khatamat'); }}
             style={{
               padding: '4px 8px',
               'border-radius': '4px',
