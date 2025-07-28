@@ -77,7 +77,7 @@ export function BottomNavigation() {
           return navigationItems;
         case 'lehrer':
           return navigationItems.filter(item => 
-            ['home', 'mutuun', 'news', 'more'].includes(item.page)
+            ['home', 'mutuun', 'reciting', 'news', 'more'].includes(item.page)
           );
         case 'student':
           return navigationItems.filter(item => 

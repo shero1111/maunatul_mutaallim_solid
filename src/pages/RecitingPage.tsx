@@ -18,6 +18,7 @@ export function RecitingPage() {
   const [playingRecording, setPlayingRecording] = createSignal<string | null>(null);
   const [editingRecordingId, setEditingRecordingId] = createSignal<string | null>(null);
   const [newRecordingName, setNewRecordingName] = createSignal('');
+  const [audioElement, setAudioElement] = createSignal<HTMLAudioElement | null>(null);
   
   // Exchange Center State
   const [exchangeFilter, setExchangeFilter] = createSignal<'all' | 'offers' | 'requests' | 'my'>('all');
@@ -29,10 +30,10 @@ export function RecitingPage() {
   const [postLevel, setPostLevel] = createSignal('');
   const [postType, setPostType] = createSignal<'offer' | 'request'>('request');
   
-  // Only allow students to access this page
+  // Allow all authenticated users to access this page
   const canAccess = createMemo(() => {
     const user = app.currentUser();
-    return user?.role === 'student';
+    return !!user; // Just check if user is logged in
   });
   
   // Filter exchange posts
@@ -55,17 +56,45 @@ export function RecitingPage() {
   // Recording functions
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        }
+      });
+      
+      // Try different MIME types based on browser support
+      let mimeType = 'audio/webm;codecs=opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm';
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/mp4';
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = ''; // Let browser choose
+      }
+      
+      console.log('🎙️ Using MIME type:', mimeType);
+      
+      const recorder = new MediaRecorder(stream, { 
+        mimeType: mimeType || undefined
+      });
       
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
+          console.log('📊 Audio chunk received, size:', event.data.size);
           setAudioChunks(prev => [...prev, event.data]);
         }
       };
       
       recorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks(), { type: 'audio/webm' });
+        console.log('🛑 Recording stopped, total chunks:', audioChunks().length);
+        const audioBlob = new Blob(audioChunks(), { 
+          type: mimeType || 'audio/webm' 
+        });
+        console.log('💾 Created audio blob, size:', audioBlob.size);
         saveRecording(audioBlob);
         setAudioChunks([]);
       };
@@ -131,7 +160,17 @@ export function RecitingPage() {
   };
   
   const saveRecording = (audioBlob: Blob) => {
+    console.log('💾 Saving recording with blob size:', audioBlob.size);
+    
+    if (audioBlob.size === 0) {
+      console.error('❌ Recording failed: Empty audio blob');
+      alert(app.translate('recordingFailed') + ': No audio data recorded');
+      return;
+    }
+    
     const url = URL.createObjectURL(audioBlob);
+    console.log('🔗 Created object URL:', url);
+    
     const recording: AudioRecording = {
       id: Date.now().toString(),
       name: `${app.translate('newRecording')} ${new Date().toLocaleDateString()}`,
@@ -142,8 +181,22 @@ export function RecitingPage() {
       size: audioBlob.size
     };
     
+    console.log('✅ Recording saved:', recording);
     app.addRecording(recording);
     setRecordingTime(0);
+    
+    // Test playback immediately
+    setTimeout(() => {
+      console.log('🎵 Testing immediate playback...');
+      const testAudio = new Audio(url);
+      testAudio.volume = 0.1; // Low volume for test
+      testAudio.play().then(() => {
+        console.log('✅ Immediate playback test successful');
+        testAudio.pause();
+      }).catch(error => {
+        console.error('❌ Immediate playback test failed:', error);
+      });
+    }, 500);
   };
   
   const deleteRecording = (id: string) => {
@@ -159,10 +212,61 @@ export function RecitingPage() {
   };
   
   const playRecording = (id: string) => {
+    const recording = app.recordings().find(r => r.id === id);
+    if (!recording) return;
+
+    // Stop any currently playing audio
+    const currentAudio = audioElement();
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
     if (playingRecording() === id) {
+      // Stop playback
       setPlayingRecording(null);
+      setAudioElement(null);
     } else {
-      setPlayingRecording(id);
+      // Start playback
+      try {
+        const audio = new Audio(recording.url);
+        audio.volume = 1.0; // Full volume
+        
+        audio.onplay = () => {
+          console.log('🎵 Audio playback started for recording:', recording.name);
+          setPlayingRecording(id);
+        };
+        
+        audio.onpause = () => {
+          console.log('⏸️ Audio playback paused');
+          setPlayingRecording(null);
+        };
+        
+        audio.onended = () => {
+          console.log('✅ Audio playback completed');
+          setPlayingRecording(null);
+          setAudioElement(null);
+        };
+        
+        audio.onerror = (e) => {
+          console.error('❌ Audio playback error:', e);
+          alert('Error playing recording. Please try again.');
+          setPlayingRecording(null);
+          setAudioElement(null);
+        };
+        
+        setAudioElement(audio);
+        audio.play().catch(error => {
+          console.error('❌ Failed to play audio:', error);
+          alert('Failed to play recording. Browser may have blocked audio playback.');
+          setPlayingRecording(null);
+          setAudioElement(null);
+        });
+        
+      } catch (error) {
+        console.error('❌ Error creating audio element:', error);
+        alert('Error playing recording. The audio file may be corrupted.');
+      }
     }
   };
   
@@ -264,6 +368,15 @@ export function RecitingPage() {
     if (recorder && recorder.state !== 'inactive') {
       recorder.stop();
     }
+    
+    // Stop any playing audio
+    const audio = audioElement();
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    setAudioElement(null);
+    setPlayingRecording(null);
   });
   
   if (!canAccess()) {
@@ -278,7 +391,7 @@ export function RecitingPage() {
       }}>
         <div style={{ 'text-align': 'center' }}>
           <div style={{ 'font-size': '48px', 'margin-bottom': '16px' }}>🚫</div>
-          <div>Access restricted to students only</div>
+          <div>Please log in to access this page</div>
         </div>
       </div>
     );
