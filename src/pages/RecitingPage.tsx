@@ -33,6 +33,10 @@ export function RecitingPage() {
     message: '',
     onConfirm: () => {}
   });
+
+  // Snackbar for simple notifications
+  const [showSnackbar, setShowSnackbar] = createSignal(false);
+  const [snackbarMessage, setSnackbarMessage] = createSignal('');
   
   // Exchange Center State
   const [exchangeFilter, setExchangeFilter] = createSignal<'all' | 'offers' | 'requests' | 'my'>('all');
@@ -92,6 +96,15 @@ export function RecitingPage() {
 
   const hideConfirmation = () => {
     setShowConfirmModal(false);
+  };
+
+  // Show snackbar for simple notifications
+  const showSnackbar = (message: string, duration: number = 3000) => {
+    setSnackbarMessage(message);
+    setShowSnackbar(true);
+    setTimeout(() => {
+      setShowSnackbar(false);
+    }, duration);
   };
   
   // Allow all authenticated users to access this page
@@ -300,7 +313,14 @@ export function RecitingPage() {
   
   const playRecording = (id: string) => {
     const recording = app.recordings().find(r => r.id === id);
-    if (!recording) return;
+    if (!recording) {
+      showSnackbar(
+        app.language() === 'ar' 
+          ? 'التسجيل غير موجود' 
+          : 'Recording not found'
+      );
+      return;
+    }
 
     // Stop any currently playing audio
     const currentAudio = audioElement();
@@ -313,101 +333,74 @@ export function RecitingPage() {
       // Stop playback
       setPlayingRecording(null);
       setAudioElement(null);
-    } else {
-      // Start playback
-      try {
-        const audio = new Audio(recording.url);
-        audio.volume = 1.0; // Full volume
-        
-        audio.onplay = () => {
-          console.log('🎵 Audio playback started for recording:', recording.name);
-          setPlayingRecording(id);
-        };
-        
-        audio.onpause = () => {
-          console.log('⏸️ Audio playback paused');
-          setPlayingRecording(null);
-        };
-        
-        audio.onended = () => {
-          console.log('✅ Audio playback completed');
-          setPlayingRecording(null);
-          setAudioElement(null);
-        };
-        
-        audio.onerror = (e) => {
-          console.error('❌ Audio playback error:', e);
-          showConfirmation(
-            app.translate('recordingFailed'),
-            app.language() === 'ar'
-              ? 'خطأ في تشغيل التسجيل. حاول مرة أخرى.'
-              : 'Error playing recording. Please try again.',
-            () => {},
-            'danger'
+      return;
+    }
+
+    // Start playback
+    try {
+      console.log('🎵 Starting playback for:', recording.url);
+      const audio = new Audio();
+      
+      // Set up event handlers first
+      audio.onloadstart = () => console.log('📥 Loading audio...');
+      audio.oncanplay = () => console.log('✅ Audio ready to play');
+      
+      audio.onplay = () => {
+        console.log('🎵 Audio playback started');
+        setPlayingRecording(id);
+      };
+      
+      audio.onpause = () => {
+        console.log('⏸️ Audio paused');
+        setPlayingRecording(null);
+      };
+      
+      audio.onended = () => {
+        console.log('✅ Audio ended');
+        setPlayingRecording(null);
+        setAudioElement(null);
+      };
+      
+      audio.onerror = (e) => {
+        console.error('❌ Audio error:', e);
+        showSnackbar(
+          app.language() === 'ar' 
+            ? 'خطأ في تشغيل التسجيل' 
+            : 'Error playing recording'
+        );
+        setPlayingRecording(null);
+        setAudioElement(null);
+      };
+      
+      // Set source and load
+      audio.src = recording.url;
+      audio.load();
+      
+      setAudioElement(audio);
+      
+      // Try to play
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error('❌ Play failed:', error);
+          showSnackbar(
+            app.language() === 'ar' 
+              ? 'فشل تشغيل الصوت. اضغط مرة أخرى.' 
+              : 'Audio playback failed. Try again.'
           );
           setPlayingRecording(null);
           setAudioElement(null);
-        };
-        
-        setAudioElement(audio);
-        
-        // Try to play with user gesture fallback
-        const playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            console.log('✅ Audio playback started successfully');
-          }).catch(error => {
-            console.error('❌ Failed to play audio:', error);
-            
-            // Show user-friendly message for autoplay issues
-            if (error.name === 'NotAllowedError') {
-              showConfirmation(
-                app.translate('playRecording'),
-                app.language() === 'ar' 
-                  ? 'يتطلب تشغيل الصوت تفاعل المستخدم. اضغط على تشغيل مرة أخرى.'
-                  : 'Audio playback requires user interaction. Please click play again.',
-                () => {
-                  // Retry playback after user confirmation
-                  const retryAudio = new Audio(recording.url);
-                  retryAudio.volume = 1.0;
-                  retryAudio.onplay = () => setPlayingRecording(id);
-                  retryAudio.onended = () => {
-                    setPlayingRecording(null);
-                    setAudioElement(null);
-                  };
-                  setAudioElement(retryAudio);
-                  retryAudio.play();
-                },
-                'info'
-              );
-            } else {
-              showConfirmation(
-                app.translate('recordingFailed'),
-                app.language() === 'ar'
-                  ? 'فشل في تشغيل التسجيل. قد يكون الملف تالفاً.'
-                  : 'Failed to play recording. The audio file may be corrupted.',
-                () => {},
-                'danger'
-              );
-            }
-            
-            setPlayingRecording(null);
-            setAudioElement(null);
-          });
-        }
-        
-              } catch (error) {
-          console.error('❌ Error creating audio element:', error);
-          showConfirmation(
-            app.translate('recordingFailed'),
-            app.language() === 'ar'
-              ? 'خطأ في تشغيل التسجيل. قد يكون الملف تالفاً.'
-              : 'Error playing recording. The audio file may be corrupted.',
-            () => {},
-            'danger'
-          );
-        }
+        });
+      }
+      
+    } catch (error) {
+      console.error('❌ Error creating audio element:', error);
+      showSnackbar(
+        app.language() === 'ar'
+          ? 'خطأ في تشغيل التسجيل'
+          : 'Error playing recording'
+      );
     }
   };
   
