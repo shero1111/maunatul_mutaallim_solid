@@ -51,33 +51,20 @@ export function NewsModal(props: NewsModalProps) {
           ...props.newsItem,
           ...newsData
         };
-        console.log('Updating news:', updatedNews);
+        console.log('📝 Updating news:', updatedNews);
         app.updateNews(updatedNews);
       } else {
         // Create new news
-        const newNewsData = {
-          created_at: new Date().toISOString(),
-          ...newsData
-        };
-        console.log('🆕 Creating new news:', newNewsData);
-        console.log('📱 App.createNews function:', typeof app.createNews);
+        console.log('📝 Creating new news:', newsData);
+        app.createNews(newsData);
         
-        if (typeof app.createNews === 'function') {
-          app.createNews(newNewsData);
-          console.log('✅ createNews called successfully');
-          
-          // Small delay to see the news being added
-          setTimeout(() => {
-            console.log('🔄 Current news count after delay:', app.news().length);
-          }, 100);
-        } else {
-          console.error('❌ app.createNews is not a function!');
-          alert('Fehler: News-Funktion nicht verfügbar');
-          return;
-        }
+        // Debug: Check if news was added
+        setTimeout(() => {
+          console.log('📊 News count after creation:', app.news().length);
+          alert(`News created! Total news: ${app.news().length}`);
+        }, 100);
       }
       
-      console.log('🔄 News count before closing:', app.news().length);
       props.onClose();
     } catch (error) {
       console.error('Error saving news:', error);
@@ -91,9 +78,7 @@ export function NewsModal(props: NewsModalProps) {
     
     setIsLoading(true);
     try {
-      console.log('Deleting news:', props.newsItem.id);
       app.deleteNews(props.newsItem.id);
-      
       setShowDeleteConfirm(false);
       props.onClose();
     } catch (error) {
@@ -101,11 +86,6 @@ export function NewsModal(props: NewsModalProps) {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const canEdit = () => {
-    const currentUser = app.currentUser();
-    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
   const modalOverlayStyle = {
@@ -116,24 +96,6 @@ export function NewsModal(props: NewsModalProps) {
     bottom: '0',
     'background-color': 'rgba(0, 0, 0, 0.5)',
     'z-index': '1000'
-  };
-
-  const modalContentStyle = {
-    position: 'fixed' as const,
-    bottom: '0',
-    left: '0',
-    right: '0',
-    background: 'var(--color-background)',
-    'border-radius': '20px 20px 0 0',
-    'max-height': '90vh',
-    'min-height': '50vh',
-    'box-shadow': '0 -10px 30px rgba(0,0,0,0.3)',
-    display: 'flex',
-    'flex-direction': 'column' as const,
-    overflow: 'hidden',
-    transform: 'translateY(100%)',
-    transition: 'transform 0.3s ease-out',
-    animation: 'slideUp 0.3s ease-out forwards'
   };
 
   const inputStyle = {
@@ -182,6 +144,11 @@ export function NewsModal(props: NewsModalProps) {
     ...buttonStyle,
     'background-color': 'var(--color-error)',
     color: 'white'
+  };
+
+  const canEdit = () => {
+    const currentUser = app.currentUser();
+    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
   if (!canEdit()) {
@@ -236,7 +203,8 @@ export function NewsModal(props: NewsModalProps) {
           }
         `}
       </style>
-              <Show when={props.isOpen}>
+
+      <Show when={props.isOpen}>
         <div style={modalOverlayStyle} onClick={props.onClose}>
           <div 
             class="news-modal-content"
@@ -303,72 +271,72 @@ export function NewsModal(props: NewsModalProps) {
               class="scrollable-content"
               style={{
                 padding: '16px 20px'
-              }}>
+              }}
+            >
+              <div style={{ 'margin-bottom': '16px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
+                }}>
+                  {app.translate('newsTitle')}
+                </label>
+                <input
+                  type="text"
+                  value={title()}
+                  onInput={(e) => setTitle(e.currentTarget.value)}
+                  style={inputStyle}
+                  placeholder={app.translate('newsTitle')}
+                />
+              </div>
 
-          <div style={{ 'margin-bottom': '16px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('newsTitle')}
-            </label>
-            <input
-              type="text"
-              value={title()}
-              onInput={(e) => setTitle(e.currentTarget.value)}
-              style={inputStyle}
-              placeholder={app.translate('newsTitle')}
-            />
-          </div>
+              <div style={{ 'margin-bottom': '16px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
+                }}>
+                  {app.translate('newsDescription')}
+                </label>
+                <textarea
+                  value={description()}
+                  onInput={(e) => setDescription(e.currentTarget.value)}
+                  style={textareaStyle}
+                  placeholder={app.translate('newsDescription')}
+                />
+              </div>
 
-          <div style={{ 'margin-bottom': '16px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('newsDescription')}
-            </label>
-            <textarea
-              value={description()}
-              onInput={(e) => setDescription(e.currentTarget.value)}
-              style={textareaStyle}
-              placeholder={app.translate('newsDescription')}
-            />
-          </div>
-
-          <div style={{ 'margin-bottom': '24px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('publishDate')}
-            </label>
-            <input
-              type="date"
-              value={publishDate()}
-              onInput={(e) => setPublishDate(e.currentTarget.value)}
-              style={inputStyle}
-            />
-            <div style={{
-              'font-size': '12px',
-              color: 'var(--color-text-secondary)',
-              'margin-top': '4px'
-            }}>
-              {new Date(publishDate()) > new Date() ? 
-                app.language() === 'ar' ? 'سيتم نشر هذا الخبر في المستقبل' : 'This news will be published in the future' :
-                app.language() === 'ar' ? 'سيكون هذا الخبر مرئياً للجميع' : 'This news will be visible to everyone'
-              }
-            </div>
-          </div>
+              <div style={{ 'margin-bottom': '24px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
+                }}>
+                  {app.translate('publishDate')}
+                </label>
+                <input
+                  type="date"
+                  value={publishDate()}
+                  onInput={(e) => setPublishDate(e.currentTarget.value)}
+                  style={inputStyle}
+                />
+                <div style={{
+                  'font-size': '12px',
+                  color: 'var(--color-text-secondary)',
+                  'margin-top': '4px'
+                }}>
+                  {new Date(publishDate()) > new Date() ? 
+                    app.language() === 'ar' ? 'سيتم نشر هذا الخبر في المستقبل' : 'This news will be published in the future' :
+                    app.language() === 'ar' ? 'سيكون هذا الخبر مرئياً للجميع' : 'This news will be visible to everyone'
+                  }
+                </div>
+              </div>
             </div>
 
             {/* Modal Footer - Fixed at bottom */}
@@ -409,55 +377,32 @@ export function NewsModal(props: NewsModalProps) {
               </div>
             </div>
           </div>
-      </div>
+        </div>
+      </Show>
 
       {/* Delete Confirmation Modal */}
       <Show when={showDeleteConfirm()}>
         <div style={modalOverlayStyle} onClick={() => setShowDeleteConfirm(false)}>
           <div style={{
-            ...modalContentStyle,
-            'max-width': '400px'
+            position: 'fixed' as const,
+            bottom: '0',
+            left: '0',
+            right: '0',
+            background: 'var(--color-background)',
+            'border-radius': '20px 20px 0 0',
+            'max-height': '400px',
+            'min-height': '300px',
+            'box-shadow': '0 -10px 30px rgba(0,0,0,0.3)',
+            padding: '20px',
+            display: 'flex',
+            'flex-direction': 'column',
+            gap: '16px'
           }} onClick={(e) => e.stopPropagation()}>
-            {/* Close X Button for Delete Confirmation */}
-            <button
-              onClick={() => setShowDeleteConfirm(false)}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'transparent',
-                border: 'none',
-                'font-size': '20px',
-                color: 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                padding: '4px',
-                'border-radius': '50%',
-                width: '28px',
-                height: '28px',
-                display: 'flex',
-                'align-items': 'center',
-                'justify-content': 'center',
-                transition: 'all 0.2s ease',
-                'z-index': '10'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--color-border)';
-                e.currentTarget.style.color = 'var(--color-text)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
-              }}
-              title="إغلاق"
-            >
-              ✕
-            </button>
-
             <h3 style={{
               'font-size': '18px',
               'font-weight': '600',
               color: 'var(--color-text)',
-              'margin-bottom': '16px',
+              'margin': '0',
               'text-align': 'center'
             }}>
               {app.translate('confirmDelete')}
@@ -465,7 +410,7 @@ export function NewsModal(props: NewsModalProps) {
             <p style={{
               'font-size': '14px',
               color: 'var(--color-text)',
-              'margin-bottom': '20px',
+              'margin': '0',
               'text-align': 'center',
               'line-height': '1.5'
             }}>
@@ -493,7 +438,6 @@ export function NewsModal(props: NewsModalProps) {
             </div>
           </div>
         </div>
-      </Show>
       </Show>
     </>
   );
