@@ -115,40 +115,25 @@ export function NewsModal(props: NewsModalProps) {
     right: '0',
     bottom: '0',
     'background-color': 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    'align-items': 'center',
-    'justify-content': 'center',
-    'z-index': '1000',
-    padding: '10px'
+    'z-index': '1000'
   };
 
   const modalContentStyle = {
+    position: 'fixed' as const,
+    bottom: '0',
+    left: '0',
+    right: '0',
     background: 'var(--color-background)',
-    'border-radius': '16px',
-    width: '90vw',
-    'max-width': '500px',
-    height: '85vh',
-    'max-height': '650px',
-    'min-height': '400px',
-    'box-shadow': '0 10px 30px rgba(0,0,0,0.3)',
-    margin: 'auto',
-    position: 'relative' as const,
+    'border-radius': '20px 20px 0 0',
+    'max-height': '90vh',
+    'min-height': '50vh',
+    'box-shadow': '0 -10px 30px rgba(0,0,0,0.3)',
     display: 'flex',
     'flex-direction': 'column' as const,
     overflow: 'hidden',
-    '@media (max-width: 768px)': {
-      width: '95vw',
-      height: '90vh',
-      'max-height': 'none',
-      'border-radius': '12px'
-    },
-    '@media (max-width: 480px)': {
-      width: '100vw',
-      height: '100vh',
-      'max-height': 'none',
-      'border-radius': '0',
-      margin: '0'
-    }
+    transform: 'translateY(100%)',
+    transition: 'transform 0.3s ease-out',
+    animation: 'slideUp 0.3s ease-out forwards'
   };
 
   const inputStyle = {
@@ -207,37 +192,54 @@ export function NewsModal(props: NewsModalProps) {
     <>
       <style>
         {`
-          @media (max-width: 768px) {
-            .news-modal-content {
-              width: 95vw !important;
-              height: 90vh !important;
-              max-height: none !important;
-              border-radius: 12px !important;
+          @keyframes slideUp {
+            from {
+              transform: translateY(100%);
+            }
+            to {
+              transform: translateY(0);
             }
           }
-          @media (max-width: 480px) {
-            .news-modal-content {
-              width: 100vw !important;
-              height: 100vh !important;
-              max-width: none !important;
-              max-height: none !important;
-              margin: 0 !important;
-              border-radius: 0 !important;
-            }
+          
+          .news-modal-content {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-background);
+            border-radius: 20px 20px 0 0;
+            max-height: 90vh;
+            min-height: 50vh;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out forwards;
+          }
+
+          .modal-handle {
+            width: 40px;
+            height: 4px;
+            background-color: var(--color-border);
+            border-radius: 2px;
+            margin: 12px auto 8px auto;
+            opacity: 0.5;
           }
         `}
       </style>
-      <Show when={props.isOpen}>
+              <Show when={props.isOpen}>
         <div style={modalOverlayStyle} onClick={props.onClose}>
           <div 
             class="news-modal-content"
-            style={modalContentStyle} 
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Modal Handle */}
+            <div class="modal-handle"></div>
+            
             {/* Modal Header */}
             <div style={{
               'flex-shrink': '0',
-              padding: '16px 20px',
+              padding: '8px 20px 16px 20px',
               'border-bottom': '1px solid var(--color-border)',
               position: 'relative'
             }}>
@@ -246,17 +248,17 @@ export function NewsModal(props: NewsModalProps) {
                 onClick={props.onClose}
                 style={{
                   position: 'absolute',
-                  top: '16px',
+                  top: '8px',
                   right: '16px',
                   background: 'transparent',
                   border: 'none',
-                  'font-size': '24px',
+                  'font-size': '20px',
                   color: 'var(--color-text-secondary)',
                   cursor: 'pointer',
                   padding: '4px',
                   'border-radius': '50%',
-                  width: '32px',
-                  height: '32px',
+                  width: '28px',
+                  height: '28px',
                   display: 'flex',
                   'align-items': 'center',
                   'justify-content': 'center',
