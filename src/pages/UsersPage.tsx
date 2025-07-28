@@ -8,9 +8,15 @@ export function UsersPage() {
   const [searchTerm, setSearchTerm] = createSignal('');
   const [selectedRole, setSelectedRole] = createSignal('all');
   
-  // Filtered users - NO DEBOUNCING needed in SolidJS!
+  // Filtered users with role-based access control
   const filteredUsers = createMemo(() => {
     let users = app.users();
+    const currentUser = app.currentUser();
+    
+    // Hide admins from leaders (only admins can see other admins)
+    if (currentUser?.role === 'leader') {
+      users = users.filter(u => u.role !== 'admin');
+    }
     
     // Filter by role
     if (selectedRole() !== 'all') {
@@ -30,7 +36,29 @@ export function UsersPage() {
     return users;
   });
   
-  const roles = ['all', 'student', 'lehrer', 'leitung', 'superuser'];
+  // Role options depend on current user's role
+  const roles = createMemo(() => {
+    const currentUser = app.currentUser();
+    if (currentUser?.role === 'leader') {
+      // Leaders don't see admin option
+      return ['all', 'student', 'teacher', 'leader'];
+    }
+    return ['all', 'student', 'teacher', 'leader', 'admin'];
+  });
+  
+  // Function to get search results text
+  const getSearchResultsText = () => {
+    const count = filteredUsers().length;
+    if (count === 0) {
+      return app.translate('noUsersFound');
+    } else if (count === 1) {
+      return app.language() === 'ar' ? app.translate('userFound') : app.translate('userFound');
+    } else {
+      return app.language() === 'ar' 
+        ? `${app.translate('foundUsers')} ${count} ${app.translate('usersFound').split(' ')[2]}` // "وُجد X مستخدمين"
+        : `Found ${count} users`;
+    }
+  };
   
   const containerStyle = {
     padding: '20px 16px 80px 16px',
@@ -191,7 +219,7 @@ export function UsersPage() {
         />
         
         <div style={roleFilterStyle}>
-          <For each={roles}>
+          <For each={roles()}>
             {(role) => (
               <button
                 style={roleButtonStyle(selectedRole() === role)}
@@ -207,68 +235,76 @@ export function UsersPage() {
           'font-size': '14px',
           color: 'var(--color-text-secondary)',
           'text-align': 'center',
-          'margin-bottom': '8px'
+          'margin-bottom': '12px',
+          'font-weight': '500'
         }}>
-          {filteredUsers().length} {app.translate('noUsersFound').split(' ')[0]} found
+          {getSearchResultsText()}
         </div>
       </div>
       
       <For each={filteredUsers()}>
-        {(user) => {
-          const displayInfo = getUserDisplayInfo(user);
-          
-          return (
-            <div style={userCardStyle}>
-              <div style={userHeaderStyle}>
-                <div>
-                  <div style={userNameStyle}>{user.name}</div>
-                  <div style={userUsernameStyle}>@{user.username}</div>
-                </div>
-                <div style={roleTagStyle(user.role)}>
-                  {app.translate(user.role)}
-                </div>
-              </div>
-              
-              <Show when={displayInfo}>
-                {(info) => (
-                  <div style={statusContainerStyle}>
-                    <div style={statusIndicatorStyle(info().status)} />
-                    <span style={{
-                      'font-size': '12px',
-                      color: 'var(--color-text-secondary)'
-                    }}>
-                      {info().statusText} • {formatDate(info().lastUpdate)}
-                    </span>
-                  </div>
-                )}
-              </Show>
-              
-              <div style={{
-                'font-size': '12px',
-                color: 'var(--color-text-secondary)',
-                'margin-top': '8px'
-              }}>
-                {app.translate('createdAt')}: {formatDate(user.created_at)}
-              </div>
-              
-              <Show when={user.isActive}>
+        {(user) => (
+          <div style={{
+            background: 'var(--color-background)',
+            'border-radius': '12px',
+            padding: '16px',
+            'margin-bottom': '12px',
+            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+            border: '1px solid var(--color-border)',
+            transition: 'all 0.2s ease'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center'
+            }}>
+              <div style={{ flex: '1' }}>
                 <div style={{
-                  'margin-top': '8px',
-                  padding: '4px 8px',
-                  'background-color': 'var(--color-success)',
-                  color: 'white',
-                  'border-radius': '12px',
-                  'font-size': '10px',
-                  'font-weight': '500',
-                  'display': 'inline-block'
+                  'font-size': '16px',
+                  'font-weight': '600',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '4px'
                 }}>
-                  {app.translate('active')}
+                  {user.name}
                 </div>
-              </Show>
+                <div style={{
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{
+                    ...roleTagStyle(user.role),
+                    'font-size': '11px',
+                    padding: '3px 8px'
+                  }}>
+                    {app.translate(user.role)}
+                  </span>
+                  <Show when={user.isActive !== undefined}>
+                    <div style={{
+                      display: 'flex',
+                      'align-items': 'center',
+                      gap: '4px'
+                    }}>
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        'border-radius': '50%',
+                        'background-color': user.isActive ? 'var(--color-success)' : 'var(--color-error)'
+                      }} />
+                      <span style={{
+                        'font-size': '12px',
+                        color: 'var(--color-text-secondary)',
+                        'font-weight': '500'
+                      }}>
+                        {user.isActive ? app.translate('active') : app.translate('inactive')}
+                      </span>
+                    </div>
+                  </Show>
+                                </div>
+              </div>
             </div>
-          );
-        }}
-      </For>
+          )}
+        </For>
       
       <Show when={filteredUsers().length === 0}>
         <div style={{
