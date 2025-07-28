@@ -1,7 +1,7 @@
 import { createSignal, Show, onMount, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 
-// Simple Icon components for media controls
+// Media Control Icons - Updated with Standard Icons
 const PlayIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
     <path d="M8 5v14l11-7z"/>
