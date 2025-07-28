@@ -1051,7 +1051,7 @@ function LeadershipDashboard(props: { user: User }) {
   
   const users = app.users();
   const students = users.filter(u => u.role === 'student') as Student[];
-  const teachers = users.filter(u => u.role === 'lehrer');
+  const teachers = users.filter(u => u.role === 'teacher');
   const halaqat = app.halaqat();
   
   // Student status statistics
@@ -1064,207 +1064,290 @@ function LeadershipDashboard(props: { user: User }) {
   // Online users (simplified - in real app would use presence)
   const onlineUsers = users.filter(u => u.isActive).length;
 
+  // Common style for stat cards
+  const statCardStyle = {
+    background: 'var(--color-surface)', 
+    padding: '12px', 
+    'border-radius': '8px', 
+    'text-align': 'center' as const, 
+    'box-shadow': '0 2px 4px rgba(0,0,0,0.08)', 
+    border: '1px solid var(--color-border)',
+    transition: 'transform 0.2s ease',
+    cursor: 'pointer'
+  };
+
+  const handleStatCardHover = (e: MouseEvent, isEnter: boolean) => {
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = isEnter ? 'translateY(-2px)' : 'translateY(0)';
+    target.style.boxShadow = isEnter ? '0 4px 8px rgba(0,0,0,0.12)' : '0 2px 4px rgba(0,0,0,0.08)';
+  };
+
   return (
     <div>
-      {/* Welcome Card */}
+      {/* Compact Welcome Header */}
       <div style={{
-        background: 'var(--color-surface)',
+        background: 'linear-gradient(135deg, var(--color-primary), #3b82f6)',
         'border-radius': '12px',
-        padding: '20px',
-        'margin-bottom': '20px',
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)',
-        'text-align': 'center'
+        padding: '16px 20px',
+        'margin-bottom': '16px',
+        'box-shadow': '0 4px 12px rgba(59, 130, 246, 0.3)',
+        'text-align': 'center',
+        color: 'white'
       }}>
-        <h3 style={{
-          color: 'var(--color-text)',
-          margin: '0 0 10px 0',
-          'font-size': '1.3rem',
-          'font-weight': '600'
+        <div style={{
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          gap: '12px',
+          'margin-bottom': '4px'
         }}>
-          {props.user.role === 'superuser' ? '👑' : '👥'} مرحباً {props.user.name}
-        </h3>
-        <p style={{ color: 'var(--color-text-secondary)', margin: '0' }}>
-          {props.user.role === 'superuser' ? 'مطور النظام' : 'قائد الحلقات'}
+          <span style={{ 'font-size': '1.5rem' }}>
+            {props.user.role === 'admin' ? '👑' : '👥'}
+          </span>
+          <h3 style={{
+            margin: '0',
+            'font-size': '1.1rem',
+            'font-weight': '600'
+          }}>
+            مرحباً {props.user.name}
+          </h3>
+        </div>
+        <p style={{ margin: '0', 'font-size': '0.8rem', opacity: '0.9' }}>
+          {props.user.role === 'admin' ? 'مطور النظام' : 'قائد الحلقات'}
         </p>
       </div>
 
-      {/* General Statistics */}
+      {/* Compact Statistics Grid */}
       <div style={{ 
         display: 'grid', 
-        'grid-template-columns': 'repeat(auto-fit, minmax(150px, 1fr))', 
-        gap: '15px', 
-        'margin-bottom': '20px' 
+        'grid-template-columns': 'repeat(auto-fit, minmax(120px, 1fr))', 
+        gap: '10px', 
+        'margin-bottom': '16px' 
       }}>
-        <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '12px', 
-          'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
-        }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👥</div>
+        <div 
+          style={statCardStyle}
+          onMouseEnter={(e) => handleStatCardHover(e, true)}
+          onMouseLeave={(e) => handleStatCardHover(e, false)}
+        >
+          <div style={{ 'font-size': '1.2rem', 'margin-bottom': '4px' }}>👥</div>
           <div style={{ 
-            'font-size': '1.8rem', 
-            'font-weight': 'bold', 
+            'font-size': '1.3rem', 
+            'font-weight': '700', 
             color: 'var(--color-primary)',
-            'margin-bottom': '5px'
+            'margin-bottom': '2px'
           }}>
             {users.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
-            إجمالي المستخدمين
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
+            المستخدمين
           </div>
         </div>
 
-        <Show when={props.user.role === 'superuser'}>
+        <div 
+          style={statCardStyle}
+          onMouseEnter={(e) => handleStatCardHover(e, true)}
+          onMouseLeave={(e) => handleStatCardHover(e, false)}
+        >
+          <div style={{ 'font-size': '1.2rem', 'margin-bottom': '4px' }}>🎓</div>
           <div style={{ 
-            background: 'var(--color-surface)', 
-            padding: '20px', 
-            'border-radius': '12px', 
-            'text-align': 'center', 
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
+            'font-size': '1.3rem', 
+            'font-weight': '700', 
+            color: '#10b981',
+            'margin-bottom': '2px'
           }}>
-            <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟢</div>
-            <div style={{ 
-              'font-size': '1.8rem', 
-              'font-weight': 'bold', 
-              color: '#10b981',
-              'margin-bottom': '5px'
-            }}>
-              {onlineUsers}
-            </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
-              متصل الآن
-            </div>
+            {students.length}
           </div>
-        </Show>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
+            الطلاب
+          </div>
+        </div>
 
-        <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '12px', 
-          'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
-        }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>👨‍🏫</div>
+        <div 
+          style={statCardStyle}
+          onMouseEnter={(e) => handleStatCardHover(e, true)}
+          onMouseLeave={(e) => handleStatCardHover(e, false)}
+        >
+          <div style={{ 'font-size': '1.2rem', 'margin-bottom': '4px' }}>👨‍🏫</div>
           <div style={{ 
-            'font-size': '1.8rem', 
-            'font-weight': 'bold', 
+            'font-size': '1.3rem', 
+            'font-weight': '700', 
             color: '#f59e0b',
-            'margin-bottom': '5px'
+            'margin-bottom': '2px'
           }}>
             {teachers.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
             المعلمين
           </div>
         </div>
 
-        <div style={{ 
-          background: 'var(--color-surface)', 
-          padding: '20px', 
-          'border-radius': '12px', 
-          'text-align': 'center', 
-          'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
-        }}>
-          <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🔵</div>
+        <div 
+          style={statCardStyle}
+          onMouseEnter={(e) => handleStatCardHover(e, true)}
+          onMouseLeave={(e) => handleStatCardHover(e, false)}
+        >
+          <div style={{ 'font-size': '1.2rem', 'margin-bottom': '4px' }}>🔵</div>
           <div style={{ 
-            'font-size': '1.8rem', 
-            'font-weight': 'bold', 
+            'font-size': '1.3rem', 
+            'font-weight': '700', 
             color: 'var(--color-primary)',
-            'margin-bottom': '5px'
+            'margin-bottom': '2px'
           }}>
             {halaqat.length}
           </div>
-          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
             الحلقات
           </div>
         </div>
+
+        <Show when={props.user.role === 'admin'}>
+          <div 
+            style={statCardStyle}
+            onMouseEnter={(e) => handleStatCardHover(e, true)}
+            onMouseLeave={(e) => handleStatCardHover(e, false)}
+          >
+            <div style={{ 'font-size': '1.2rem', 'margin-bottom': '4px' }}>🟢</div>
+            <div style={{ 
+              'font-size': '1.3rem', 
+              'font-weight': '700', 
+              color: '#10b981',
+              'margin-bottom': '2px'
+            }}>
+              {onlineUsers}
+            </div>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
+              متصل الآن
+            </div>
+          </div>
+        </Show>
       </div>
 
-      {/* Student Status Statistics */}
+      {/* Compact Student Status Overview */}
       <div style={{ 
         background: 'var(--color-surface)', 
-        'border-radius': '12px', 
-        padding: '20px', 
-        'box-shadow': '0 2px 8px rgba(0,0,0,0.1)', border: '1px solid var(--color-border)' 
+        'border-radius': '10px', 
+        padding: '16px', 
+        'box-shadow': '0 2px 6px rgba(0,0,0,0.08)', 
+        border: '1px solid var(--color-border)' 
       }}>
-        <h3 style={{ 
-          color: 'var(--color-text)', 
-          'margin-bottom': '20px',
-          'font-size': '1.2rem'
+        <div style={{
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'space-between',
+          'margin-bottom': '12px'
         }}>
-          📊 إحصائيات حالات الطلاب
-        </h3>
+          <h3 style={{ 
+            color: 'var(--color-text)', 
+            margin: '0',
+            'font-size': '1rem',
+            'font-weight': '600'
+          }}>
+            📊 حالات الطلاب
+          </h3>
+          <div style={{
+            'font-size': '0.8rem',
+            color: 'var(--color-text-secondary)'
+          }}>
+            المجموع: {students.length}
+          </div>
+        </div>
+        
         <div style={{ 
           display: 'grid', 
-          'grid-template-columns': 'repeat(auto-fit, minmax(140px, 1fr))', 
-          gap: '15px' 
+          'grid-template-columns': 'repeat(3, 1fr)', 
+          gap: '8px' 
         }}>
           <div style={{ 
             'text-align': 'center', 
-            padding: '15px', 
-            background: 'var(--color-surface)', 
-            'border-radius': '12px', 
-            border: '2px solid var(--color-error)',
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+            padding: '10px 8px', 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            'border-radius': '8px', 
+            border: '1px solid var(--color-error)',
+            transition: 'transform 0.2s ease'
           }}>
-            <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🔴</div>
+            <div style={{ 'font-size': '1.1rem', 'margin-bottom': '2px' }}>🔴</div>
             <div style={{ 
-              'font-size': '1.5rem', 
-              'font-weight': 'bold', 
+              'font-size': '1.2rem', 
+              'font-weight': '700', 
               color: 'var(--color-error)',
-              'margin-bottom': '5px'
+              'margin-bottom': '2px'
             }}>
               {statusCounts.not_available}
             </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
-              {app.translate('not_available')}
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
+              غير متوفر
             </div>
           </div>
 
           <div style={{ 
             'text-align': 'center', 
-            padding: '15px', 
-            background: 'var(--color-surface)', 
-            'border-radius': '12px', 
-            border: '2px solid var(--color-warning)',
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+            padding: '10px 8px', 
+            background: 'rgba(245, 158, 11, 0.1)', 
+            'border-radius': '8px', 
+            border: '1px solid var(--color-warning)',
+            transition: 'transform 0.2s ease'
           }}>
-            <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟡</div>
+            <div style={{ 'font-size': '1.1rem', 'margin-bottom': '2px' }}>🟡</div>
             <div style={{ 
-              'font-size': '1.5rem', 
-              'font-weight': 'bold', 
+              'font-size': '1.2rem', 
+              'font-weight': '700', 
               color: 'var(--color-warning)',
-              'margin-bottom': '5px'
+              'margin-bottom': '2px'
             }}>
               {statusCounts.revising}
             </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
               يراجع
             </div>
           </div>
 
           <div style={{ 
             'text-align': 'center', 
-            padding: '15px', 
-            background: 'var(--color-surface)', 
-            'border-radius': '12px', 
-            border: '2px solid var(--color-success)',
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)'
+            padding: '10px 8px', 
+            background: 'rgba(16, 185, 129, 0.1)', 
+            'border-radius': '8px', 
+            border: '1px solid var(--color-success)',
+            transition: 'transform 0.2s ease'
           }}>
-            <div style={{ 'font-size': '2rem', 'margin-bottom': '8px' }}>🟢</div>
+            <div style={{ 'font-size': '1.1rem', 'margin-bottom': '2px' }}>🟢</div>
             <div style={{ 
-              'font-size': '1.5rem', 
-              'font-weight': 'bold', 
+              'font-size': '1.2rem', 
+              'font-weight': '700', 
               color: 'var(--color-success)',
-              'margin-bottom': '5px'
+              'margin-bottom': '2px'
             }}>
               {statusCounts.khatamat}
             </div>
-            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.85rem' }}>
-              {app.translate('khatamat')}
+            <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
+              ختمات
             </div>
+          </div>
+        </div>
+
+        {/* Progress Bar */}
+        <div style={{
+          'margin-top': '12px',
+          'border-radius': '4px',
+          overflow: 'hidden',
+          background: 'var(--color-border)',
+          height: '6px'
+        }}>
+          <div style={{
+            display: 'flex',
+            height: '100%'
+          }}>
+            <div style={{
+              'background-color': 'var(--color-error)',
+              width: `${(statusCounts.not_available / students.length) * 100}%`
+            }} />
+            <div style={{
+              'background-color': 'var(--color-warning)',
+              width: `${(statusCounts.revising / students.length) * 100}%`
+            }} />
+            <div style={{
+              'background-color': 'var(--color-success)',
+              width: `${(statusCounts.khatamat / students.length) * 100}%`
+            }} />
           </div>
         </div>
       </div>
