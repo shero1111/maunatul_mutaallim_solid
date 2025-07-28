@@ -247,7 +247,7 @@ export function NewsPage() {
                   display: 'flex',
                   'align-items': 'center',
                   'justify-content': 'center',
-                  'font-size': '10px',
+                  'font-size': '12px',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   'z-index': '2'
