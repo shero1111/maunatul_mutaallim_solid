@@ -67,12 +67,20 @@ export function RecitingPage() {
     const allMutun = app.mutun();
     const levelNumber = postLevel().replace('level', '');
     
-    return allMutun
+    console.log('🔍 Debug Level Selection:');
+    console.log('Selected Level:', postLevel());
+    console.log('Level Number:', levelNumber);
+    console.log('All Mutun:', allMutun);
+    
+    const filtered = allMutun
       .filter(matn => matn.level === parseInt(levelNumber))
       .map(matn => ({
         value: matn.id,
         label: matn.name
       }));
+      
+    console.log('Filtered Mutun for level', levelNumber, ':', filtered);
+    return filtered;
   });
 
   // Matn options with empty option
@@ -99,7 +107,7 @@ export function RecitingPage() {
   };
 
   // Show snackbar for simple notifications
-  const showSnackbar = (message: string, duration: number = 3000) => {
+  const showErrorSnackbar = (message: string, duration: number = 3000) => {
     setSnackbarMessage(message);
     setShowSnackbar(true);
     setTimeout(() => {
@@ -314,7 +322,7 @@ export function RecitingPage() {
   const playRecording = (id: string) => {
     const recording = app.recordings().find(r => r.id === id);
     if (!recording) {
-      showSnackbar(
+      showErrorSnackbar(
         app.language() === 'ar' 
           ? 'التسجيل غير موجود' 
           : 'Recording not found'
@@ -361,16 +369,16 @@ export function RecitingPage() {
         setAudioElement(null);
       };
       
-      audio.onerror = (e) => {
-        console.error('❌ Audio error:', e);
-        showSnackbar(
-          app.language() === 'ar' 
-            ? 'خطأ في تشغيل التسجيل' 
-            : 'Error playing recording'
-        );
-        setPlayingRecording(null);
-        setAudioElement(null);
-      };
+             audio.onerror = (e) => {
+         console.error('❌ Audio error:', e);
+         showErrorSnackbar(
+           app.language() === 'ar' 
+             ? 'خطأ في تشغيل التسجيل' 
+             : 'Error playing recording'
+         );
+         setPlayingRecording(null);
+         setAudioElement(null);
+       };
       
       // Set source and load
       audio.src = recording.url;
@@ -384,7 +392,7 @@ export function RecitingPage() {
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error('❌ Play failed:', error);
-          showSnackbar(
+          showErrorSnackbar(
             app.language() === 'ar' 
               ? 'فشل تشغيل الصوت. اضغط مرة أخرى.' 
               : 'Audio playback failed. Try again.'
@@ -396,7 +404,7 @@ export function RecitingPage() {
       
     } catch (error) {
       console.error('❌ Error creating audio element:', error);
-      showSnackbar(
+      showErrorSnackbar(
         app.language() === 'ar'
           ? 'خطأ في تشغيل التسجيل'
           : 'Error playing recording'
@@ -1199,7 +1207,7 @@ export function RecitingPage() {
                 </div>
 
                 {/* Matn Selection - Only show if level is selected and not "الجميع" */}
-                <Show when={postLevel() && postLevel() !== 'all' && getMatuunForLevel().length > 0}>
+                <Show when={postLevel() && postLevel() !== 'all'}>
                   <div style={{ 'margin-bottom': '16px' }}>
                     <select
                       value={postMatn()}
@@ -1444,6 +1452,42 @@ export function RecitingPage() {
         onCancel={hideConfirmation}
         type={confirmModalProps().type}
       />
+
+      {/* Error Snackbar */}
+      <Show when={showSnackbar()}>
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          'background-color': 'var(--color-error)',
+          color: 'white',
+          padding: '12px 24px',
+          'border-radius': '8px',
+          'box-shadow': '0 4px 12px rgba(0,0,0,0.15)',
+          'z-index': '1001',
+          'font-size': '14px',
+          'font-weight': '500',
+          animation: 'slideUpSnackbar 0.3s ease-out'
+        }}>
+          {snackbarMessage()}
+        </div>
+      </Show>
+
+      <style>
+        {`
+          @keyframes slideUpSnackbar {
+            from {
+              transform: translateX(-50%) translateY(100px);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(-50%) translateY(0);
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
