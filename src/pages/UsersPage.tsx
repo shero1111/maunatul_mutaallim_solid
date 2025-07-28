@@ -2,11 +2,14 @@ import { createSignal, createMemo, For, Show } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { User, Student } from '../types';
 import { getStatusColor } from '../styles/themes';
+import { UserModal } from '../components/UserModal';
 
 export function UsersPage() {
   const app = useApp();
   const [searchTerm, setSearchTerm] = createSignal('');
   const [selectedRole, setSelectedRole] = createSignal('all');
+  const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = createSignal(false);
   
   // Filtered users with role-based access control
   const filteredUsers = createMemo(() => {
@@ -58,6 +61,16 @@ export function UsersPage() {
         ? `${app.translate('foundUsers')} ${count} ${app.translate('usersFound').split(' ')[2]}` // "وُجد X مستخدمين"
         : `Found ${count} users`;
     }
+  };
+
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
   };
   
   const containerStyle = {
@@ -244,15 +257,27 @@ export function UsersPage() {
       
       <For each={filteredUsers()}>
         {(user) => (
-          <div style={{
-            background: 'var(--color-background)',
-            'border-radius': '12px',
-            padding: '16px',
-            'margin-bottom': '12px',
-            'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
-            border: '1px solid var(--color-border)',
-            transition: 'all 0.2s ease'
-          }}>
+          <div 
+            style={{
+              background: 'var(--color-background)',
+              'border-radius': '12px',
+              padding: '16px',
+              'margin-bottom': '12px',
+              'box-shadow': '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid var(--color-border)',
+              transition: 'all 0.2s ease',
+              cursor: 'pointer'
+            }}
+            onClick={() => handleUserClick(user)}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            }}
+          >
             <div style={{
               display: 'flex',
               'justify-content': 'space-between',
@@ -300,11 +325,12 @@ export function UsersPage() {
                       </span>
                     </div>
                   </Show>
-                                </div>
+                </div>
               </div>
             </div>
-          )}
-        </For>
+          </div>
+        )}
+      </For>
       
       <Show when={filteredUsers().length === 0}>
         <div style={{
@@ -321,6 +347,12 @@ export function UsersPage() {
           </Show>
         </div>
       </Show>
+
+      <UserModal
+        user={selectedUser()}
+        isOpen={isModalOpen()}
+        onClose={handleModalClose}
+      />
     </div>
   );
 }
