@@ -265,7 +265,7 @@ export function MutunPage() {
         <div style={{ 
           display: 'flex', 
           'align-items': 'center',
-          gap: '12px', 
+          gap: '8px', 
           'flex-wrap': 'wrap',
           'margin-bottom': '20px'
         }}>
@@ -283,16 +283,17 @@ export function MutunPage() {
           <button 
             onClick={() => handleLevelFilterChange('all')} 
             style={{ 
-              padding: '8px 16px', 
+              padding: '6px 12px', 
               background: levelFilter() === 'all' 
                 ? 'var(--color-primary)' 
                 : 'var(--color-surface)', 
               color: levelFilter() === 'all' ? 'white' : 'var(--color-text)', 
               border: '1px solid var(--color-border)', 
-              'border-radius': '6px', 
+              'border-radius': '5px', 
               cursor: 'pointer', 
-              'font-size': '14px',
-              'font-weight': '500'
+              'font-size': '13px',
+              'font-weight': '500',
+              'line-height': '1.2'
             }}
           >
             الجميع
@@ -306,16 +307,17 @@ export function MutunPage() {
                 <button 
                   onClick={() => handleLevelFilterChange(fullLevel)} 
                   style={{ 
-                    padding: '8px 16px', 
+                    padding: '6px 12px', 
                     background: levelFilter() === fullLevel 
                       ? 'var(--color-primary)' 
                       : 'var(--color-surface)', 
                     color: levelFilter() === fullLevel ? 'white' : 'var(--color-text)', 
                     border: '1px solid var(--color-border)', 
-                    'border-radius': '6px', 
+                    'border-radius': '5px', 
                     cursor: 'pointer', 
-                    'font-size': '14px',
-                    'font-weight': '500'
+                    'font-size': '13px',
+                    'font-weight': '500',
+                    'line-height': '1.2'
                   }}
                 >
                   {levelShort}
