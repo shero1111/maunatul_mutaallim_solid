@@ -575,7 +575,7 @@ function StudentDashboard(props: { user: Student }) {
           color: 'var(--color-text-secondary)',
           'margin-bottom': '20px'
         }}>
-          <span style={{ 'font-size': '0.9rem' }}>No results found</span>
+          <span style={{ 'font-size': '0.9rem' }}>{app.translate('noResultsFound')}</span>
         </div>
       </Show>
     </div>
@@ -1037,7 +1037,7 @@ function TeacherDashboard(props: { user: Teacher }) {
           color: 'var(--color-text-secondary)',
           'margin-bottom': '20px'
         }}>
-          <span style={{ 'font-size': '0.9rem' }}>No results found</span>
+          <span style={{ 'font-size': '0.9rem' }}>{app.translate('noResultsFound')}</span>
         </div>
       </Show>
     </div>
