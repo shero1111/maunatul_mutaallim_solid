@@ -176,9 +176,9 @@ export function NewsModal(props: NewsModalProps) {
             right: 0;
             background: var(--color-background);
             border-radius: 20px 20px 0 0;
-            height: 60vh;
-            max-height: 500px;
-            min-height: 350px;
+            height: 45vh;
+            max-height: 400px;
+            min-height: 280px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
