@@ -35,10 +35,27 @@ export function TimerModal() {
   const [customMinutes, setCustomMinutes] = createSignal(10);
   const [customSeconds, setCustomSeconds] = createSignal(0);
 
-  // Show timer FAB only on specific pages
+  // Show timer FAB only on specific pages and when audio player is not visible
   const shouldShowTimer = () => {
     const currentPage = app.currentPage();
-    return currentPage === 'home' || currentPage === 'mutuun';
+    const isOnCorrectPage = currentPage === 'home' || currentPage === 'mutuun';
+    
+    // Hide timer if audio player is visible (has title or matnId)
+    const audioPlayerVisible = !!(app.audioPlayer().title || app.audioPlayer().matnId);
+    
+    const shouldShow = isOnCorrectPage && !audioPlayerVisible;
+    
+    // Debug logging
+    console.log('🎛️ Timer FAB visibility check:', {
+      currentPage,
+      isOnCorrectPage,
+      audioPlayerTitle: app.audioPlayer().title,
+      audioPlayerMatnId: app.audioPlayer().matnId,
+      audioPlayerVisible,
+      shouldShow
+    });
+    
+    return shouldShow;
   };
 
   // Update custom values when timer is stopped/paused
