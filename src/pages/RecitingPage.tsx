@@ -1125,7 +1125,7 @@ export function RecitingPage() {
                   'max-height': '85vh',
                   overflow: 'auto',
                   padding: '20px',
-                  'padding-bottom': '100px'
+                  'padding-bottom': '40px'
                 }} 
                 onClick={(e) => e.stopPropagation()}
               >
@@ -1332,9 +1332,9 @@ export function RecitingPage() {
                   display: 'flex',
                   gap: '12px',
                   'justify-content': 'space-between',
-                  'margin-top': '30px',
-                  'padding-top': '20px',
-                  'padding-bottom': '20px',
+                  'margin-top': '20px',
+                  'padding-top': '16px',
+                  'padding-bottom': '16px',
                   'border-top': '2px solid var(--color-border)',
                   'background-color': 'var(--color-background)',
                   position: 'sticky',
