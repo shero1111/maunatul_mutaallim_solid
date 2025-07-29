@@ -151,7 +151,11 @@ export function NewsModal(props: NewsModalProps) {
     return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
   };
 
-  if (!canEdit()) {
+  // Allow viewing for all users, editing only for admins/leaders
+  if (!props.isEdit && !canEdit()) {
+    // For view mode, anyone can see
+  } else if (props.isEdit && !canEdit()) {
+    // For edit mode, only admins/leaders
     return null;
   }
 
@@ -403,8 +407,8 @@ export function NewsModal(props: NewsModalProps) {
 
             </div>
 
-            {/* Optional Delete Button Footer - Only for Edit Mode */}
-            <Show when={props.isEdit}>
+            {/* Optional Delete Button Footer - Only for Edit Mode and Admin/Leitung */}
+            <Show when={props.isEdit && canEdit()}>
               <div style={{
                 'flex-shrink': '0',
                 padding: '12px 20px 16px 20px',
