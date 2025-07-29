@@ -1,6 +1,7 @@
 import { createSignal, Show, createEffect } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { NewsItem } from '../types';
+import { SimpleConfirmDialog } from './SimpleConfirmDialog';
 
 interface NewsModalProps {
   newsItem: NewsItem | null;
@@ -82,16 +83,9 @@ export function NewsModal(props: NewsModalProps) {
   const handleDelete = async () => {
     if (!props.newsItem) return;
     
-    setIsLoading(true);
-    try {
-      app.deleteNews(props.newsItem.id);
-      setShowDeleteConfirm(false);
-      props.onClose();
-    } catch (error) {
-      console.error('Error deleting news:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    app.deleteNews(props.newsItem.id);
+    setShowDeleteConfirm(false);
+    props.onClose();
   };
 
   const modalOverlayStyle = {
@@ -491,6 +485,19 @@ export function NewsModal(props: NewsModalProps) {
           </div>
         </div>
       </Show>
+
+      {/* Simple Delete Confirmation */}
+      <SimpleConfirmDialog
+        isOpen={showDeleteConfirm()}
+        message={
+          app.language() === 'ar' 
+            ? `هل تريد حذف "${props.newsItem?.title || 'هذا الخبر'}"؟`
+            : `Delete "${props.newsItem?.title || 'this news'}"?`
+        }
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        type="delete"
+      />
 
       {/* Validation Snackbar */}
       <Show when={showValidationSnackbar()}>
