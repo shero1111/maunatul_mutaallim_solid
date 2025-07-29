@@ -1,7 +1,7 @@
 import { createSignal, createMemo, For, Show, onMount, onCleanup } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { AudioRecording, ExchangePost } from '../types';
-import { ConfirmationModal } from '../components/ConfirmationModal';
+import { SimpleConfirmDialog } from '../components/SimpleConfirmDialog';
 
 export function RecitingPage() {
   const app = useApp();
@@ -91,20 +91,7 @@ export function RecitingPage() {
     return [...baseOptions, ...getMatuunForLevel()];
   });
 
-  // Helper function for confirmations
-  const showConfirmation = (title: string, message: string, onConfirm: () => void, type: 'warning' | 'danger' | 'info' = 'warning') => {
-    setConfirmModalProps({
-      title,
-      message,
-      onConfirm,
-      type
-    });
-    setShowConfirmModal(true);
-  };
 
-  const hideConfirmation = () => {
-    setShowConfirmModal(false);
-  };
 
   // Show snackbar for simple notifications
   const showErrorSnackbar = (message: string, duration: number = 3000) => {
@@ -333,17 +320,20 @@ export function RecitingPage() {
   
   const deleteRecording = (id: string) => {
     const recording = app.recordings().find(r => r.id === id);
-    showConfirmation(
-      app.translate('deleteRecording'),
-      app.language() === 'ar'
-        ? `هل أنت متأكد من حذف التسجيل "${recording?.name}"؟`
-        : `Are you sure you want to delete the recording "${recording?.name}"?`,
-      () => {
+    const message = app.language() === 'ar'
+      ? `هل تريد حذف "${recording?.name}"؟`
+      : `Delete "${recording?.name}"?`;
+    
+    setConfirmModalProps({
+      title: '',
+      message,
+      onConfirm: () => {
         app.deleteRecording(id);
-        hideConfirmation();
+        setShowConfirmModal(false);
       },
-      'danger'
-    );
+      type: 'danger'
+    });
+    setShowConfirmModal(true);
   };
   
   const renameRecording = (id: string, newName: string) => {
@@ -547,17 +537,20 @@ export function RecitingPage() {
   
   const deletePost = (id: string) => {
     const post = app.exchangePosts().find(p => p.id === id);
-    showConfirmation(
-      app.translate('deletePost'),
-      app.language() === 'ar'
-        ? `هل أنت متأكد من حذف المنشور "${post?.title}"؟`
-        : `Are you sure you want to delete the post "${post?.title}"?`,
-      () => {
+    const message = app.language() === 'ar'
+      ? `هل تريد حذف "${post?.title}"؟`
+      : `Delete "${post?.title}"?`;
+    
+    setConfirmModalProps({
+      title: '',
+      message,
+      onConfirm: () => {
         app.deleteExchangePost(id);
-        hideConfirmation();
+        setShowConfirmModal(false);
       },
-      'danger'
-    );
+      type: 'danger'
+    });
+    setShowConfirmModal(true);
   };
   
   const resetPostForm = () => {
@@ -1498,17 +1491,13 @@ export function RecitingPage() {
         </div>
       </Show>
 
-      {/* Confirmation Modal */}
-      <ConfirmationModal
+      {/* Simple Confirmation Dialog */}
+      <SimpleConfirmDialog
         isOpen={showConfirmModal()}
-        title={confirmModalProps().title}
         message={confirmModalProps().message}
-        onConfirm={() => {
-          confirmModalProps().onConfirm();
-          hideConfirmation();
-        }}
-        onCancel={hideConfirmation}
-        type={confirmModalProps().type}
+        onConfirm={confirmModalProps().onConfirm}
+        onCancel={() => setShowConfirmModal(false)}
+        type={confirmModalProps().type === 'danger' ? 'delete' : 'warning'}
       />
 
       {/* Error Snackbar */}

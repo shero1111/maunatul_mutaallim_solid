@@ -1,7 +1,7 @@
 import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { NewsModal } from '../components/NewsModal';
-import { ConfirmationModal } from '../components/ConfirmationModal';
+import { SimpleConfirmDialog } from '../components/SimpleConfirmDialog';
 import { NewsItem } from '../types';
 
 export function NewsPage() {
@@ -13,6 +13,8 @@ export function NewsPage() {
   const [contextMenuNews, setContextMenuNews] = createSignal<NewsItem | null>(null);
   const [contextMenuPosition, setContextMenuPosition] = createSignal({ x: 0, y: 0 });
   const [longPressTimer, setLongPressTimer] = createSignal<number | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
+  const [newsToDelete, setNewsToDelete] = createSignal<NewsItem | null>(null);
   
   // Filter and sort news based on user role and publish date
   const filteredNews = createMemo(() => {
@@ -209,13 +211,18 @@ export function NewsPage() {
   };
 
   const handleDeleteNews = (newsItem: NewsItem) => {
-    const confirmMessage = app.language() === 'ar' 
-      ? 'هل أنت متأكد من حذف هذا الخبر؟'
-      : 'Are you sure you want to delete this news?';
-    
-    if (confirm(confirmMessage)) {
-      app.deleteNews(newsItem.id);
+    setNewsToDelete(newsItem);
+    setShowDeleteConfirm(true);
+    setShowContextMenu(false);
+  };
+
+  const confirmDeleteNews = () => {
+    const news = newsToDelete();
+    if (news) {
+      app.deleteNews(news.id);
     }
+    setShowDeleteConfirm(false);
+    setNewsToDelete(null);
   };
 
   // Close context menu when clicking outside
@@ -522,6 +529,22 @@ export function NewsPage() {
           </div>
         </div>
       </Show>
+      
+      {/* Simple Delete Confirmation */}
+      <SimpleConfirmDialog
+        isOpen={showDeleteConfirm()}
+        message={
+          app.language() === 'ar' 
+            ? `هل تريد حذف "${newsToDelete()?.title || 'هذا الخبر'}"؟`
+            : `Delete "${newsToDelete()?.title || 'this news'}"?`
+        }
+        onConfirm={confirmDeleteNews}
+        onCancel={() => {
+          setShowDeleteConfirm(false);
+          setNewsToDelete(null);
+        }}
+        type="delete"
+      />
       </div>
     </>
   );
