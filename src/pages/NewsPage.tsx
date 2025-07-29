@@ -6,6 +6,25 @@ import { NewsItem } from '../types';
 
 export function NewsPage() {
   const app = useApp();
+  
+  // Add CSS animation for snackbar
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    @keyframes slideUpSnackbar {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  `;
+  if (!document.head.querySelector('style[data-snackbar]')) {
+    styleElement.setAttribute('data-snackbar', 'true');
+    document.head.appendChild(styleElement);
+  }
   const [selectedNews, setSelectedNews] = createSignal<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = createSignal(false);
   const [isEdit, setIsEdit] = createSignal(false);
@@ -15,6 +34,17 @@ export function NewsPage() {
   const [longPressTimer, setLongPressTimer] = createSignal<number | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
   const [newsToDelete, setNewsToDelete] = createSignal<NewsItem | null>(null);
+  const [showSnackbar, setShowSnackbar] = createSignal(false);
+  const [snackbarMessage, setSnackbarMessage] = createSignal('');
+  
+  // Show snackbar for notifications
+  const showSuccessSnackbar = (message: string, duration: number = 3000) => {
+    setSnackbarMessage(message);
+    setShowSnackbar(true);
+    setTimeout(() => {
+      setShowSnackbar(false);
+    }, duration);
+  };
   
   // Filter and sort news based on user role and publish date
   const filteredNews = createMemo(() => {
@@ -66,7 +96,11 @@ export function NewsPage() {
     padding: '16px',
     'margin-bottom': '16px',
     'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
-    border: '1px solid var(--color-border)'
+    border: '1px solid var(--color-border)',
+    'user-select': 'none' as const,
+    '-webkit-user-select': 'none' as const,
+    '-moz-user-select': 'none' as const,
+    '-ms-user-select': 'none' as const
   };
   
   const newsTitleStyle = {
@@ -197,7 +231,9 @@ export function NewsPage() {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(shareText).then(() => {
-        alert(app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard');
+        showSuccessSnackbar(
+          app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard'
+        );
       }).catch(console.error);
     }
   };
@@ -206,7 +242,9 @@ export function NewsPage() {
     const copyText = `${newsItem.title || ''}\n\n${newsItem.description || ''}\n\n${formatDate(newsItem.publish_date || newsItem.created_at)}`;
     
     navigator.clipboard.writeText(copyText).then(() => {
-      alert(app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard');
+      showSuccessSnackbar(
+        app.language() === 'ar' ? 'تم نسخ النص للحافظة' : 'Text copied to clipboard'
+      );
     }).catch(console.error);
   };
 
@@ -545,6 +583,29 @@ export function NewsPage() {
         }}
         type="delete"
       />
+      
+      {/* Success Snackbar */}
+      <Show when={showSnackbar()}>
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          'background-color': '#10b981',
+          color: 'white',
+          padding: '12px 20px',
+          'border-radius': '8px',
+          'box-shadow': '0 4px 12px rgba(0, 0, 0, 0.15)',
+          'z-index': '2000',
+          'font-size': '14px',
+          'font-weight': '500',
+          'max-width': '90vw',
+          'text-align': 'center',
+          animation: 'slideUpSnackbar 0.3s ease-out'
+        }}>
+          {snackbarMessage()}
+        </div>
+      </Show>
       </div>
     </>
   );
