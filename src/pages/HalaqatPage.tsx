@@ -9,6 +9,14 @@ export function HalaqatPage() {
   // Track search terms for each halaqa
   const [searchTerms, setSearchTerms] = createSignal<Record<string, string>>({});
   
+  // Edit modal state
+  const [showEditModal, setShowEditModal] = createSignal(false);
+  const [editingHalaqa, setEditingHalaqa] = createSignal<any>(null);
+  const [editName, setEditName] = createSignal('');
+  const [editTeacher, setEditTeacher] = createSignal('');
+  const [editType, setEditType] = createSignal('');
+  const [editIsActive, setEditIsActive] = createSignal(true);
+  
   const toggleStudentList = (halaqaId: string) => {
     setExpandedHalaqat(prev => ({
       ...prev,
@@ -256,8 +264,45 @@ export function HalaqatPage() {
   };
 
   const handleEditHalaqa = (halaqaId: string) => {
-    // Placeholder for edit functionality
-    alert(`Edit Halaqa ${halaqaId} - Functionality to be implemented`);
+    const halaqa = userHalaqat().find(h => h.id === halaqaId);
+    if (!halaqa) return;
+    
+    setEditingHalaqa(halaqa);
+    setEditName(halaqa.name);
+    setEditTeacher(halaqa.teacher_id);
+    setEditType(halaqa.type);
+    setEditIsActive(halaqa.isActive);
+    setShowEditModal(true);
+  };
+
+  const handleSaveHalaqa = () => {
+    const halaqa = editingHalaqa();
+    if (!halaqa) return;
+    
+    // Update halaqa object
+    const updatedHalaqa = {
+      ...halaqa,
+      name: editName().trim(),
+      teacher_id: editTeacher(),
+      type: editType(),
+      isActive: editIsActive()
+    };
+    
+    // Call app update function (placeholder for now)
+    console.log('Updating halaqa:', updatedHalaqa);
+    // app.updateHalaqa(updatedHalaqa);
+    
+    setShowEditModal(false);
+    setEditingHalaqa(null);
+  };
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+    setEditingHalaqa(null);
+    setEditName('');
+    setEditTeacher('');
+    setEditType('');
+    setEditIsActive(true);
   };
 
   const canEditHalaqat = () => {
@@ -322,7 +367,7 @@ export function HalaqatPage() {
                       color: 'var(--color-text)',
                       'line-height': '1.3'
                     }}>
-                      {getTypeIcon(halaqa.type)} {halaqa.name}
+                      {getTypeIcon(halaqa.type)} #{halaqa.internal_number} {halaqa.name}
                     </h3>
                     <div style={{
                       'font-size': '0.85rem',
@@ -375,36 +420,18 @@ export function HalaqatPage() {
                   </div>
                 </div>
                 
-                {/* Compact Info Grid */}
+                {/* Teacher Info */}
                 <div style={{
-                  display: 'grid',
-                  'grid-template-columns': '1fr 1fr',
-                  gap: '8px',
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '6px',
+                  'font-size': '0.85rem',
                   'margin-bottom': '12px'
                 }}>
-                  <div style={{
-                    display: 'flex',
-                    'align-items': 'center',
-                    gap: '6px',
-                    'font-size': '0.85rem'
-                  }}>
-                    <span>👨‍🏫</span>
-                    <span style={{ color: 'var(--color-text-secondary)' }}>
-                      {getTeacherName(halaqa.teacher_id)}
-                    </span>
-                  </div>
-                  
-                  <div style={{
-                    display: 'flex',
-                    'align-items': 'center',
-                    gap: '6px',
-                    'font-size': '0.85rem'
-                  }}>
-                    <span>🔢</span>
-                    <span style={{ color: 'var(--color-text-secondary)' }}>
-                      #{halaqa.internal_number}
-                    </span>
-                  </div>
+                  <span>👨‍🏫</span>
+                  <span style={{ color: 'var(--color-text-secondary)' }}>
+                    {getTeacherName(halaqa.teacher_id)}
+                  </span>
                 </div>
                 
                 {/* Students Dropdown */}
@@ -567,6 +594,240 @@ export function HalaqatPage() {
           </Show>
         </div>
       </div>
+
+      {/* Edit Halaqa Modal */}
+      <Show when={showEditModal()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          right: '0',
+          bottom: '0',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          'z-index': '1000',
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'center',
+          padding: '20px'
+        }} onClick={handleCancelEdit}>
+          <div style={{
+            'background-color': 'var(--color-background)',
+            'border-radius': '16px',
+            'max-width': '500px',
+            width: '100%',
+            padding: '0',
+            'box-shadow': '0 20px 60px rgba(0, 0, 0, 0.3)',
+            overflow: 'hidden'
+          }} onClick={(e) => e.stopPropagation()}>
+            
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 24px',
+              'border-bottom': '1px solid var(--color-border)',
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center'
+            }}>
+              <h2 style={{
+                margin: '0',
+                'font-size': '1.2rem',
+                'font-weight': 'bold',
+                color: 'var(--color-text)'
+              }}>
+                ✏️ {app.language() === 'ar' ? 'تحرير الحلقة' : 'Edit Halaqa'}
+              </h2>
+              <button
+                onClick={handleCancelEdit}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  'font-size': '20px',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-secondary)',
+                  padding: '4px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div style={{ padding: '24px' }}>
+              {/* Halaqa Name */}
+              <div style={{ 'margin-bottom': '20px' }}>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': '600',
+                  color: 'var(--color-text)',
+                  'font-size': '14px'
+                }}>
+                  📚 {app.language() === 'ar' ? 'اسم الحلقة' : 'Halaqa Name'}
+                </label>
+                <input
+                  type="text"
+                  value={editName()}
+                  onInput={(e) => setEditName(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-surface)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Teacher Selection */}
+              <div style={{ 'margin-bottom': '20px' }}>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': '600',
+                  color: 'var(--color-text)',
+                  'font-size': '14px'
+                }}>
+                  👨‍🏫 {app.language() === 'ar' ? 'المعلم' : 'Teacher'}
+                </label>
+                <select
+                  value={editTeacher()}
+                  onChange={(e) => setEditTeacher(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-surface)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">
+                    {app.language() === 'ar' ? 'اختر المعلم' : 'Select Teacher'}
+                  </option>
+                  <For each={app.users().filter(u => u.role === 'lehrer')}>
+                    {(teacher) => (
+                      <option value={teacher.id}>
+                        {teacher.name}
+                      </option>
+                    )}
+                  </For>
+                </select>
+              </div>
+
+              {/* Halaqa Type */}
+              <div style={{ 'margin-bottom': '20px' }}>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': '600',
+                  color: 'var(--color-text)',
+                  'font-size': '14px'
+                }}>
+                  📖 {app.language() === 'ar' ? 'نوع الحلقة' : 'Halaqa Type'}
+                </label>
+                <select
+                  value={editType()}
+                  onChange={(e) => setEditType(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-surface)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="memorizing">{app.language() === 'ar' ? 'تحفيظ' : 'Memorizing'}</option>
+                  <option value="explanation">{app.language() === 'ar' ? 'شرح' : 'Explanation'}</option>
+                  <option value="memorizing_intensive">{app.language() === 'ar' ? 'تحفيظ مكثف' : 'Intensive Memorizing'}</option>
+                  <option value="explanation_intensive">{app.language() === 'ar' ? 'شرح مكثف' : 'Intensive Explanation'}</option>
+                </select>
+              </div>
+
+              {/* Active Status */}
+              <div style={{ 'margin-bottom': '24px' }}>
+                <label style={{
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px',
+                  cursor: 'pointer'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={editIsActive()}
+                    onChange={(e) => setEditIsActive(e.currentTarget.checked)}
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <span style={{
+                    'font-weight': '600',
+                    color: 'var(--color-text)',
+                    'font-size': '14px'
+                  }}>
+                    {editIsActive() ? '🟢' : '🔴'} {app.language() === 'ar' ? 'حلقة نشطة' : 'Active Halaqa'}
+                  </span>
+                </label>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                'justify-content': 'flex-end'
+              }}>
+                <button
+                  onClick={handleCancelEdit}
+                  style={{
+                    padding: '12px 24px',
+                    background: 'var(--color-surface)',
+                    color: 'var(--color-text)',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'font-weight': '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {app.language() === 'ar' ? 'إلغاء' : 'Cancel'}
+                </button>
+                <button
+                  onClick={handleSaveHalaqa}
+                  disabled={!editName().trim() || !editTeacher()}
+                  style={{
+                    padding: '12px 24px',
+                    'background-color': (!editName().trim() || !editTeacher()) 
+                      ? 'var(--color-text-secondary)' 
+                      : 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'font-weight': '500',
+                    cursor: (!editName().trim() || !editTeacher()) ? 'not-allowed' : 'pointer',
+                    opacity: (!editName().trim() || !editTeacher()) ? '0.5' : '1',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  💾 {app.language() === 'ar' ? 'حفظ' : 'Save'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Show>
     </>
   );
 }
