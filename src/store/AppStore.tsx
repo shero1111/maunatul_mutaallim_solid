@@ -1,5 +1,5 @@
 import { createContext, useContext, createSignal, createMemo, JSX, onMount, onCleanup } from 'solid-js';
-import { User, Student, Teacher, Halaqa, Matn, NewsItem, Theme, Language, Page, AudioPlayerState, TimerState, AudioRecording, ExchangePost } from '../types';
+import { User, Student, Teacher, Halaqa, Matn, NewsItem, Theme, Language, Page, AudioPlayerState, TimerState, AudioRecording, ExchangePost, ChatMessage, ChatConversation } from '../types';
 import { demoUsers, demoHalaqat, demoMutun, demoNews, generatePersonalMutun } from '../data/demo-data';
 import { themeColors, setCSSVariables } from '../styles/themes';
 import { translations } from '../i18n/translations';
@@ -29,6 +29,8 @@ export interface AppState {
   news: () => NewsItem[];
   recordings: () => AudioRecording[];
   exchangePosts: () => ExchangePost[];
+  conversations: () => ChatConversation[];
+  messages: () => ChatMessage[];
   
   // Audio Player
   audioPlayer: () => AudioPlayerState;
@@ -63,6 +65,12 @@ export interface AppState {
   addExchangePost: (post: ExchangePost) => void;
   updateExchangePost: (post: ExchangePost) => void;
   deleteExchangePost: (postId: string) => void;
+  
+  // Chat functions
+  startConversation: (otherUserId: string) => string; // Returns conversation ID
+  sendMessage: (conversationId: string, content: string) => void;
+  markMessagesAsRead: (conversationId: string) => void;
+  getConversationWith: (userId: string) => ChatConversation | null;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -92,6 +100,8 @@ export function AppProvider(props: { children: JSX.Element }) {
   const [news, setNews] = createSignal<NewsItem[]>(demoNews);
   const [recordings, setRecordings] = createSignal<AudioRecording[]>([]);
   const [exchangePosts, setExchangePosts] = createSignal<ExchangePost[]>([]);
+  const [conversations, setConversations] = createSignal<ChatConversation[]>([]);
+  const [messages, setMessages] = createSignal<ChatMessage[]>([]);
   const [searchTerm, setSearchTerm] = createSignal('');
   
   // Audio Player State
@@ -137,6 +147,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     const savedNewsData = localStorage.getItem('newsData');
     const savedRecordingsData = localStorage.getItem('recordingsData');
     const savedExchangePostsData = localStorage.getItem('exchangePostsData');
+    const savedConversationsData = localStorage.getItem('conversationsData');
+    const savedMessagesData = localStorage.getItem('messagesData');
     const savedCurrentPage = localStorage.getItem('currentPage') as Page;
     const savedAudioProgress = localStorage.getItem('audioProgress');
     
@@ -237,6 +249,26 @@ export function AppProvider(props: { children: JSX.Element }) {
         console.log('🔄 Exchange posts loaded:', exchangePostsData.length, 'items');
       } catch (e) {
         console.error('Error parsing saved exchange posts:', e);
+      }
+    }
+
+    if (savedConversationsData) {
+      try {
+        const conversationsData = JSON.parse(savedConversationsData);
+        setConversations(conversationsData);
+        console.log('💬 Conversations loaded:', conversationsData.length, 'items');
+      } catch (e) {
+        console.error('Error parsing saved conversations:', e);
+      }
+    }
+
+    if (savedMessagesData) {
+      try {
+        const messagesData = JSON.parse(savedMessagesData);
+        setMessages(messagesData);
+        console.log('💬 Messages loaded:', messagesData.length, 'items');
+      } catch (e) {
+        console.error('Error parsing saved messages:', e);
       }
     }
     
@@ -631,6 +663,110 @@ export function AppProvider(props: { children: JSX.Element }) {
     console.log('✅ Exchange post deleted, remaining:', newPosts.length);
   };
 
+  // Chat Functions
+  const startConversation = (otherUserId: string): string => {
+    const currentUserId = currentUser()?.id;
+    if (!currentUserId) return '';
+    
+    // Check if conversation already exists
+    const existing = conversations().find(conv => 
+      (conv.participant1_id === currentUserId && conv.participant2_id === otherUserId) ||
+      (conv.participant1_id === otherUserId && conv.participant2_id === currentUserId)
+    );
+    
+    if (existing) return existing.id;
+    
+    // Create new conversation
+    const otherUser = users().find(u => u.id === otherUserId);
+    if (!otherUser) return '';
+    
+    const newConversation: ChatConversation = {
+      id: `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      participant1_id: currentUserId,
+      participant1_name: currentUser()!.name,
+      participant2_id: otherUserId,
+      participant2_name: otherUser.name,
+      unread_count: 0,
+      created_at: new Date().toISOString()
+    };
+    
+    const updatedConversations = [...conversations(), newConversation];
+    setConversations(updatedConversations);
+    localStorage.setItem('conversationsData', JSON.stringify(updatedConversations));
+    
+    console.log('💬 New conversation created:', newConversation.id);
+    return newConversation.id;
+  };
+
+  const sendMessage = (conversationId: string, content: string) => {
+    const currentUserId = currentUser()?.id;
+    if (!currentUserId || !content.trim()) return;
+    
+    const newMessage: ChatMessage = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      conversation_id: conversationId,
+      sender_id: currentUserId,
+      sender_name: currentUser()!.name,
+      content: content.trim(),
+      created_at: new Date().toISOString(),
+      is_read: false
+    };
+    
+    const updatedMessages = [...messages(), newMessage];
+    setMessages(updatedMessages);
+    localStorage.setItem('messagesData', JSON.stringify(updatedMessages));
+    
+    // Update conversation last message
+    const updatedConversations = conversations().map(conv => {
+      if (conv.id === conversationId) {
+        return {
+          ...conv,
+          last_message: content.trim(),
+          last_message_at: newMessage.created_at
+        };
+      }
+      return conv;
+    });
+    setConversations(updatedConversations);
+    localStorage.setItem('conversationsData', JSON.stringify(updatedConversations));
+    
+    console.log('💬 Message sent:', newMessage.id);
+  };
+
+  const markMessagesAsRead = (conversationId: string) => {
+    const currentUserId = currentUser()?.id;
+    if (!currentUserId) return;
+    
+    const updatedMessages = messages().map(msg => {
+      if (msg.conversation_id === conversationId && msg.sender_id !== currentUserId) {
+        return { ...msg, is_read: true };
+      }
+      return msg;
+    });
+    setMessages(updatedMessages);
+    localStorage.setItem('messagesData', JSON.stringify(updatedMessages));
+    
+    // Update conversation unread count
+    const updatedConversations = conversations().map(conv => {
+      if (conv.id === conversationId) {
+        return { ...conv, unread_count: 0 };
+      }
+      return conv;
+    });
+    setConversations(updatedConversations);
+    localStorage.setItem('conversationsData', JSON.stringify(updatedConversations));
+  };
+
+  const getConversationWith = (userId: string): ChatConversation | null => {
+    const currentUserId = currentUser()?.id;
+    if (!currentUserId) return null;
+    
+    return conversations().find(conv => 
+      (conv.participant1_id === currentUserId && conv.participant2_id === userId) ||
+      (conv.participant1_id === userId && conv.participant2_id === currentUserId)
+    ) || null;
+  };
+
   const playAudio = (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => {
     // Stop current audio if playing
     if (audioElement) {
@@ -862,6 +998,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     news,
     recordings,
     exchangePosts,
+    conversations,
+    messages,
     audioPlayer,
     audioProgress,
     timer,
@@ -907,6 +1045,10 @@ export function AppProvider(props: { children: JSX.Element }) {
     addExchangePost,
     updateExchangePost,
     deleteExchangePost,
+    startConversation,
+    sendMessage,
+    markMessagesAsRead,
+    getConversationWith,
     playAudio,
     pauseAudio,
     stopAudio,

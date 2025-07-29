@@ -114,3 +114,26 @@ export interface ExchangePost {
   created_at: string;
   is_active: boolean;
 }
+
+// Chat System Interfaces
+export interface ChatMessage {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  sender_name: string;
+  content: string;
+  created_at: string;
+  is_read: boolean;
+}
+
+export interface ChatConversation {
+  id: string;
+  participant1_id: string;
+  participant1_name: string;
+  participant2_id: string;
+  participant2_name: string;
+  last_message?: string;
+  last_message_at?: string;
+  unread_count: number;
+  created_at: string;
+}

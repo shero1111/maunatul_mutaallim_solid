@@ -2,17 +2,22 @@ import { createSignal, createMemo, For, Show, onMount, onCleanup } from 'solid-j
 import { useApp } from '../store/AppStore';
 import { AudioRecording, ExchangePost } from '../types';
 import { SimpleConfirmDialog } from '../components/SimpleConfirmDialog';
+import { makeTextClickable } from '../utils/textUtils';
 
 export function RecitingPage() {
   const app = useApp();
   
   // State for active tab - persist in localStorage
-  const [activeTab, setActiveTab] = createSignal<'recording' | 'exchange'>(
-    (localStorage.getItem('reciting-active-tab') as 'recording' | 'exchange') || 'recording'
+  const [activeTab, setActiveTab] = createSignal<'recording' | 'exchange' | 'chat'>(
+    (localStorage.getItem('reciting-active-tab') as 'recording' | 'exchange' | 'chat') || 'recording'
   );
   
+  // Chat state
+  const [activeChatConversation, setActiveChatConversation] = createSignal<string | null>(null);
+  const [chatMessage, setChatMessage] = createSignal('');
+  
   // Save tab changes to localStorage
-  const handleTabChange = (tab: 'recording' | 'exchange') => {
+  const handleTabChange = (tab: 'recording' | 'exchange' | 'chat') => {
     setActiveTab(tab);
     localStorage.setItem('reciting-active-tab', tab);
   };
@@ -712,6 +717,22 @@ export function RecitingPage() {
             }}
           >
             🔄 {app.translate('exchangeCenter')}
+          </button>
+          <button
+            onClick={() => handleTabChange('chat')}
+            style={{
+              flex: '1',
+              padding: '12px',
+              border: 'none',
+              'border-radius': '8px',
+              'background-color': activeTab() === 'chat' ? 'white' : 'transparent',
+              color: activeTab() === 'chat' ? 'var(--color-primary)' : 'white',
+              'font-weight': '500',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            💬 {app.translate('chat')}
           </button>
         </div>
       </div>
@@ -1525,7 +1546,7 @@ export function RecitingPage() {
                   </div>
                   
                   <h4 style={{
-                    margin: '0 0 8px 0',
+                    margin: post.description ? '0 0 8px 0' : '0 0 4px 0',
                     'font-size': '16px',
                     'font-weight': 'bold',
                     color: 'var(--color-text)'
@@ -1533,32 +1554,313 @@ export function RecitingPage() {
                     {post.title}
                   </h4>
                   
-                  <p style={{
-                    margin: '0 0 12px 0',
-                    'font-size': '14px',
-                    color: 'var(--color-text)',
-                    'line-height': '1.5'
-                  }}>
-                    {post.description}
-                  </p>
+                  <Show when={post.description}>
+                    <p style={{
+                      margin: '0 0 12px 0',
+                      'font-size': '14px',
+                      color: 'var(--color-text)',
+                      'line-height': '1.5'
+                    }}>
+                      {post.description}
+                    </p>
+                  </Show>
                   
                   <div style={{
                     display: 'flex',
                     'justify-content': 'space-between',
                     'align-items': 'center',
                     'font-size': '12px',
-                    color: 'var(--color-text-secondary)'
+                    color: 'var(--color-text-secondary)',
+                    'margin-top': post.description ? '12px' : '8px'
                   }}>
-                    <span>
-                      {app.translate('postedBy')} {post.author_name}
-                    </span>
-                    <span>
-                      {formatTimeAgo(post.created_at)}
-                    </span>
+                    <div style={{ display: 'flex', 'align-items': 'center', gap: '12px', flex: '1' }}>
+                      <span>
+                        {app.translate('publisher')}: {post.author_name}
+                      </span>
+                      <span>
+                        {formatTimeAgo(post.created_at)}
+                      </span>
+                    </div>
+                    
+                    <Show when={post.author_id !== app.currentUser()?.id}>
+                      <button
+                        onClick={() => {
+                          const conversationId = app.startConversation(post.author_id);
+                          if (conversationId) {
+                            handleTabChange('chat');
+                            setActiveChatConversation(conversationId);
+                          }
+                        }}
+                        style={{
+                          'background-color': 'var(--color-primary)',
+                          color: 'white',
+                          border: 'none',
+                          padding: '4px 8px',
+                          'border-radius': '4px',
+                          'font-size': '11px',
+                          cursor: 'pointer',
+                          'white-space': 'nowrap'
+                        }}
+                        title={app.translate('sendMessage')}
+                      >
+                        💬 {app.translate('sendMessage')}
+                      </button>
+                    </Show>
                   </div>
                 </div>
               )}
             </For>
+          </Show>
+        </div>
+      </Show>
+
+      {/* Chat Center */}
+      <Show when={activeTab() === 'chat'}>
+        <div style={{ padding: '20px 16px', height: 'calc(100vh - 200px)', display: 'flex', 'flex-direction': 'column' }}>
+          <Show 
+            when={activeChatConversation()}
+            fallback={
+              <div style={{ display: 'flex', 'flex-direction': 'column', height: '100%' }}>
+                <h3 style={{ margin: '0 0 16px 0', color: 'var(--color-text)' }}>
+                  {app.translate('conversations')}
+                </h3>
+                
+                <Show 
+                  when={app.conversations().length > 0}
+                  fallback={
+                    <div style={{
+                      'text-align': 'center',
+                      padding: '40px 20px',
+                      color: 'var(--color-text-secondary)'
+                    }}>
+                      <div style={{ 'font-size': '48px', 'margin-bottom': '16px' }}>💬</div>
+                      <div>{app.translate('noConversations')}</div>
+                    </div>
+                  }
+                >
+                  <div style={{ flex: '1', 'overflow-y': 'auto' }}>
+                    <For each={app.conversations()}>
+                      {(conversation) => {
+                        const otherUser = conversation.participant1_id === app.currentUser()?.id 
+                          ? { id: conversation.participant2_id, name: conversation.participant2_name }
+                          : { id: conversation.participant1_id, name: conversation.participant1_name };
+                        
+                        return (
+                          <div 
+                            onClick={() => setActiveChatConversation(conversation.id)}
+                            style={{
+                              'background-color': 'var(--color-background)',
+                              'border-radius': '12px',
+                              padding: '16px',
+                              'margin-bottom': '12px',
+                              'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)',
+                              cursor: 'pointer',
+                              border: '2px solid transparent',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                            onMouseLeave={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                          >
+                            <div style={{
+                              display: 'flex',
+                              'justify-content': 'space-between',
+                              'align-items': 'center'
+                            }}>
+                              <div>
+                                <div style={{
+                                  'font-weight': 'bold',
+                                  color: 'var(--color-text)',
+                                  'margin-bottom': '4px'
+                                }}>
+                                  {otherUser.name}
+                                </div>
+                                <Show when={conversation.last_message}>
+                                  <div style={{
+                                    'font-size': '14px',
+                                    color: 'var(--color-text-secondary)',
+                                    'max-width': '200px',
+                                    overflow: 'hidden',
+                                    'text-overflow': 'ellipsis',
+                                    'white-space': 'nowrap'
+                                  }}>
+                                    {conversation.last_message}
+                                  </div>
+                                </Show>
+                              </div>
+                              <Show when={conversation.unread_count > 0}>
+                                <div style={{
+                                  'background-color': 'var(--color-error)',
+                                  color: 'white',
+                                  'border-radius': '50%',
+                                  width: '20px',
+                                  height: '20px',
+                                  display: 'flex',
+                                  'align-items': 'center',
+                                  'justify-content': 'center',
+                                  'font-size': '12px',
+                                  'font-weight': 'bold'
+                                }}>
+                                  {conversation.unread_count}
+                                </div>
+                              </Show>
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
+              </div>
+            }
+          >
+            {/* Chat Messages View */}
+            <div style={{ display: 'flex', 'flex-direction': 'column', height: '100%' }}>
+              {/* Chat Header */}
+              <div style={{
+                display: 'flex',
+                'align-items': 'center',
+                'margin-bottom': '16px',
+                padding: '12px',
+                'background-color': 'var(--color-background)',
+                'border-radius': '12px',
+                'box-shadow': '0 2px 8px rgba(0, 0, 0, 0.1)'
+              }}>
+                <button
+                  onClick={() => setActiveChatConversation(null)}
+                  style={{
+                    'background-color': 'transparent',
+                    border: 'none',
+                    color: 'var(--color-primary)',
+                    cursor: 'pointer',
+                    'margin-right': '12px',
+                    'font-size': '18px'
+                  }}
+                >
+                  ←
+                </button>
+                <div style={{
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {(() => {
+                    const conversation = app.conversations().find(c => c.id === activeChatConversation());
+                    if (!conversation) return '';
+                    const otherUser = conversation.participant1_id === app.currentUser()?.id 
+                      ? conversation.participant2_name
+                      : conversation.participant1_name;
+                    return `${app.translate('chatWith')} ${otherUser}`;
+                  })()}
+                </div>
+              </div>
+              
+              {/* Messages */}
+              <div style={{
+                flex: '1',
+                'overflow-y': 'auto',
+                'margin-bottom': '16px',
+                padding: '8px',
+                'background-color': 'var(--color-surface)',
+                'border-radius': '12px',
+                'min-height': '300px'
+              }}>
+                <Show 
+                  when={app.messages().filter(m => m.conversation_id === activeChatConversation()).length > 0}
+                  fallback={
+                    <div style={{
+                      'text-align': 'center',
+                      padding: '40px 20px',
+                      color: 'var(--color-text-secondary)'
+                    }}>
+                      <div style={{ 'font-size': '32px', 'margin-bottom': '16px' }}>💭</div>
+                      <div>{app.translate('noMessages')}</div>
+                    </div>
+                  }
+                >
+                  <For each={app.messages().filter(m => m.conversation_id === activeChatConversation())}>
+                    {(message) => {
+                      const isOwn = message.sender_id === app.currentUser()?.id;
+                      return (
+                        <div style={{
+                          display: 'flex',
+                          'justify-content': isOwn ? 'flex-end' : 'flex-start',
+                          'margin-bottom': '12px'
+                        }}>
+                          <div style={{
+                            'max-width': '70%',
+                            padding: '8px 12px',
+                            'border-radius': '12px',
+                            'background-color': isOwn ? 'var(--color-primary)' : 'var(--color-background)',
+                            color: isOwn ? 'white' : 'var(--color-text)',
+                            'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
+                          }}>
+                                                         <div style={{ 'word-wrap': 'break-word' }}>
+                               {makeTextClickable(message.content, app.language())}
+                             </div>
+                            <div style={{
+                              'font-size': '11px',
+                              opacity: '0.7',
+                              'margin-top': '4px',
+                              'text-align': isOwn ? 'right' : 'left'
+                            }}>
+                              {new Date(message.created_at).toLocaleTimeString()}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  </For>
+                </Show>
+              </div>
+              
+              {/* Message Input */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                'align-items': 'center'
+              }}>
+                <input
+                  type="text"
+                  value={chatMessage()}
+                  onInput={(e) => setChatMessage(e.currentTarget.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && chatMessage().trim()) {
+                      app.sendMessage(activeChatConversation()!, chatMessage());
+                      setChatMessage('');
+                    }
+                  }}
+                  placeholder={app.translate('typeMessage')}
+                  style={{
+                    flex: '1',
+                    padding: '12px',
+                    border: '2px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'font-size': '14px'
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    if (chatMessage().trim()) {
+                      app.sendMessage(activeChatConversation()!, chatMessage());
+                      setChatMessage('');
+                    }
+                  }}
+                  disabled={!chatMessage().trim()}
+                  style={{
+                    'background-color': chatMessage().trim() ? 'var(--color-primary)' : 'var(--color-border)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 16px',
+                    'border-radius': '8px',
+                    cursor: chatMessage().trim() ? 'pointer' : 'not-allowed',
+                    'font-weight': '500'
+                  }}
+                >
+                  {app.translate('send')}
+                </button>
+              </div>
+            </div>
           </Show>
         </div>
       </Show>

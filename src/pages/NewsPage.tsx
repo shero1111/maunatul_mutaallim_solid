@@ -3,6 +3,7 @@ import { useApp } from '../store/AppStore';
 import { NewsModal } from '../components/NewsModal';
 import { SimpleConfirmDialog } from '../components/SimpleConfirmDialog';
 import { NewsItem } from '../types';
+import { makeTextClickable } from '../utils/textUtils';
 
 export function NewsPage() {
   const app = useApp();
@@ -408,7 +409,7 @@ export function NewsPage() {
             
             <Show when={newsItem.description?.trim()}>
               <p style={newsDescriptionStyle}>
-                {newsItem.description}
+                {makeTextClickable(newsItem.description, app.language())}
               </p>
             </Show>
             
@@ -419,7 +420,7 @@ export function NewsPage() {
                 'font-size': '1.1rem',
                 'line-height': '1.4'
               }}>
-                {newsItem.description}
+                {makeTextClickable(newsItem.description, app.language())}
               </h2>
             </Show>
             
