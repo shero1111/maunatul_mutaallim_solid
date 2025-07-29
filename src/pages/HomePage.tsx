@@ -1113,7 +1113,7 @@ function LeadershipDashboard(props: { user: User }) {
           </h3>
         </div>
         <p style={{ margin: '0', 'font-size': '0.8rem', opacity: '0.9' }}>
-          {props.user.role === 'superuser' ? 'مطور النظام' : 'قائد الحلقات'}
+          {app.translate(props.user.role)}
         </p>
       </div>
 
@@ -1139,7 +1139,7 @@ function LeadershipDashboard(props: { user: User }) {
             {users.length}
           </div>
           <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
-            المستخدمين
+            {app.translate('totalUsers')}
           </div>
         </div>
 
@@ -1158,7 +1158,7 @@ function LeadershipDashboard(props: { user: User }) {
             {students.length}
           </div>
           <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
-            الطلاب
+            {app.translate('totalStudents')}
           </div>
         </div>
 
@@ -1177,7 +1177,7 @@ function LeadershipDashboard(props: { user: User }) {
             {teachers.length}
           </div>
           <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
-            المعلمين
+            {app.translate('totalTeachers')}
           </div>
         </div>
 
@@ -1196,7 +1196,7 @@ function LeadershipDashboard(props: { user: User }) {
             {halaqat.length}
           </div>
           <div style={{ color: 'var(--color-text-secondary)', 'font-size': '0.7rem' }}>
-            الحلقات
+            {app.translate('totalHalaqat')}
           </div>
         </div>
 
@@ -1242,7 +1242,7 @@ function LeadershipDashboard(props: { user: User }) {
             'font-size': '1rem',
             'font-weight': '600'
           }}>
-            📊 حالات الطلاب
+            📊 {app.translate('studentsStatus')}
           </h3>
           <div style={{
             'font-size': '0.8rem',

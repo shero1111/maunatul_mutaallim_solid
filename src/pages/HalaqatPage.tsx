@@ -690,7 +690,7 @@ export function HalaqatPage() {
                   color: 'var(--color-text)',
                   'font-size': '14px'
                 }}>
-                  👨‍🏫 {app.language() === 'ar' ? 'المعلم' : 'Teacher'}
+                  👨‍🏫 {app.translate('lehrer')}
                 </label>
                 <select
                   value={editTeacher()}
@@ -708,7 +708,7 @@ export function HalaqatPage() {
                   }}
                 >
                   <option value="">
-                    {app.language() === 'ar' ? 'اختر المعلم' : 'Select Teacher'}
+                    {app.translate('selectTeacher')}
                   </option>
                   <For each={app.users().filter(u => u.role === 'lehrer')}>
                     {(teacher) => (

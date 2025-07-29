@@ -15,6 +15,7 @@ export const translations = {
     changeStatus: 'تغيير الحالة',
     lastUpdate: 'آخر تحديث',
     totalUsers: 'إجمالي المستخدمين',
+    totalStudents: 'إجمالي الطلاب',
     totalTeachers: 'إجمالي المعلمين',
     totalHalaqat: 'إجمالي الحلقات',
     studentsStatus: 'حالة الطلاب',
@@ -69,6 +70,9 @@ export const translations = {
     lastSeen: 'آخر ظهور',
     superuser: 'المدير العام',
     leitung: 'قائد الحلقات',
+    lehrer: 'معلم',
+    student: 'طالب',
+    selectTeacher: 'اختر المعلم',
 
     assignToHalaqa: 'إضافة إلى حلقة',
     removeFromHalaqa: 'إزالة من حلقة',
@@ -145,7 +149,6 @@ export const translations = {
     administrator: 'المشرف العام',
     leadership: 'الإدارة',
     teacher: 'المعلم',
-    student: 'الطالب',
     
     currentPassword: 'كلمة المرور الحالية',
     enterCurrentPassword: 'أدخل كلمة المرور الحالية',
@@ -230,6 +233,7 @@ export const translations = {
     changeStatus: 'Change Status',
     lastUpdate: 'Last Update',
     totalUsers: 'Total Users',
+    totalStudents: 'Total Students',
     totalTeachers: 'Total Teachers',
     totalHalaqat: 'Total Halaqat',
     studentsStatus: 'Students Status',
@@ -284,6 +288,9 @@ export const translations = {
     lastSeen: 'Last Seen',
     superuser: 'Super Admin',
     leitung: 'Halaqa Leader',
+    lehrer: 'Teacher',
+    student: 'Student',
+    selectTeacher: 'Select Teacher',
 
     assignToHalaqa: 'Assign to Halaqa',
     removeFromHalaqa: 'Remove from Halaqa',
@@ -360,7 +367,6 @@ export const translations = {
     administrator: 'Administrator',
     leadership: 'Leadership',
     teacher: 'Teacher',
-    student: 'Student',
     
     currentPassword: 'Current Password',
     enterCurrentPassword: 'Enter current password',
