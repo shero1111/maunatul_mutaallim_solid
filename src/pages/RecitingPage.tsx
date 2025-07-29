@@ -6,8 +6,16 @@ import { SimpleConfirmDialog } from '../components/SimpleConfirmDialog';
 export function RecitingPage() {
   const app = useApp();
   
-  // State for active tab
-  const [activeTab, setActiveTab] = createSignal<'recording' | 'exchange'>('recording');
+  // State for active tab - persist in localStorage
+  const [activeTab, setActiveTab] = createSignal<'recording' | 'exchange'>(
+    (localStorage.getItem('reciting-active-tab') as 'recording' | 'exchange') || 'recording'
+  );
+  
+  // Save tab changes to localStorage
+  const handleTabChange = (tab: 'recording' | 'exchange') => {
+    setActiveTab(tab);
+    localStorage.setItem('reciting-active-tab', tab);
+  };
   
   // Recording Center State
   const [isRecording, setIsRecording] = createSignal(false);
@@ -674,7 +682,7 @@ export function RecitingPage() {
           gap: '4px'
         }}>
           <button
-            onClick={() => setActiveTab('recording')}
+            onClick={() => handleTabChange('recording')}
             style={{
               flex: '1',
               padding: '12px',
@@ -690,7 +698,7 @@ export function RecitingPage() {
             🎙️ {app.translate('recordingCenter')}
           </button>
           <button
-            onClick={() => setActiveTab('exchange')}
+            onClick={() => handleTabChange('exchange')}
             style={{
               flex: '1',
               padding: '12px',
@@ -1431,46 +1439,50 @@ export function RecitingPage() {
                   <div style={{
                     display: 'flex',
                     'justify-content': 'space-between',
-                    'align-items': 'flex-start',
-                    'margin-bottom': '12px'
+                    'align-items': 'center',
+                    'margin-bottom': '12px',
+                    'flex-wrap': 'wrap',
+                    gap: '8px'
                   }}>
                     <div style={{
                       display: 'flex',
                       'align-items': 'center',
-                      gap: '8px'
+                      gap: '6px',
+                      'flex-wrap': 'wrap',
+                      flex: '1'
                     }}>
                       <span style={{
                         'background-color': post.type === 'offer' ? '#10b981' : '#3b82f6',
                         color: 'white',
-                        padding: '4px 8px',
-                        'border-radius': '6px',
-                        'font-size': '12px',
+                        padding: '3px 6px',
+                        'border-radius': '4px',
+                        'font-size': '11px',
                         'font-weight': '500'
                       }}>
                         {post.type === 'offer' ? '🤝' : '🙋'} {app.translate(post.type)}
                       </span>
                       
-                      <Show when={post.matn_name}>
-                        <span style={{
-                          'background-color': 'var(--color-surface)',
-                          color: 'var(--color-text-secondary)',
-                          padding: '4px 8px',
-                          'border-radius': '6px',
-                          'font-size': '12px'
-                        }}>
-                          📖 {post.matn_name}
-                        </span>
-                      </Show>
-                      
                       <Show when={post.level}>
                         <span style={{
                           'background-color': 'var(--color-surface)',
                           color: 'var(--color-text-secondary)',
-                          padding: '4px 8px',
-                          'border-radius': '6px',
-                          'font-size': '12px'
+                          padding: '3px 6px',
+                          'border-radius': '4px',
+                          'font-size': '11px'
                         }}>
-                          📊 {post.level}
+                          🎯 {post.level}
+                        </span>
+                      </Show>
+                      
+                      <Show when={post.matn_name}>
+                        <span style={{
+                          'background-color': 'var(--color-surface)',
+                          color: 'var(--color-text-secondary)',
+                          padding: '3px 6px',
+                          'border-radius': '4px',
+                          'font-size': '11px'
+                        }}>
+                          📖 {post.matn_name}
                         </span>
                       </Show>
                     </div>
