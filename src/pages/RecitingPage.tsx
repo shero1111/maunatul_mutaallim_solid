@@ -478,7 +478,7 @@ export function RecitingPage() {
   
   // Exchange post functions
   const createPost = () => {
-    if (!postTitle().trim() || !postDescription().trim() || !postLevel()) return;
+    if (!postTitle().trim()) return;
     
     // Get the actual matn name from the mutun data
     let finalMatnName: string | undefined = undefined;
@@ -491,9 +491,9 @@ export function RecitingPage() {
       id: Date.now().toString(),
       type: postType(),
       title: postTitle().trim(),
-      description: postDescription().trim(),
+      description: postDescription().trim() || '', // Optional
       matn_name: finalMatnName,
-      level: levelOptions.find(opt => opt.value === postLevel())?.label,
+      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined, // Optional
       author_id: app.currentUser()?.id || '',
       author_name: app.currentUser()?.name || '',
       created_at: new Date().toISOString(),
@@ -529,7 +529,7 @@ export function RecitingPage() {
   
   const updatePost = () => {
     const post = editingPost();
-    if (!post || !postTitle().trim() || !postDescription().trim() || !postLevel()) return;
+    if (!post || !postTitle().trim()) return;
     
     // Get the actual matn name from the mutun data
     let finalMatnName: string | undefined = undefined;
@@ -542,9 +542,9 @@ export function RecitingPage() {
       ...post,
       type: postType(),
       title: postTitle().trim(),
-      description: postDescription().trim(),
+      description: postDescription().trim() || '', // Optional
       matn_name: finalMatnName,
-      level: levelOptions.find(opt => opt.value === postLevel())?.label
+      level: postLevel() ? levelOptions.find(opt => opt.value === postLevel())?.label : undefined // Optional
     };
     
     app.updateExchangePost(updatedPost);
@@ -1204,7 +1204,7 @@ export function RecitingPage() {
                     'font-weight': '500',
                     color: 'var(--color-text)'
                   }}>
-                    {app.translate('postTitle')}
+                    {app.translate('postTitle')} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="text"
@@ -1228,7 +1228,7 @@ export function RecitingPage() {
                     'font-weight': '500',
                     color: 'var(--color-text)'
                   }}>
-                    {app.translate('postDescription')}
+                    {app.translate('postDescription')} <span style={{ color: 'var(--color-text-secondary)', 'font-weight': '400' }}>({app.language() === 'ar' ? 'اختياري' : 'optional'})</span>
                   </label>
                   <textarea
                     value={postDescription()}
@@ -1248,6 +1248,14 @@ export function RecitingPage() {
                 
                 {/* Level Selection */}
                 <div style={{ 'margin-bottom': '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    'margin-bottom': '6px',
+                    'font-weight': '500',
+                    color: 'var(--color-text)'
+                  }}>
+                    {app.language() === 'ar' ? 'المستوى' : 'Level'} <span style={{ color: 'var(--color-text-secondary)', 'font-weight': '400' }}>({app.language() === 'ar' ? 'اختياري' : 'optional'})</span>
+                  </label>
                   <select
                     value={postLevel()}
                     onChange={(e) => {
@@ -1372,11 +1380,11 @@ export function RecitingPage() {
                   {/* Save Button */}
                   <button
                     onClick={editingPost() ? updatePost : createPost}
-                    disabled={!postTitle().trim() || !postDescription().trim() || !postLevel()}
+                    disabled={!postTitle().trim()}
                     style={{
                       flex: '2',
                       padding: '12px',
-                      'background-color': (!postTitle().trim() || !postDescription().trim() || !postLevel()) 
+                      'background-color': !postTitle().trim()
                         ? 'var(--color-text-secondary)' 
                         : (postType() === 'offer' ? '#10b981' : '#3b82f6'),
                       color: 'white',
@@ -1384,8 +1392,8 @@ export function RecitingPage() {
                       'border-radius': '8px',
                       'font-size': '14px',
                       'font-weight': '500',
-                      cursor: (!postTitle().trim() || !postDescription().trim() || !postLevel()) ? 'not-allowed' : 'pointer',
-                      opacity: (!postTitle().trim() || !postDescription().trim() || !postLevel()) ? '0.5' : '1',
+                      cursor: !postTitle().trim() ? 'not-allowed' : 'pointer',
+                      opacity: !postTitle().trim() ? '0.5' : '1',
                       transition: 'all 0.2s ease'
                     }}
                   >
