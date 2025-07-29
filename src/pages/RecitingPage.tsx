@@ -1632,7 +1632,7 @@ export function RecitingPage() {
                       color: 'var(--color-text)',
                       'line-height': '1.5'
                     }}>
-                      {post.description}
+                      {makeTextClickable(post.description, app.language())}
                     </p>
                   </Show>
                   

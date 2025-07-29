@@ -107,92 +107,122 @@ function showPhoneActions(phoneNumber: string, language: 'ar' | 'en') {
   const actions = [
     {
       text: language === 'ar' ? 'اتصال مباشر' : 'Direct Call',
-      action: () => window.open(`tel:${cleanNumber}`)
+      action: () => {
+        window.location.href = `tel:${cleanNumber}`;
+      }
     },
     {
       text: language === 'ar' ? 'محادثة واتساب' : 'WhatsApp Chat',
-      action: () => window.open(`https://wa.me/${cleanNumber}`)
+      action: () => {
+        window.open(`https://wa.me/${cleanNumber}`, '_blank');
+      }
     }
   ];
   
-  // Create a simple action menu
-  const actionMenu = document.createElement('div');
-  actionMenu.style.cssText = `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--color-background);
-    border: 2px solid var(--color-border);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    z-index: 10000;
-    min-width: 200px;
-  `;
+  // Create backdrop first
+  const backdrop = document.createElement('div');
+  backdrop.style.position = 'fixed';
+  backdrop.style.top = '0';
+  backdrop.style.left = '0';
+  backdrop.style.width = '100%';
+  backdrop.style.height = '100%';
+  backdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  backdrop.style.zIndex = '9999';
+  backdrop.style.display = 'flex';
+  backdrop.style.alignItems = 'center';
+  backdrop.style.justifyContent = 'center';
   
+  // Create action menu
+  const actionMenu = document.createElement('div');
+  actionMenu.style.backgroundColor = '#ffffff';
+  actionMenu.style.borderRadius = '12px';
+  actionMenu.style.padding = '20px';
+  actionMenu.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+  actionMenu.style.minWidth = '250px';
+  actionMenu.style.maxWidth = '90vw';
+  
+  // Title
   const title = document.createElement('div');
   title.textContent = phoneNumber;
-  title.style.cssText = `
-    font-weight: bold;
-    margin-bottom: 12px;
-    text-align: center;
-    color: var(--color-text);
-  `;
+  title.style.fontWeight = 'bold';
+  title.style.marginBottom = '16px';
+  title.style.textAlign = 'center';
+  title.style.color = '#1f2937';
+  title.style.fontSize = '16px';
   actionMenu.appendChild(title);
   
-  actions.forEach((action, index) => {
+  // Action buttons
+  actions.forEach((action) => {
     const button = document.createElement('button');
     button.textContent = action.text;
-    button.style.cssText = `
-      width: 100%;
-      padding: 8px 12px;
-      margin: 4px 0;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      background: var(--color-surface);
-      color: var(--color-text);
-      cursor: pointer;
-      transition: background-color 0.2s;
-    `;
-    button.onmouseover = () => button.style.backgroundColor = 'var(--color-primary-light)';
-    button.onmouseout = () => button.style.backgroundColor = 'var(--color-surface)';
-    button.onclick = () => {
-      action.action();
-      document.body.removeChild(actionMenu);
+    button.style.width = '100%';
+    button.style.padding = '12px 16px';
+    button.style.margin = '6px 0';
+    button.style.border = 'none';
+    button.style.borderRadius = '8px';
+    button.style.backgroundColor = '#3b82f6';
+    button.style.color = 'white';
+    button.style.cursor = 'pointer';
+    button.style.fontSize = '14px';
+    button.style.fontWeight = '500';
+    button.style.transition = 'background-color 0.2s';
+    
+    button.onmouseover = () => {
+      button.style.backgroundColor = '#2563eb';
     };
+    button.onmouseout = () => {
+      button.style.backgroundColor = '#3b82f6';
+    };
+    
+    button.onclick = (e) => {
+      e.stopPropagation();
+      action.action();
+      document.body.removeChild(backdrop);
+    };
+    
     actionMenu.appendChild(button);
   });
   
-  // Add cancel button
+  // Cancel button
   const cancelButton = document.createElement('button');
   cancelButton.textContent = language === 'ar' ? 'إلغاء' : 'Cancel';
-  cancelButton.style.cssText = `
-    width: 100%;
-    padding: 8px 12px;
-    margin-top: 8px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background: var(--color-error);
-    color: white;
-    cursor: pointer;
-  `;
-  cancelButton.onclick = () => document.body.removeChild(actionMenu);
+  cancelButton.style.width = '100%';
+  cancelButton.style.padding = '12px 16px';
+  cancelButton.style.marginTop = '8px';
+  cancelButton.style.border = 'none';
+  cancelButton.style.borderRadius = '8px';
+  cancelButton.style.backgroundColor = '#ef4444';
+  cancelButton.style.color = 'white';
+  cancelButton.style.cursor = 'pointer';
+  cancelButton.style.fontSize = '14px';
+  cancelButton.style.fontWeight = '500';
+  
+  cancelButton.onmouseover = () => {
+    cancelButton.style.backgroundColor = '#dc2626';
+  };
+  cancelButton.onmouseout = () => {
+    cancelButton.style.backgroundColor = '#ef4444';
+  };
+  
+  cancelButton.onclick = (e) => {
+    e.stopPropagation();
+    document.body.removeChild(backdrop);
+  };
+  
   actionMenu.appendChild(cancelButton);
   
-  // Add backdrop
-  const backdrop = document.createElement('div');
-  backdrop.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3);
-    z-index: 9999;
-  `;
-  backdrop.onclick = () => document.body.removeChild(actionMenu);
+  // Close on backdrop click
+  backdrop.onclick = (e) => {
+    if (e.target === backdrop) {
+      document.body.removeChild(backdrop);
+    }
+  };
   
-  actionMenu.appendChild(backdrop);
-  document.body.appendChild(actionMenu);
+  // Prevent menu clicks from closing
+  actionMenu.onclick = (e) => {
+    e.stopPropagation();
+  };
+  
+  backdrop.appendChild(actionMenu);
+  document.body.appendChild(backdrop);
 }
