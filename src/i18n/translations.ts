@@ -170,7 +170,7 @@ export const translations = {
     
     // Reciting Center
     recordingCenter: 'مركز التسجيل',
-    exchangeCenter: 'مركز التبادل',
+    exchangeCenter: 'مركز التسميع',
     startRecording: 'بدء التسجيل',
     stopRecording: 'إيقاف التسجيل',
     pauseRecording: 'إيقاف مؤقت',

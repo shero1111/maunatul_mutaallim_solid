@@ -372,7 +372,9 @@ export function RecitingPage() {
       console.log('⏹️ Stopping current audio');
       currentAudio.pause();
       currentAudio.currentTime = 0;
-      currentAudio.src = '';
+      // Don't clear src to avoid error - just remove event listeners
+      currentAudio.removeEventListener('ended', () => {});
+      currentAudio.removeEventListener('error', () => {});
     }
 
     if (playingRecording() === id) {
