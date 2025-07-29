@@ -1371,7 +1371,7 @@ export function RecitingPage() {
                   'justify-content': 'space-between',
                   'margin-top': '20px',
                   'padding-top': '16px',
-                  'padding-bottom': '16px',
+                  'padding-bottom': '80px',
                   'border-top': '2px solid var(--color-border)',
                   'background-color': 'var(--color-background)',
                   position: 'sticky',

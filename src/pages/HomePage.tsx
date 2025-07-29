@@ -112,8 +112,12 @@ function StudentDashboard(props: { user: Student }) {
     const halaqa = app.halaqat().find(h => h.id === halaqaId);
     if (!halaqa) return [];
     
+    const currentUser = app.currentUser();
+    const isAdminOrLeader = currentUser && (currentUser.role === 'superuser' || currentUser.role === 'leitung');
+    
     return allStudents().filter(student => 
-      halaqa.student_ids.includes(student.id)
+      halaqa.student_ids.includes(student.id) && 
+      (isAdminOrLeader || student.isActive) // Hide inactive students for non-admin/leader users
     );
   };
   
@@ -733,8 +737,12 @@ function TeacherDashboard(props: { user: Teacher }) {
     const halaqa = app.halaqat().find(h => h.id === halaqaId);
     if (!halaqa) return [];
     
+    const currentUser = app.currentUser();
+    const isAdminOrLeader = currentUser && (currentUser.role === 'superuser' || currentUser.role === 'leitung');
+    
     return allStudents().filter(student => 
-      halaqa.student_ids.includes(student.id)
+      halaqa.student_ids.includes(student.id) && 
+      (isAdminOrLeader || student.isActive) // Hide inactive students for non-admin/leader users
     );
   };
   

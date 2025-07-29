@@ -336,7 +336,7 @@ export function NewsModal(props: NewsModalProps) {
             <div 
               class="scrollable-content"
               style={{
-                padding: '16px 20px'
+                padding: '16px 20px 80px 20px'
               }}
             >
               <div style={{ 'margin-bottom': '16px' }}>

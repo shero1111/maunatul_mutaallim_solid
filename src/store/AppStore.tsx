@@ -71,6 +71,10 @@ export interface AppState {
   sendMessage: (conversationId: string, content: string) => void;
   markMessagesAsRead: (conversationId: string) => void;
   getConversationWith: (userId: string) => ChatConversation | null;
+  
+  // User management functions
+  updateUser: (user: User) => void;
+  deleteUser: (userId: string) => void;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -416,6 +420,12 @@ export function AppProvider(props: { children: JSX.Element }) {
     console.log('🎯 Final found user:', foundUser ? `${foundUser.name} (${foundUser.role})` : 'NONE');
     
     if (foundUser) {
+      // Check if user is active
+      if (!foundUser.isActive) {
+        console.log('❌ User is inactive, login denied');
+        return false;
+      }
+      
       console.log('✅ BEFORE setCurrentUser - current user:', currentUser()?.name || 'NULL');
       
       // FORCE SET USER WITH VERIFICATION
@@ -552,6 +562,24 @@ export function AppProvider(props: { children: JSX.Element }) {
         // Save to localStorage  
     localStorage.setItem('usersData', JSON.stringify(newUsersData));
     console.log('💾 Saved to localStorage');
+  };
+
+  const deleteUser = (userId: string) => {
+    console.log('🗑️ AppStore.deleteUser called with ID:', userId);
+    const currentUsers = users();
+    const newUsersData = currentUsers.filter(u => u.id !== userId);
+    
+    setUsers(newUsersData);
+    
+    // If deleting the current user (shouldn't happen but safety check)
+    if (currentUser()?.id === userId) {
+      setCurrentUser(null);
+      localStorage.removeItem('currentUser');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('usersData', JSON.stringify(newUsersData));
+    console.log('✅ User deleted, remaining users:', newUsersData.length);
   };
 
   // News CRUD operations
@@ -1049,6 +1077,8 @@ export function AppProvider(props: { children: JSX.Element }) {
     sendMessage,
     markMessagesAsRead,
     getConversationWith,
+    updateUser,
+    deleteUser,
     playAudio,
     pauseAudio,
     stopAudio,

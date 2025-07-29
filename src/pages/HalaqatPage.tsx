@@ -246,10 +246,17 @@ export function HalaqatPage() {
   };
   
   const getStudentNames = (studentIds: string[]): string[] => {
+    const currentUser = app.currentUser();
+    const isAdminOrLeader = currentUser && (currentUser.role === 'superuser' || currentUser.role === 'leitung');
+    
     return studentIds.map(id => {
       const student = app.users().find(u => u.id === id);
+      // Hide inactive students for non-admin/leader users
+      if (!isAdminOrLeader && student && !student.isActive) {
+        return null;
+      }
       return student?.name || 'Unknown';
-    });
+    }).filter(name => name !== null) as string[];
   };
 
   const getFilteredStudentNames = (studentIds: string[], halaqaId: string): string[] => {

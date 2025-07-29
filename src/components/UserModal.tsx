@@ -1,663 +1,431 @@
-import { createSignal, Show, For } from 'solid-js';
+import { createSignal, Show, onMount } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { User } from '../types';
+import { SimpleConfirmDialog } from './SimpleConfirmDialog';
 
 interface UserModalProps {
-  user: User | null;
   isOpen: boolean;
+  user: User | null;
   onClose: () => void;
-  isViewMode?: boolean; // New prop to show view-only mode
 }
 
 export function UserModal(props: UserModalProps) {
   const app = useApp();
+  
+  // Form state
   const [name, setName] = createSignal('');
   const [username, setUsername] = createSignal('');
-  const [role, setRole] = createSignal('');
+  const [role, setRole] = createSignal<User['role']>('student');
   const [isActive, setIsActive] = createSignal(true);
-  const [showPasswordConfirm, setShowPasswordConfirm] = createSignal(false);
   const [isLoading, setIsLoading] = createSignal(false);
-
+  
+  // Confirmation states
+  const [showPasswordReset, setShowPasswordReset] = createSignal(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = createSignal(false);
+  
   // Initialize form when user changes
-  const initializeForm = () => {
+  onMount(() => {
     if (props.user) {
       setName(props.user.name);
       setUsername(props.user.username);
       setRole(props.user.role);
-      setIsActive(props.user.isActive ?? true);
+      setIsActive(props.user.isActive);
+    }
+  });
+  
+  // Update form when user prop changes
+  const updateForm = () => {
+    if (props.user) {
+      setName(props.user.name);
+      setUsername(props.user.username);
+      setRole(props.user.role);
+      setIsActive(props.user.isActive);
     }
   };
-
-  // Call initializeForm when modal opens
-  const handleModalOpen = () => {
-    if (props.isOpen && props.user) {
-      initializeForm();
+  
+  // Watch for user changes
+  onMount(() => {
+    const checkUser = () => {
+      if (props.user) {
+        updateForm();
+      }
+    };
+    
+    // Update when modal opens
+    if (props.isOpen) {
+      checkUser();
     }
-  };
-
-  // Watch for modal opening
-  handleModalOpen();
-
-  const handleSave = async () => {
-    if (!props.user) return;
+  });
+  
+  const handleSave = () => {
+    if (!props.user || !name().trim() || !username().trim()) return;
     
     setIsLoading(true);
-    try {
-      const updatedUser: User = {
-        ...props.user,
-        name: name(),
-        username: username(),
-        role: role() as any,
-        isActive: isActive()
-      };
-      
-      // Here you would call app.updateUser(updatedUser) or similar
-      console.log('Updating user:', updatedUser);
-      
-      props.onClose();
-    } catch (error) {
-      console.error('Error updating user:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    
+    const updatedUser: User = {
+      ...props.user,
+      name: name().trim(),
+      username: username().trim(),
+      role: role(),
+      isActive: isActive()
+    };
+    
+    app.updateUser(updatedUser);
+    setIsLoading(false);
+    props.onClose();
   };
-
-  const handlePasswordReset = async () => {
+  
+  const handlePasswordReset = () => {
     if (!props.user) return;
     
-    setIsLoading(true);
-    try {
-      // Here you would call app.resetUserPassword(props.user.id)
-      console.log('Resetting password for user:', props.user.id);
-      
-      setShowPasswordConfirm(false);
-      // Show success message or notification
-    } catch (error) {
-      console.error('Error resetting password:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    const updatedUser: User = {
+      ...props.user,
+      password: '123456'
+    };
+    
+    app.updateUser(updatedUser);
+    setShowPasswordReset(false);
+    
+    // Show success message
+    const message = app.language() === 'ar' 
+      ? 'تم إعادة تعيين كلمة المرور إلى 123456'
+      : 'Password reset to 123456';
+    
+    // Simple alert for now - could be improved with snackbar
+    alert(message);
   };
-
-  const availableRoles = () => {
-    const currentUser = app.currentUser();
-    if (currentUser?.role === 'leitung') {
-      return ['student', 'lehrer', 'leitung'];
-    }
-    return ['student', 'lehrer', 'leitung', 'superuser'];
+  
+  const handleDelete = () => {
+    if (!props.user) return;
+    
+    app.deleteUser(props.user.id);
+    setShowDeleteConfirm(false);
+    props.onClose();
   };
-
+  
   const canEdit = () => {
     const currentUser = app.currentUser();
-    return (currentUser?.role === 'superuser' || currentUser?.role === 'leitung') && !props.isViewMode;
+    return currentUser && (currentUser.role === 'superuser' || currentUser.role === 'leitung');
   };
-
-  const canView = () => {
+  
+  const canDelete = () => {
     const currentUser = app.currentUser();
-    return currentUser?.role === 'superuser' || currentUser?.role === 'leitung';
+    return currentUser && currentUser.role === 'superuser' && props.user?.id !== currentUser.id;
   };
-
+  
   const modalOverlayStyle = {
     position: 'fixed' as const,
     top: '0',
     left: '0',
-    right: '0',
-    bottom: '0',
+    width: '100%',
+    height: '100%',
     'background-color': 'rgba(0, 0, 0, 0.5)',
+    'z-index': '1000',
     display: 'flex',
     'align-items': 'center',
-    'justify-content': 'center',
-    'z-index': '1000',
-    padding: '20px'
+    'justify-content': 'center'
   };
-
-  const modalContentStyle = {
-    background: 'var(--color-background)',
+  
+  const modalStyle = {
+    'background-color': 'var(--color-background)',
     'border-radius': '16px',
-    padding: '24px',
-    width: '100%',
+    width: '90%',
     'max-width': '500px',
-    'max-height': '90vh',
-    'overflow-y': 'auto' as const,
-    'box-shadow': '0 10px 30px rgba(0,0,0,0.3)'
+    'max-height': '80vh',
+    'box-shadow': '0 10px 30px rgba(0,0,0,0.3)',
+    display: 'flex',
+    'flex-direction': 'column' as const,
+    overflow: 'hidden'
   };
-
+  
+  const headerStyle = {
+    display: 'flex',
+    'align-items': 'center',
+    'justify-content': 'space-between',
+    padding: '20px',
+    'border-bottom': '1px solid var(--color-border)',
+    'flex-shrink': '0'
+  };
+  
   const inputStyle = {
     width: '100%',
-    padding: '12px 16px',
-    border: '1px solid var(--color-border)',
+    padding: '12px',
+    border: '2px solid var(--color-border)',
     'border-radius': '8px',
-    'font-size': '16px',
     'background-color': 'var(--color-surface)',
     color: 'var(--color-text)',
-    'margin-bottom': '16px'
+    'font-size': '14px',
+    'box-sizing': 'border-box' as const
   };
-
-  const selectStyle = {
-    ...inputStyle,
-    cursor: 'pointer'
-  };
-
+  
   const buttonStyle = {
-    padding: '12px 20px',
+    padding: '10px 16px',
     'border-radius': '8px',
     border: 'none',
+    cursor: 'pointer' as const,
     'font-size': '14px',
     'font-weight': '500',
-    cursor: 'pointer',
     transition: 'all 0.2s ease'
   };
-
+  
   const primaryButtonStyle = {
     ...buttonStyle,
     'background-color': 'var(--color-primary)',
     color: 'white'
   };
-
+  
   const secondaryButtonStyle = {
     ...buttonStyle,
     'background-color': 'var(--color-surface)',
     color: 'var(--color-text)',
     border: '1px solid var(--color-border)'
   };
-
+  
   const dangerButtonStyle = {
     ...buttonStyle,
     'background-color': 'var(--color-error)',
     color: 'white'
   };
-
-  if (!canView()) {
-    return null;
-  }
-
+  
   return (
-    <Show when={props.isOpen && props.user}>
-      <div style={modalOverlayStyle} onClick={props.onClose}>
-        <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-          {/* Close X Button */}
-          <button
-            onClick={props.onClose}
-            style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
-              background: 'transparent',
-              border: 'none',
-              'font-size': '24px',
-              color: 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              padding: '4px',
-              'border-radius': '50%',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              'align-items': 'center',
-              'justify-content': 'center',
-              transition: 'all 0.2s ease',
-              'z-index': '10'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--color-border)';
-              e.currentTarget.style.color = 'var(--color-text)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = 'var(--color-text-secondary)';
-            }}
-            title="إغلاق"
-          >
-            ✕
-          </button>
-
-          <h2 style={{
-            'font-size': '20px',
-            'font-weight': '600',
-            color: 'var(--color-text)',
-            'margin-bottom': '20px',
-            'text-align': 'center',
-            'padding-right': '40px' // Space for X button
-          }}>
-            {props.isViewMode ? 'تفاصيل المستخدم' : app.translate('editUser')}
-          </h2>
-
-          {/* View Mode - Display user info */}
-          <Show when={props.isViewMode}>
-            <div style={{ 'margin-bottom': '24px' }}>
-              {/* User Avatar/Icon */}
-              <div style={{
-                'text-align': 'center',
-                'margin-bottom': '20px'
+    <>
+      <Show when={props.isOpen && props.user}>
+        <div style={modalOverlayStyle} onClick={props.onClose}>
+          <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div style={headerStyle}>
+              <h2 style={{
+                'font-size': '18px',
+                'font-weight': '600',
+                color: 'var(--color-text)',
+                margin: '0'
               }}>
-                <div style={{
-                  width: '80px',
-                  height: '80px',
-                  'border-radius': '50%',
-                  background: 'linear-gradient(135deg, var(--color-primary), #3b82f6)',
+                {app.translate('userDetails')}
+              </h2>
+              <button
+                onClick={props.onClose}
+                style={{
+                  'background-color': 'transparent',
+                  border: 'none',
+                  'font-size': '24px',
+                  color: 'var(--color-text-secondary)',
+                  cursor: 'pointer',
+                  padding: '0',
+                  width: '30px',
+                  height: '30px',
                   display: 'flex',
                   'align-items': 'center',
-                  'justify-content': 'center',
-                  margin: '0 auto',
-                  'font-size': '2rem',
-                  color: 'white',
-                  'font-weight': '600'
+                  'justify-content': 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Content */}
+            <div style={{
+              padding: '20px',
+              'overflow-y': 'auto',
+              'flex-grow': '1'
+            }}>
+              {/* Name Field */}
+              <div style={{ 'margin-bottom': '16px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
                 }}>
-                  {props.user?.name?.charAt(0)?.toUpperCase() || '👤'}
-                </div>
+                  {app.translate('name')}
+                </label>
+                <input
+                  type="text"
+                  value={name()}
+                  onInput={(e) => setName(e.currentTarget.value)}
+                  style={inputStyle}
+                  disabled={!canEdit()}
+                />
               </div>
-
-              {/* User Details Grid */}
-              <div style={{
-                display: 'grid',
-                gap: '16px'
-              }}>
-                <div style={{
-                  padding: '12px 16px',
-                  background: 'var(--color-surface)',
-                  'border-radius': '8px',
-                  border: '1px solid var(--color-border)'
+              
+              {/* Username Field */}
+              <div style={{ 'margin-bottom': '16px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
                 }}>
-                  <div style={{
-                    'font-size': '12px',
-                    color: 'var(--color-text-secondary)',
-                    'margin-bottom': '4px',
-                    'font-weight': '500'
-                  }}>
-                    {app.translate('fullName')}
-                  </div>
-                  <div style={{
-                    'font-size': '16px',
-                    color: 'var(--color-text)',
-                    'font-weight': '600'
-                  }}>
-                    {props.user?.name}
-                  </div>
-                </div>
-
-                <div style={{
-                  padding: '12px 16px',
-                  background: 'var(--color-surface)',
-                  'border-radius': '8px',
-                  border: '1px solid var(--color-border)'
+                  {app.translate('username')}
+                </label>
+                <input
+                  type="text"
+                  value={username()}
+                  onInput={(e) => setUsername(e.currentTarget.value)}
+                  style={inputStyle}
+                  disabled={!canEdit()}
+                />
+              </div>
+              
+              {/* Role Field */}
+              <div style={{ 'margin-bottom': '16px' }}>
+                <label style={{
+                  display: 'block',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  color: 'var(--color-text)',
+                  'margin-bottom': '6px'
                 }}>
-                  <div style={{
-                    'font-size': '12px',
-                    color: 'var(--color-text-secondary)',
-                    'margin-bottom': '4px',
-                    'font-weight': '500'
-                  }}>
-                    {app.translate('userName')}
-                  </div>
-                  <div style={{
-                    'font-size': '16px',
-                    color: 'var(--color-text)',
-                    'font-weight': '600'
-                  }}>
-                    @{props.user?.username}
-                  </div>
-                </div>
-
-                <div style={{
-                  display: 'grid',
-                  'grid-template-columns': '1fr 1fr',
-                  gap: '12px'
+                  {app.translate('role')}
+                </label>
+                <select
+                  value={role()}
+                  onChange={(e) => setRole(e.currentTarget.value as User['role'])}
+                  style={inputStyle}
+                  disabled={!canEdit()}
+                >
+                  <option value="student">{app.translate('student')}</option>
+                  <option value="lehrer">{app.translate('lehrer')}</option>
+                  <option value="leitung">{app.translate('leitung')}</option>
+                  <Show when={app.currentUser()?.role === 'superuser'}>
+                    <option value="superuser">{app.translate('superuser')}</option>
+                  </Show>
+                </select>
+              </div>
+              
+              {/* Active Status */}
+              <div style={{ 'margin-bottom': '20px' }}>
+                <label style={{
+                  display: 'flex',
+                  'align-items': 'center',
+                  gap: '8px',
+                  cursor: 'pointer'
                 }}>
-                  <div style={{
-                    padding: '12px 16px',
-                    background: 'var(--color-surface)',
-                    'border-radius': '8px',
-                    border: '1px solid var(--color-border)'
-                  }}>
-                    <div style={{
-                      'font-size': '12px',
-                      color: 'var(--color-text-secondary)',
-                      'margin-bottom': '4px',
-                      'font-weight': '500'
-                    }}>
-                      {app.translate('role')}
-                    </div>
-                    <span style={{
-                      ...roleTagStyle(props.user?.role || ''),
-                      'font-size': '12px',
-                      padding: '4px 8px'
-                    }}>
-                      {app.translate(props.user?.role || '')}
-                    </span>
-                  </div>
-
-                  <div style={{
-                    padding: '12px 16px',
-                    background: 'var(--color-surface)',
-                    'border-radius': '8px',
-                    border: '1px solid var(--color-border)'
-                  }}>
-                    <div style={{
-                      'font-size': '12px',
-                      color: 'var(--color-text-secondary)',
-                      'margin-bottom': '4px',
-                      'font-weight': '500'
-                    }}>
-                      الحالة
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      'align-items': 'center',
-                      gap: '6px'
-                    }}>
-                      <div style={{
-                        width: '10px',
-                        height: '10px',
-                        'border-radius': '50%',
-                        'background-color': props.user?.isActive ? 'var(--color-success)' : 'var(--color-border)',
-                        border: props.user?.isActive ? 'none' : '2px solid var(--color-border)'
-                      }} />
-                      <span style={{
-                        'font-size': '14px',
-                        color: 'var(--color-text)',
-                        'font-weight': '500'
-                      }}>
-                        {props.user?.isActive ? 'نشط' : 'غير نشط'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{
-                  padding: '12px 16px',
-                  background: 'var(--color-surface)',
-                  'border-radius': '8px',
-                  border: '1px solid var(--color-border)'
-                }}>
-                  <div style={{
-                    'font-size': '12px',
-                    color: 'var(--color-text-secondary)',
-                    'margin-bottom': '4px',
-                    'font-weight': '500'
-                  }}>
-                    تاريخ الإنشاء
-                  </div>
-                  <div style={{
+                  <input
+                    type="checkbox"
+                    checked={isActive()}
+                    onChange={(e) => setIsActive(e.currentTarget.checked)}
+                    disabled={!canEdit()}
+                    style={{
+                      width: '18px',
+                      height: '18px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <span style={{
                     'font-size': '14px',
+                    'font-weight': '500',
                     color: 'var(--color-text)'
                   }}>
-                    {props.user?.created_at ? new Date(props.user.created_at).toLocaleDateString('ar-SA') : 'غير محدد'}
-                  </div>
-                </div>
+                    {app.translate('activeUser')}
+                  </span>
+                </label>
               </div>
-
-              {/* Edit Button for admins/leaders */}
+              
+              {/* Password Reset Section */}
               <Show when={canEdit()}>
                 <div style={{
-                  'margin-top': '20px',
-                  'text-align': 'center'
+                  'background-color': 'var(--color-surface)',
+                  padding: '16px',
+                  'border-radius': '8px',
+                  'margin-bottom': '20px'
                 }}>
+                  <h4 style={{
+                    margin: '0 0 8px 0',
+                    color: 'var(--color-text)',
+                    'font-size': '14px'
+                  }}>
+                    {app.translate('passwordReset')}
+                  </h4>
+                  <p style={{
+                    margin: '0 0 12px 0',
+                    'font-size': '12px',
+                    color: 'var(--color-text-secondary)',
+                    'line-height': '1.4'
+                  }}>
+                    {app.language() === 'ar' 
+                      ? 'سيتم إعادة تعيين كلمة المرور إلى "123456"'
+                      : 'Password will be reset to "123456"'
+                    }
+                  </p>
                   <button
-                    style={{
-                      ...primaryButtonStyle,
-                      width: '100%'
-                    }}
-                    onClick={() => {
-                      // Switch to edit mode - this would need to be handled by parent component
-                      props.onClose();
-                    }}
+                    onClick={() => setShowPasswordReset(true)}
+                    style={dangerButtonStyle}
                   >
-                    ✏️ تحرير المستخدم
+                    {app.translate('resetPassword')}
                   </button>
                 </div>
               </Show>
             </div>
-          </Show>
-
-          {/* Edit Mode - Show form inputs */}
-          <Show when={!props.isViewMode}>
-
-          <div style={{ 'margin-bottom': '16px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('fullName')}
-            </label>
-            <input
-              type="text"
-              value={name()}
-              onInput={(e) => setName(e.currentTarget.value)}
-              style={inputStyle}
-              placeholder={app.translate('fullName')}
-            />
-          </div>
-
-          <div style={{ 'margin-bottom': '16px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('userName')}
-            </label>
-            <input
-              type="text"
-              value={username()}
-              onInput={(e) => setUsername(e.currentTarget.value)}
-              style={inputStyle}
-              placeholder={app.translate('userName')}
-            />
-          </div>
-
-          <div style={{ 'margin-bottom': '16px' }}>
-            <label style={{
-              display: 'block',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              'margin-bottom': '6px'
-            }}>
-              {app.translate('role')}
-            </label>
-            <select
-              value={role()}
-              onChange={(e) => setRole(e.currentTarget.value)}
-              style={selectStyle}
-            >
-              <For each={availableRoles()}>
-                {(roleOption) => (
-                  <option value={roleOption}>
-                    {app.translate(roleOption)}
-                  </option>
-                )}
-              </For>
-            </select>
-          </div>
-
-          <div style={{ 'margin-bottom': '24px' }}>
-            <label style={{
-              display: 'flex',
-              'align-items': 'center',
-              'font-size': '14px',
-              'font-weight': '500',
-              color: 'var(--color-text)',
-              cursor: 'pointer'
-            }}>
-              <input
-                type="checkbox"
-                checked={isActive()}
-                onChange={(e) => setIsActive(e.currentTarget.checked)}
-                style={{ 'margin-right': '8px' }}
-              />
-              {app.translate('isActive')}
-            </label>
-          </div>
-
-          {/* Password Reset Section */}
-          <div style={{
-            padding: '16px',
-            'background-color': 'var(--color-surface)',
-            'border-radius': '8px',
-            'margin-bottom': '24px',
-            border: '1px solid var(--color-border)'
-          }}>
-            <h3 style={{
-              'font-size': '16px',
-              'font-weight': '600',
-              color: 'var(--color-text)',
-              'margin-bottom': '8px'
-            }}>
-              {app.translate('resetPassword')}
-            </h3>
-            <p style={{
-              'font-size': '14px',
-              color: 'var(--color-text-secondary)',
-              'margin-bottom': '12px',
-              'line-height': '1.4'
-            }}>
-              {app.translate('resetPasswordInfo')}
-            </p>
-            <button
-              style={dangerButtonStyle}
-              onClick={() => setShowPasswordConfirm(true)}
-              disabled={isLoading()}
-            >
-              {app.translate('resetPassword')}
-            </button>
-          </div>
-
-          {/* Action Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: '12px',
-            'justify-content': 'flex-end'
-          }}>
-            <button
-              style={secondaryButtonStyle}
-              onClick={props.onClose}
-              disabled={isLoading()}
-            >
-              {app.translate('cancel')}
-            </button>
-            <button
-              style={primaryButtonStyle}
-              onClick={handleSave}
-              disabled={isLoading()}
-            >
-              {isLoading() ? '...' : app.translate('save')}
-            </button>
-          </div>
-          </Show>
-
-          {/* Close Button for View Mode */}
-          <Show when={props.isViewMode}>
+            
+            {/* Footer */}
             <div style={{
-              'text-align': 'center',
-              'margin-top': '20px'
-            }}>
-              <button
-                style={secondaryButtonStyle}
-                onClick={props.onClose}
-              >
-                إغلاق
-              </button>
-            </div>
-          </Show>
-        </div>
-      </div>
-
-      {/* Password Reset Confirmation Modal */}
-      <Show when={showPasswordConfirm()}>
-        <div style={modalOverlayStyle} onClick={() => setShowPasswordConfirm(false)}>
-          <div style={{
-            ...modalContentStyle,
-            'max-width': '400px'
-          }} onClick={(e) => e.stopPropagation()}>
-            {/* Close X Button for Password Reset Confirmation */}
-            <button
-              onClick={() => setShowPasswordConfirm(false)}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'transparent',
-                border: 'none',
-                'font-size': '20px',
-                color: 'var(--color-text-secondary)',
-                cursor: 'pointer',
-                padding: '4px',
-                'border-radius': '50%',
-                width: '28px',
-                height: '28px',
-                display: 'flex',
-                'align-items': 'center',
-                'justify-content': 'center',
-                transition: 'all 0.2s ease',
-                'z-index': '10'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--color-border)';
-                e.currentTarget.style.color = 'var(--color-text)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--color-text-secondary)';
-              }}
-              title="إغلاق"
-            >
-              ✕
-            </button>
-
-            <h3 style={{
-              'font-size': '18px',
-              'font-weight': '600',
-              color: 'var(--color-text)',
-              'margin-bottom': '16px',
-              'text-align': 'center'
-            }}>
-              {app.translate('confirm')}
-            </h3>
-            <p style={{
-              'font-size': '14px',
-              color: 'var(--color-text)',
-              'margin-bottom': '20px',
-              'text-align': 'center',
-              'line-height': '1.5'
-            }}>
-              {app.translate('resetPasswordConfirm')}
-            </p>
-            <p style={{
-              'font-size': '14px',
-              color: 'var(--color-error)',
-              'margin-bottom': '20px',
-              'text-align': 'center',
-              'font-weight': '500'
-            }}>
-              {app.translate('resetPasswordInfo')}
-            </p>
-            <div style={{
+              padding: '16px 20px',
+              'border-top': '1px solid var(--color-border)',
               display: 'flex',
               gap: '12px',
-              'justify-content': 'center'
+              'flex-shrink': '0'
             }}>
               <button
+                onClick={props.onClose}
                 style={secondaryButtonStyle}
-                onClick={() => setShowPasswordConfirm(false)}
-                disabled={isLoading()}
               >
                 {app.translate('cancel')}
               </button>
-              <button
-                style={dangerButtonStyle}
-                onClick={handlePasswordReset}
-                disabled={isLoading()}
-              >
-                {isLoading() ? '...' : app.translate('confirm')}
-              </button>
+              
+              <Show when={canEdit()}>
+                <button
+                  onClick={handleSave}
+                  disabled={isLoading() || !name().trim() || !username().trim()}
+                  style={{
+                    ...primaryButtonStyle,
+                    flex: '1',
+                    opacity: isLoading() || !name().trim() || !username().trim() ? '0.5' : '1'
+                  }}
+                >
+                  {isLoading() ? '...' : app.translate('save')}
+                </button>
+              </Show>
+              
+              <Show when={canDelete()}>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  style={dangerButtonStyle}
+                >
+                  {app.translate('delete')}
+                </button>
+              </Show>
             </div>
           </div>
         </div>
       </Show>
-    </Show>
+      
+      {/* Password Reset Confirmation */}
+      <SimpleConfirmDialog
+        isOpen={showPasswordReset()}
+        message={
+          app.language() === 'ar'
+            ? `هل تريد إعادة تعيين كلمة مرور "${props.user?.name}" إلى "123456"؟`
+            : `Reset password for "${props.user?.name}" to "123456"?`
+        }
+        onConfirm={handlePasswordReset}
+        onCancel={() => setShowPasswordReset(false)}
+        type="warning"
+      />
+      
+      {/* Delete User Confirmation */}
+      <SimpleConfirmDialog
+        isOpen={showDeleteConfirm()}
+        message={
+          app.language() === 'ar'
+            ? `هل تريد حذف المستخدم "${props.user?.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`
+            : `Delete user "${props.user?.name}"? This action cannot be undone.`
+        }
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        type="delete"
+      />
+    </>
   );
 }
