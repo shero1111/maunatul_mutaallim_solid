@@ -16,6 +16,34 @@ export function RecitingPage() {
   const [activeChatConversation, setActiveChatConversation] = createSignal<string | null>(null);
   const [chatMessage, setChatMessage] = createSignal('');
   
+  // Calculate total unread messages
+  const totalUnreadCount = createMemo(() => {
+    const currentUserId = app.currentUser()?.id;
+    if (!currentUserId) return 0;
+    
+    return app.messages().filter(msg => 
+      msg.sender_id !== currentUserId && !msg.is_read
+    ).length;
+  });
+  
+  // Calculate unread count for a specific conversation
+  const getConversationUnreadCount = (conversationId: string) => {
+    const currentUserId = app.currentUser()?.id;
+    if (!currentUserId) return 0;
+    
+    return app.messages().filter(msg => 
+      msg.conversation_id === conversationId && 
+      msg.sender_id !== currentUserId && 
+      !msg.is_read
+    ).length;
+  };
+  
+  // Mark messages as read when opening a conversation
+  const openConversation = (conversationId: string) => {
+    setActiveChatConversation(conversationId);
+    app.markMessagesAsRead(conversationId);
+  };
+  
   // Save tab changes to localStorage
   const handleTabChange = (tab: 'recording' | 'exchange' | 'chat') => {
     setActiveTab(tab);
@@ -751,10 +779,31 @@ export function RecitingPage() {
               color: activeTab() === 'chat' ? 'var(--color-primary)' : 'white',
               'font-weight': '500',
               cursor: 'pointer',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              position: 'relative'
             }}
           >
             💬 {app.translate('chat')}
+            <Show when={totalUnreadCount() > 0}>
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                'background-color': '#ef4444',
+                color: 'white',
+                'border-radius': '50%',
+                'min-width': '20px',
+                height: '20px',
+                display: 'flex',
+                'align-items': 'center',
+                'justify-content': 'center',
+                'font-size': '12px',
+                'font-weight': 'bold',
+                'line-height': '1'
+              }}>
+                {totalUnreadCount() > 99 ? '99+' : totalUnreadCount()}
+              </span>
+            </Show>
           </button>
         </div>
       </div>
@@ -1667,9 +1716,11 @@ export function RecitingPage() {
                           ? { id: conversation.participant2_id, name: conversation.participant2_name }
                           : { id: conversation.participant1_id, name: conversation.participant1_name };
                         
+                        const unreadCount = getConversationUnreadCount(conversation.id);
+                        
                         return (
                           <div 
-                            onClick={() => setActiveChatConversation(conversation.id)}
+                            onClick={() => openConversation(conversation.id)}
                             style={{
                               'background-color': 'var(--color-background)',
                               'border-radius': '12px',
@@ -1688,7 +1739,7 @@ export function RecitingPage() {
                               'justify-content': 'space-between',
                               'align-items': 'center'
                             }}>
-                              <div>
+                              <div style={{ flex: '1' }}>
                                 <div style={{
                                   'font-weight': 'bold',
                                   color: 'var(--color-text)',
@@ -1709,20 +1760,21 @@ export function RecitingPage() {
                                   </div>
                                 </Show>
                               </div>
-                              <Show when={conversation.unread_count > 0}>
+                              <Show when={unreadCount > 0}>
                                 <div style={{
-                                  'background-color': 'var(--color-error)',
+                                  'background-color': '#ef4444',
                                   color: 'white',
                                   'border-radius': '50%',
-                                  width: '20px',
-                                  height: '20px',
+                                  'min-width': '24px',
+                                  height: '24px',
                                   display: 'flex',
                                   'align-items': 'center',
                                   'justify-content': 'center',
                                   'font-size': '12px',
-                                  'font-weight': 'bold'
+                                  'font-weight': 'bold',
+                                  'margin-left': '8px'
                                 }}>
-                                  {conversation.unread_count}
+                                  {unreadCount > 99 ? '99+' : unreadCount}
                                 </div>
                               </Show>
                             </div>
@@ -1838,16 +1890,16 @@ export function RecitingPage() {
               <div style={{
                 display: 'flex',
                 gap: '8px',
-                'align-items': 'center'
+                'align-items': 'flex-end'
               }}>
-                <input
-                  type="text"
+                <textarea
                   value={chatMessage()}
                   onInput={(e) => setChatMessage(e.currentTarget.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && chatMessage().trim()) {
-                      app.sendMessage(activeChatConversation()!, chatMessage());
-                      setChatMessage('');
+                  onKeyDown={(e) => {
+                    // Allow Enter for new line, no sending via Enter
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      // Just allow the default behavior (new line)
+                      return;
                     }
                   }}
                   placeholder={app.translate('typeMessage')}
@@ -1858,8 +1910,15 @@ export function RecitingPage() {
                     'border-radius': '8px',
                     'background-color': 'var(--color-background)',
                     color: 'var(--color-text)',
-                    'font-size': '14px'
+                    'font-size': '14px',
+                    'font-family': 'inherit',
+                    resize: 'none',
+                    'min-height': '44px',
+                    'max-height': '120px',
+                    'overflow-y': 'auto',
+                    'line-height': '1.4'
                   }}
+                  rows={1}
                 />
                 <button
                   onClick={() => {
@@ -1876,7 +1935,9 @@ export function RecitingPage() {
                     padding: '12px 16px',
                     'border-radius': '8px',
                     cursor: chatMessage().trim() ? 'pointer' : 'not-allowed',
-                    'font-weight': '500'
+                    'font-weight': '500',
+                    'min-height': '44px',
+                    'white-space': 'nowrap'
                   }}
                 >
                   {app.translate('send')}
