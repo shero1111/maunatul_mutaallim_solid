@@ -149,39 +149,58 @@ export function RecitingPage() {
         }
       });
       
-      // Try different MIME types based on browser support
-      let mimeType = 'audio/webm;codecs=opus';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'audio/webm';
-      }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'audio/mp4';
-      }
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = ''; // Let browser choose
+      // Try different MIME types based on browser support (most compatible first)
+      const supportedTypes = [
+        'audio/mp4',
+        'audio/mpeg',
+        'audio/wav',
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg;codecs=opus'
+      ];
+      
+      let mimeType = '';
+      for (const type of supportedTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
       }
       
-      console.log('🎙️ Using MIME type:', mimeType);
+      console.log('🎙️ Available MIME types:', supportedTypes.map(type => ({ 
+        type, 
+        supported: MediaRecorder.isTypeSupported(type) 
+      })));
+      console.log('🎯 Selected MIME type:', mimeType || 'browser default');
       
       const recorder = new MediaRecorder(stream, { 
         mimeType: mimeType || undefined
       });
       
+      const chunks: Blob[] = [];
+      
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          console.log('📊 Audio chunk received, size:', event.data.size);
-          setAudioChunks(prev => [...prev, event.data]);
+          console.log('📊 Audio chunk received, size:', event.data.size, 'type:', event.data.type);
+          chunks.push(event.data);
         }
       };
       
       recorder.onstop = () => {
-        console.log('🛑 Recording stopped, total chunks:', audioChunks().length);
-        const audioBlob = new Blob(audioChunks(), { 
-          type: mimeType || 'audio/webm' 
+        console.log('🛑 Recording stopped, total chunks:', chunks.length);
+        console.log('🔍 Chunk details:', chunks.map(chunk => ({ size: chunk.size, type: chunk.type })));
+        
+        // Create blob with proper MIME type
+        const blobType = mimeType || chunks[0]?.type || 'audio/webm';
+        const audioBlob = new Blob(chunks, { type: blobType });
+        console.log('💾 Created audio blob:', {
+          size: audioBlob.size,
+          type: audioBlob.type,
+          mimeType: mimeType
         });
-        console.log('💾 Created audio blob, size:', audioBlob.size);
+        
         saveRecording(audioBlob);
-        setAudioChunks([]);
+        chunks.length = 0; // Clear chunks
       };
       
       setMediaRecorder(recorder);
@@ -272,16 +291,29 @@ export function RecitingPage() {
     const url = URL.createObjectURL(audioBlob);
     console.log('🔗 Created object URL:', url);
     
-    // Test the URL immediately
+    // Test the URL immediately with more detailed logging
     console.log('🧪 Testing blob URL...');
     const testAudio = new Audio();
     testAudio.src = url;
+    
+    testAudio.addEventListener('loadstart', () => {
+      console.log('📥 Test audio loading started');
+    });
+    
     testAudio.addEventListener('canplaythrough', () => {
       console.log('✅ Blob URL is valid and audio can play');
     });
+    
     testAudio.addEventListener('error', (e) => {
       console.error('❌ Blob URL test failed:', e);
+      console.error('❌ Test audio error details:', {
+        error: testAudio.error,
+        networkState: testAudio.networkState,
+        readyState: testAudio.readyState,
+        src: testAudio.src
+      });
     });
+    
     testAudio.load();
     
     const recording: AudioRecording = {
