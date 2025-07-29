@@ -83,12 +83,19 @@ export function RecitingPage() {
     
     const filtered = allMutun
       .filter(matn => matn.section === targetSection)
-      .map(matn => ({
-        value: matn.id,
-        label: matn.name
-      }));
+      .reduce((unique, matn) => {
+        // Remove duplicates by name
+        if (!unique.find(item => item.label === matn.name)) {
+          unique.push({
+            value: matn.id,
+            label: matn.name
+          });
+        }
+        return unique;
+      }, [] as { value: string; label: string }[]);
       
     console.log('Filtered Mutun for level:', filtered);
+    console.log('Total unique mutun count:', filtered.length);
     return filtered;
   });
 
@@ -1115,9 +1122,10 @@ export function RecitingPage() {
                   'background-color': 'var(--color-background)',
                   'border-radius': '20px 20px 0 0',
                   width: '100%',
-                  'max-height': '80vh',
+                  'max-height': '85vh',
                   overflow: 'auto',
-                  padding: '20px'
+                  padding: '20px',
+                  'padding-bottom': '30px'
                 }} 
                 onClick={(e) => e.stopPropagation()}
               >
@@ -1251,14 +1259,21 @@ export function RecitingPage() {
                       // Auto-scroll to show matn dropdown if level is not "all"
                       if (value && value !== 'all') {
                         setTimeout(() => {
-                          const container = e.currentTarget.closest('.post-form-container');
-                          if (container) {
-                            container.scrollIntoView({ 
+                          // Find the matn dropdown that will appear
+                          const matnSection = document.querySelector('.matn-dropdown-section');
+                          if (matnSection) {
+                            matnSection.scrollIntoView({ 
                               behavior: 'smooth', 
-                              block: 'end' 
+                              block: 'center' 
                             });
+                          } else {
+                            // Fallback: scroll to bottom of container
+                            const container = e.currentTarget.closest('.post-form-container');
+                            if (container) {
+                              container.scrollTop = container.scrollHeight;
+                            }
                           }
-                        }, 100);
+                        }, 200);
                       }
                     }}
                     style={{
@@ -1285,7 +1300,7 @@ export function RecitingPage() {
 
                 {/* Matn Selection - Only show if level is selected and not "الجميع" */}
                 <Show when={postLevel() && postLevel() !== 'all'}>
-                  <div style={{ 'margin-bottom': '16px' }}>
+                  <div class="matn-dropdown-section" style={{ 'margin-bottom': '16px' }}>
                     <select
                       value={postMatn()}
                       onChange={(e) => setPostMatn(e.currentTarget.value)}
