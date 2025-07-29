@@ -369,12 +369,22 @@ export function HalaqatPage() {
                     }}>
                       {getTypeIcon(halaqa.type)} #{halaqa.internal_number} {halaqa.name}
                     </h3>
+                    {/* Teacher and Type in one line */}
                     <div style={{
                       'font-size': '0.85rem',
                       color: 'var(--color-text-secondary)',
-                      'margin-bottom': '8px'
+                      'margin-bottom': '8px',
+                      display: 'flex',
+                      'align-items': 'center',
+                      gap: '12px',
+                      'flex-wrap': 'wrap'
                     }}>
-                      {getHalaqaTypeTranslation(halaqa.type)}
+                      <div style={{ display: 'flex', 'align-items': 'center', gap: '4px' }}>
+                        <span>👨‍🏫</span>
+                        <span>{getTeacherName(halaqa.teacher_id)}</span>
+                      </div>
+                      <span style={{ color: 'var(--color-border)' }}>•</span>
+                      <span>{getHalaqaTypeTranslation(halaqa.type)}</span>
                     </div>
                   </div>
                   
@@ -420,20 +430,6 @@ export function HalaqatPage() {
                   </div>
                 </div>
                 
-                {/* Teacher Info */}
-                <div style={{
-                  display: 'flex',
-                  'align-items': 'center',
-                  gap: '6px',
-                  'font-size': '0.85rem',
-                  'margin-bottom': '12px'
-                }}>
-                  <span>👨‍🏫</span>
-                  <span style={{ color: 'var(--color-text-secondary)' }}>
-                    {getTeacherName(halaqa.teacher_id)}
-                  </span>
-                </div>
-                
                 {/* Students Dropdown */}
                 <div style={{
                   border: '1px solid var(--color-border)',
@@ -464,7 +460,7 @@ export function HalaqatPage() {
                   >
                     <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
                       <span>👥</span>
-                      <span>Show Students ({halaqa.student_ids.length})</span>
+                      <span>{app.translate('showStudents')} ({halaqa.student_ids.length})</span>
                     </div>
                     <span style={{
                       transform: expandedHalaqat()[halaqa.id] ? 'rotate(180deg)' : 'rotate(0deg)',

@@ -73,6 +73,7 @@ export const translations = {
     lehrer: 'معلم',
     student: 'طالب',
     selectTeacher: 'اختر المعلم',
+    showStudents: 'إظهار الطلاب',
 
     assignToHalaqa: 'إضافة إلى حلقة',
     removeFromHalaqa: 'إزالة من حلقة',
@@ -291,6 +292,7 @@ export const translations = {
     lehrer: 'Teacher',
     student: 'Student',
     selectTeacher: 'Select Teacher',
+    showStudents: 'Show Students',
 
     assignToHalaqa: 'Assign to Halaqa',
     removeFromHalaqa: 'Remove from Halaqa',
