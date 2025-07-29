@@ -1867,16 +1867,46 @@ export function RecitingPage() {
                             color: isOwn ? 'white' : 'var(--color-text)',
                             'box-shadow': '0 2px 4px rgba(0, 0, 0, 0.1)'
                           }}>
-                                                         <div style={{ 'word-wrap': 'break-word' }}>
-                               {makeTextClickable(message.content, app.language())}
-                             </div>
+                            <div style={{ 
+                              'word-wrap': 'break-word',
+                              'white-space': 'pre-wrap',
+                              'line-height': '1.4'
+                            }}>
+                              {message.content ? makeTextClickable(message.content, app.language()) : ''}
+                            </div>
                             <div style={{
                               'font-size': '11px',
                               opacity: '0.7',
                               'margin-top': '4px',
                               'text-align': isOwn ? 'right' : 'left'
                             }}>
-                              {new Date(message.created_at).toLocaleTimeString()}
+                              {(() => {
+                                const date = new Date(message.created_at);
+                                const today = new Date();
+                                const yesterday = new Date(today);
+                                yesterday.setDate(today.getDate() - 1);
+                                
+                                const isToday = date.toDateString() === today.toDateString();
+                                const isYesterday = date.toDateString() === yesterday.toDateString();
+                                
+                                const timeStr = date.toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                  hour12: true
+                                });
+                                
+                                if (isToday) {
+                                  return `Today ${timeStr}`;
+                                } else if (isYesterday) {
+                                  return `Yesterday ${timeStr}`;
+                                } else {
+                                  const dateStr = date.toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                  });
+                                  return `${dateStr} ${timeStr}`;
+                                }
+                              })()}
                             </div>
                           </div>
                         </div>
