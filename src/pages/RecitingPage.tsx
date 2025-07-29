@@ -1125,7 +1125,7 @@ export function RecitingPage() {
                   'max-height': '85vh',
                   overflow: 'auto',
                   padding: '20px',
-                  'padding-bottom': '30px'
+                  'padding-bottom': '100px'
                 }} 
                 onClick={(e) => e.stopPropagation()}
               >
@@ -1332,9 +1332,17 @@ export function RecitingPage() {
                   display: 'flex',
                   gap: '12px',
                   'justify-content': 'space-between',
-                  'margin-top': '20px',
-                  'padding-top': '16px',
-                  'border-top': '1px solid var(--color-border)'
+                  'margin-top': '30px',
+                  'padding-top': '20px',
+                  'padding-bottom': '20px',
+                  'border-top': '2px solid var(--color-border)',
+                  'background-color': 'var(--color-background)',
+                  position: 'sticky',
+                  bottom: '0',
+                  'margin-left': '-20px',
+                  'margin-right': '-20px',
+                  'padding-left': '20px',
+                  'padding-right': '20px'
                 }}>
                   {/* Cancel Button */}
                   <button
