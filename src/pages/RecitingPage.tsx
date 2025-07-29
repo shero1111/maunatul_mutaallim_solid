@@ -65,21 +65,30 @@ export function RecitingPage() {
     if (!postLevel() || postLevel() === 'all') return [];
     
     const allMutun = app.mutun();
-    const levelNumber = postLevel().replace('level', '');
+    
+    // Map level value to Arabic section name
+    const levelMapping: Record<string, string> = {
+      'level1': 'المستوى الأول',
+      'level2': 'المستوى الثاني', 
+      'level3': 'المستوى الثالث',
+      'level4': 'المستوى الرابع'
+    };
+    
+    const targetSection = levelMapping[postLevel()];
     
     console.log('🔍 Debug Level Selection:');
     console.log('Selected Level:', postLevel());
-    console.log('Level Number:', levelNumber);
-    console.log('All Mutun:', allMutun);
+    console.log('Target Section:', targetSection);
+    console.log('All Mutun Sections:', allMutun.map(m => ({ name: m.name, section: m.section })));
     
     const filtered = allMutun
-      .filter(matn => matn.level === parseInt(levelNumber))
+      .filter(matn => matn.section === targetSection)
       .map(matn => ({
         value: matn.id,
         label: matn.name
       }));
       
-    console.log('Filtered Mutun for level', levelNumber, ':', filtered);
+    console.log('Filtered Mutun for level:', filtered);
     return filtered;
   });
 
@@ -1100,14 +1109,18 @@ export function RecitingPage() {
               display: 'flex',
               'align-items': 'flex-end'
             }} onClick={resetPostForm}>
-              <div style={{
-                'background-color': 'var(--color-background)',
-                'border-radius': '20px 20px 0 0',
-                width: '100%',
-                'max-height': '80vh',
-                overflow: 'auto',
-                padding: '20px'
-              }} onClick={(e) => e.stopPropagation()}>
+              <div 
+                class="post-form-container"
+                style={{
+                  'background-color': 'var(--color-background)',
+                  'border-radius': '20px 20px 0 0',
+                  width: '100%',
+                  'max-height': '80vh',
+                  overflow: 'auto',
+                  padding: '20px'
+                }} 
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div style={{
                   display: 'flex',
                   'justify-content': 'space-between',
@@ -1234,6 +1247,19 @@ export function RecitingPage() {
                       setPostLevel(value);
                       // Reset matn when level changes
                       setPostMatn('');
+                      
+                      // Auto-scroll to show matn dropdown if level is not "all"
+                      if (value && value !== 'all') {
+                        setTimeout(() => {
+                          const container = e.currentTarget.closest('.post-form-container');
+                          if (container) {
+                            container.scrollIntoView({ 
+                              behavior: 'smooth', 
+                              block: 'end' 
+                            });
+                          }
+                        }, 100);
+                      }
                     }}
                     style={{
                       width: '100%',
@@ -1290,7 +1316,10 @@ export function RecitingPage() {
                 <div style={{
                   display: 'flex',
                   gap: '12px',
-                  'justify-content': 'space-between'
+                  'justify-content': 'space-between',
+                  'margin-top': '20px',
+                  'padding-top': '16px',
+                  'border-top': '1px solid var(--color-border)'
                 }}>
                   {/* Cancel Button */}
                   <button
