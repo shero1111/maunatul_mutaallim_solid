@@ -614,9 +614,31 @@ export function RecitingPage() {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
     
-    if (diffMins < 60) return `${diffMins}${app.translate('timeAgo')}`;
-    if (diffHours < 24) return `${diffHours}h ${app.translate('timeAgo')}`;
-    return `${diffDays}d ${app.translate('timeAgo')}`;
+    const isArabic = app.language() === 'ar';
+    
+    if (diffMins < 1) {
+      return isArabic ? 'الآن' : 'now';
+    }
+    
+    if (diffMins < 60) {
+      const unit = isArabic ? 'دقيقة' : 'min';
+      const ago = isArabic ? 'منذ' : 'ago';
+      return isArabic ? `${ago} ${diffMins} ${unit}` : `${diffMins} ${unit} ${ago}`;
+    }
+    
+    if (diffHours < 24) {
+      const unit = isArabic ? 'ساعة' : 'hour';
+      const pluralUnit = isArabic ? 'ساعات' : 'hours';
+      const timeUnit = diffHours === 1 ? unit : pluralUnit;
+      const ago = isArabic ? 'منذ' : 'ago';
+      return isArabic ? `${ago} ${diffHours} ${timeUnit}` : `${diffHours} ${timeUnit} ${ago}`;
+    }
+    
+    const unit = isArabic ? 'يوم' : 'day';
+    const pluralUnit = isArabic ? 'أيام' : 'days';
+    const timeUnit = diffDays === 1 ? unit : pluralUnit;
+    const ago = isArabic ? 'منذ' : 'ago';
+    return isArabic ? `${ago} ${diffDays} ${timeUnit}` : `${diffDays} ${timeUnit} ${ago}`;
   };
   
   // Cleanup on unmount
