@@ -954,7 +954,7 @@ export function RecitingPage() {
               'font-weight': 'bold',
               color: 'var(--color-text)'
             }}>
-              My Recordings
+              {app.translate('myRecordings')}
             </h3>
             
             <Show 

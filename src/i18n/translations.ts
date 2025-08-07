@@ -187,6 +187,7 @@ export const translations = {
     recordingFailed: 'فشل في التسجيل',
     microphoneAccess: 'السماح بالوصول للميكروفون',
     newRecording: 'تسجيل جديد',
+    myRecordings: 'تسجيلاتي',
     
     // Exchange Center
     makeOffer: 'تقديم عرض',
@@ -425,6 +426,7 @@ export const translations = {
     recordingFailed: 'Recording failed',
     microphoneAccess: 'Allow microphone access',
     newRecording: 'New Recording',
+    myRecordings: 'My Recordings',
     
     // Exchange Center
     makeOffer: 'Make Offer',
