@@ -11,6 +11,15 @@ export function UsersPage() {
   const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
   const [isModalOpen, setIsModalOpen] = createSignal(false);
   
+  // Add User modal state
+  const [showAddUserModal, setShowAddUserModal] = createSignal(false);
+  const [newUserFullName, setNewUserFullName] = createSignal('');
+  const [newUserUsername, setNewUserUsername] = createSignal('');
+  const [newUserPassword, setNewUserPassword] = createSignal('');
+  const [newUserConfirmPassword, setNewUserConfirmPassword] = createSignal('');
+  const [newUserRole, setNewUserRole] = createSignal('student');
+  const [newUserActive, setNewUserActive] = createSignal(true);
+  
   // Filtered users with role-based access control
   const filteredUsers = createMemo(() => {
     let users = app.users();
@@ -30,7 +39,7 @@ export function UsersPage() {
     const term = searchTerm().toLowerCase().trim();
     if (term) {
       users = users.filter(u => 
-        u.name.toLowerCase().includes(term) ||
+        u.full_name.toLowerCase().includes(term) ||
         u.username.toLowerCase().includes(term) ||
         u.role.toLowerCase().includes(term)
       );
@@ -71,6 +80,72 @@ export function UsersPage() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
+  };
+
+  // Add User helper functions
+  const openAddUserModal = () => {
+    setNewUserFullName('');
+    setNewUserUsername('');
+    setNewUserPassword('');
+    setNewUserConfirmPassword('');
+    setNewUserRole('student');
+    setNewUserActive(true);
+    setShowAddUserModal(true);
+  };
+
+  const closeAddUserModal = () => {
+    setShowAddUserModal(false);
+    setNewUserFullName('');
+    setNewUserUsername('');
+    setNewUserPassword('');
+    setNewUserConfirmPassword('');
+    setNewUserRole('student');
+    setNewUserActive(true);
+  };
+
+  const validateNewUser = (): string | null => {
+    if (!newUserFullName().trim()) {
+      return app.translate('fullNameRequired');
+    }
+    if (!newUserUsername().trim()) {
+      return app.translate('userNameRequired');
+    }
+    if (!newUserPassword().trim()) {
+      return app.translate('passwordRequired');
+    }
+    if (newUserPassword().length < 4) {
+      return app.translate('passwordTooShort');
+    }
+    if (newUserPassword() !== newUserConfirmPassword()) {
+      return app.translate('passwordsDoNotMatch');
+    }
+    return null;
+  };
+
+  const saveNewUser = async () => {
+    const validationError = validateNewUser();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    const userData = {
+      full_name: newUserFullName().trim(),
+      username: newUserUsername().trim(),
+      password: newUserPassword(),
+      role: newUserRole() as 'student' | 'lehrer' | 'admin',
+      isActive: newUserActive()
+    };
+
+    const success = await app.createUser(userData);
+    
+    if (success) {
+      closeAddUserModal();
+      // Optional: Show success message
+      console.log('✅ User created successfully');
+    } else {
+      alert(app.translate('usernameExists'));
+    }
   };
   
   const containerStyle = {
@@ -341,11 +416,323 @@ export function UsersPage() {
         </div>
       </Show>
 
+      {/* Floating Add User Button */}
+      <Show when={app.currentUser()?.role === 'admin'}>
+        <button
+          onClick={openAddUserModal}
+          style={{
+            position: 'fixed',
+            bottom: '90px',
+            right: '20px',
+            width: '60px',
+            height: '60px',
+            'border-radius': '50%',
+            'background-color': 'var(--color-primary)',
+            color: 'white',
+            border: 'none',
+            'box-shadow': '0 4px 12px rgba(0, 0, 0, 0.15)',
+            cursor: 'pointer',
+            'font-size': '24px',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            transition: 'all 0.3s ease',
+            'z-index': '100',
+            'user-select': 'none',
+            '-webkit-user-select': 'none',
+            '-moz-user-select': 'none',
+            '-ms-user-select': 'none'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+          }}
+          title={app.translate('addUser')}
+        >
+          ➕
+        </button>
+      </Show>
+
+      {/* Add User Modal */}
+      <Show when={showAddUserModal()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          'justify-content': 'center',
+          'align-items': 'center',
+          'z-index': '1000'
+        }}>
+          <div style={{
+            'background-color': 'var(--color-surface)',
+            'border-radius': '12px',
+            padding: '24px',
+            'max-width': '500px',
+            width: '90%',
+            'max-height': '80vh',
+            'overflow-y': 'auto',
+            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'margin-bottom': '20px'
+            }}>
+              <h3 style={{
+                margin: '0',
+                color: 'var(--color-text)',
+                'font-size': '18px'
+              }}>
+                {app.translate('createNewUser')}
+              </h3>
+              <button
+                onClick={closeAddUserModal}
+                style={{
+                  'background-color': 'transparent',
+                  border: 'none',
+                  'font-size': '20px',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-secondary)'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px' }}>
+              {/* Full Name */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('fullName')} *
+                </label>
+                <input
+                  type="text"
+                  value={newUserFullName()}
+                  onInput={(e) => setNewUserFullName(e.currentTarget.value)}
+                  placeholder={app.language() === 'ar' ? 'أدخل الاسم الكامل' : 'Enter full name'}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Username */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('userName')} *
+                </label>
+                <input
+                  type="text"
+                  value={newUserUsername()}
+                  onInput={(e) => setNewUserUsername(e.currentTarget.value)}
+                  placeholder={app.language() === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('password')} *
+                </label>
+                <input
+                  type="password"
+                  value={newUserPassword()}
+                  onInput={(e) => setNewUserPassword(e.currentTarget.value)}
+                  placeholder={app.language() === 'ar' ? 'أدخل كلمة المرور' : 'Enter password'}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('confirmPassword')} *
+                </label>
+                <input
+                  type="password"
+                  value={newUserConfirmPassword()}
+                  onInput={(e) => setNewUserConfirmPassword(e.currentTarget.value)}
+                  placeholder={app.language() === 'ar' ? 'تأكيد كلمة المرور' : 'Confirm password'}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Role */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('role')}
+                </label>
+                <select
+                  value={newUserRole()}
+                  onChange={(e) => setNewUserRole(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="student">{app.translate('student')}</option>
+                  <option value="lehrer">{app.translate('teacher')}</option>
+                  <option value="admin">{app.translate('admin')}</option>
+                </select>
+              </div>
+
+              {/* Active Status */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('isActive')}
+                </label>
+                <select
+                  value={newUserActive() ? 'true' : 'false'}
+                  onChange={(e) => setNewUserActive(e.currentTarget.value === 'true')}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="true">{app.translate('active')}</option>
+                  <option value="false">{app.translate('inactive')}</option>
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                'justify-content': 'space-between',
+                'margin-top': '20px',
+                gap: '12px'
+              }}>
+                <button
+                  onClick={closeAddUserModal}
+                  style={{
+                    padding: '12px 20px',
+                    'background-color': 'var(--color-text-secondary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    cursor: 'pointer',
+                    flex: '1'
+                  }}
+                >
+                  {app.translate('cancel')}
+                </button>
+                <button
+                  onClick={saveNewUser}
+                  disabled={!newUserFullName().trim() || !newUserUsername().trim() || !newUserPassword().trim()}
+                  style={{
+                    padding: '12px 20px',
+                    'background-color': (!newUserFullName().trim() || !newUserUsername().trim() || !newUserPassword().trim())
+                      ? 'var(--color-text-secondary)' 
+                      : 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    cursor: (!newUserFullName().trim() || !newUserUsername().trim() || !newUserPassword().trim()) 
+                      ? 'not-allowed' : 'pointer',
+                    opacity: (!newUserFullName().trim() || !newUserUsername().trim() || !newUserPassword().trim()) 
+                      ? '0.5' : '1',
+                    flex: '1'
+                  }}
+                >
+                  ➕ {app.translate('addUser')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Show>
+
       <UserModal
         user={selectedUser()}
         isOpen={isModalOpen()}
         onClose={handleModalClose}
-        isViewMode={true}
       />
     </div>
   );

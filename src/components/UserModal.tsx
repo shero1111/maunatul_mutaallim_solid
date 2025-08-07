@@ -1,4 +1,4 @@
-import { createSignal, Show, onMount } from 'solid-js';
+import { createSignal, Show, onMount, createEffect } from 'solid-js';
 import { useApp } from '../store/AppStore';
 import { User } from '../types';
 import { SimpleConfirmDialog } from './SimpleConfirmDialog';
@@ -26,7 +26,7 @@ export function UserModal(props: UserModalProps) {
   // Initialize form when user changes
   onMount(() => {
     if (props.user) {
-      setName(props.user.name);
+      setName(props.user.full_name);
       setUsername(props.user.username);
       setRole(props.user.role);
       setIsActive(props.user.isActive);
@@ -36,24 +36,17 @@ export function UserModal(props: UserModalProps) {
   // Update form when user prop changes
   const updateForm = () => {
     if (props.user) {
-      setName(props.user.name);
+      setName(props.user.full_name);
       setUsername(props.user.username);
       setRole(props.user.role);
       setIsActive(props.user.isActive);
     }
   };
   
-  // Watch for user changes
-  onMount(() => {
-    const checkUser = () => {
-      if (props.user) {
-        updateForm();
-      }
-    };
-    
-    // Update when modal opens
-    if (props.isOpen) {
-      checkUser();
+  // Watch for user changes with createEffect
+  createEffect(() => {
+    if (props.user && props.isOpen) {
+      updateForm();
     }
   });
   
@@ -64,7 +57,7 @@ export function UserModal(props: UserModalProps) {
     
     const updatedUser: User = {
       ...props.user,
-      name: name().trim(),
+      full_name: name().trim(),
       username: username().trim(),
       role: role(),
       isActive: isActive()

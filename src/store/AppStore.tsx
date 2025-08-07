@@ -75,6 +75,7 @@ export interface AppState {
   // User management functions
   updateUser: (user: User) => void;
   deleteUser: (userId: string) => void;
+  createUser: (userData: Omit<User, 'id'>) => Promise<boolean>;
   
   // Halaqa management functions
   addStudentToHalaqa: (halaqaId: string, studentId: string) => void;
@@ -586,6 +587,34 @@ export function AppProvider(props: { children: JSX.Element }) {
     // Save to localStorage
     localStorage.setItem('usersData', JSON.stringify(newUsersData));
     console.log('✅ User deleted, remaining users:', newUsersData.length);
+  };
+
+  const createUser = async (userData: Omit<User, 'id'>): Promise<boolean> => {
+    console.log('➕ AppStore.createUser called with:', userData);
+    
+    // Check if username already exists
+    const currentUsers = users();
+    const usernameExists = currentUsers.some(u => u.username === userData.username);
+    
+    if (usernameExists) {
+      console.log('❌ Username already exists:', userData.username);
+      return false;
+    }
+    
+    // Create new user
+    const newUser: User = {
+      id: Date.now().toString(),
+      ...userData
+    };
+    
+    const newUsersData = [...currentUsers, newUser];
+    setUsers(newUsersData);
+    
+    // Save to localStorage
+    localStorage.setItem('usersData', JSON.stringify(newUsersData));
+    console.log('✅ New user created and saved:', newUser);
+    
+    return true;
   };
 
   // Halaqa management functions
@@ -1137,6 +1166,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     markMessagesAsRead,
     getConversationWith,
     deleteUser,
+    createUser,
     addStudentToHalaqa,
     removeStudentFromHalaqa,
     updateHalaqa,

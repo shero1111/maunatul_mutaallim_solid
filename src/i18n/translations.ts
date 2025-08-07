@@ -224,6 +224,20 @@ export const translations = {
     unassignHalaqa: 'إلغاء تعيين حلقة',
     backToHalaqat: 'العودة للحلقات',
     
+    // User Creation
+    addUser: 'إضافة مستخدم',
+    createNewUser: 'إنشاء مستخدم جديد',
+    password: 'كلمة المرور',
+    confirmPassword: 'تأكيد كلمة المرور',
+    userCreated: 'تم إنشاء المستخدم بنجاح',
+    userCreationFailed: 'فشل في إنشاء المستخدم',
+    passwordTooShort: 'كلمة المرور قصيرة جداً (4 أحرف على الأقل)',
+    passwordsDoNotMatch: 'كلمات المرور غير متطابقة',
+    usernameExists: 'اسم المستخدم موجود بالفعل',
+    fullNameRequired: 'الاسم الكامل مطلوب',
+    userNameRequired: 'اسم المستخدم مطلوب',
+    passwordRequired: 'كلمة المرور مطلوبة',
+    
     // Exchange Center
     makeOffer: 'تقديم عرض',
     makeRequest: 'طلب مساعدة',
@@ -497,6 +511,20 @@ export const translations = {
     assignHalaqa: 'Assign Halaqa',
     unassignHalaqa: 'Unassign Halaqa',
     backToHalaqat: 'Back to Halaqat',
+    
+    // User Creation
+    addUser: 'Add User',
+    createNewUser: 'Create New User',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    userCreated: 'User created successfully',
+    userCreationFailed: 'Failed to create user',
+    passwordTooShort: 'Password too short (minimum 4 characters)',
+    passwordsDoNotMatch: 'Passwords do not match',
+    usernameExists: 'Username already exists',
+    fullNameRequired: 'Full name is required',
+    userNameRequired: 'Username is required',
+    passwordRequired: 'Password is required',
     
     // Exchange Center
     makeOffer: 'Make Offer',
