@@ -86,14 +86,22 @@ export function HalaqatPage() {
     color: 'var(--color-text)',
     'margin-bottom': '8px',
     'letter-spacing': '0.5px',
-    direction: app.language() === 'ar' ? 'rtl' as const : 'ltr' as const
+    direction: app.language() === 'ar' ? 'rtl' as const : 'ltr' as const,
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
   
   const subtitleStyle = {
     'font-size': '1rem',
     color: 'var(--color-text-secondary)',
     'font-weight': '500',
-    'letter-spacing': '0.2px'
+    'letter-spacing': '0.2px',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
   
   const halaqaCardStyle = {
@@ -105,7 +113,11 @@ export function HalaqatPage() {
     border: '1px solid var(--color-border)',
     position: 'relative' as const,
     overflow: 'hidden' as const,
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    'user-select': 'none',
+    '-webkit-user-select': 'none',
+    '-moz-user-select': 'none',
+    '-ms-user-select': 'none'
   };
   
   const halaqaCardHoverStyle = `
@@ -453,7 +465,11 @@ export function HalaqatPage() {
                       'font-size': '1.1rem',
                       'font-weight': 'bold',
                       color: 'var(--color-text)',
-                      'line-height': '1.3'
+                      'line-height': '1.3',
+                      'user-select': 'none',
+                      '-webkit-user-select': 'none',
+                      '-moz-user-select': 'none',
+                      '-ms-user-select': 'none'
                     }}>
                       {getTypeIcon(halaqa.type)} #{halaqa.internal_number} {halaqa.name}
                     </h3>
@@ -465,7 +481,11 @@ export function HalaqatPage() {
                       display: 'flex',
                       'align-items': 'center',
                       gap: '12px',
-                      'flex-wrap': 'wrap'
+                      'flex-wrap': 'wrap',
+                      'user-select': 'none',
+                      '-webkit-user-select': 'none',
+                      '-moz-user-select': 'none',
+                      '-ms-user-select': 'none'
                     }}>
                       <div style={{ display: 'flex', 'align-items': 'center', gap: '4px' }}>
                         <span>👨‍🏫</span>
@@ -537,7 +557,11 @@ export function HalaqatPage() {
                       cursor: 'pointer',
                       'font-size': '0.9rem',
                       color: 'var(--color-text)',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      'user-select': 'none',
+                      '-webkit-user-select': 'none',
+                      '-moz-user-select': 'none',
+                      '-ms-user-select': 'none'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'var(--color-hover)';
