@@ -1,5 +1,6 @@
 import { createMemo, For, Show, createSignal } from 'solid-js';
 import { useApp } from '../store/AppStore';
+import { UserDetailPage } from './UserDetailPage';
 
 export function HalaqatPage() {
   const app = useApp();
@@ -19,11 +20,8 @@ export function HalaqatPage() {
   
   // Student management modal state
   const [showAddStudentModal, setShowAddStudentModal] = createSignal(false);
-  const [showStudentDetailModal, setShowStudentDetailModal] = createSignal(false);
   const [selectedHalaqaForStudent, setSelectedHalaqaForStudent] = createSignal<string | null>(null);
-  const [selectedStudentId, setSelectedStudentId] = createSignal<string | null>(null);
   const [studentSearchTerm, setStudentSearchTerm] = createSignal('');
-  const [editingStudentData, setEditingStudentData] = createSignal<any>(null);
   
   // Add Halaqa modal state
   const [showAddHalaqaModal, setShowAddHalaqaModal] = createSignal(false);
@@ -32,6 +30,10 @@ export function HalaqatPage() {
   const [newHalaqaType, setNewHalaqaType] = createSignal('memorizing');
   const [newHalaqaTeacher, setNewHalaqaTeacher] = createSignal('');
   const [newHalaqaActive, setNewHalaqaActive] = createSignal(true);
+  
+  // User detail page state
+  const [showUserDetail, setShowUserDetail] = createSignal(false);
+  const [selectedUserId, setSelectedUserId] = createSignal<string | null>(null);
   
   const toggleStudentList = (halaqaId: string) => {
     setExpandedHalaqat(prev => ({
@@ -270,12 +272,12 @@ export function HalaqatPage() {
   
   const getTeacherName = (teacherId: string): string => {
     const teacher = app.users().find(u => u.id === teacherId);
-    return teacher?.name || 'Unknown';
+    return teacher?.full_name || 'Unknown';
   };
   
   const getStudentNames = (studentIds: string[]): string[] => {
     const currentUser = app.currentUser();
-    const isAdminOrLeader = currentUser && (currentUser.role === 'superuser' || currentUser.role === 'leitung');
+    const isAdminOrLeader = currentUser && (currentUser.role === 'admin' || currentUser.role === 'lehrer');
     
     return studentIds.map(id => {
       const student = app.users().find(u => u.id === id);
@@ -283,7 +285,7 @@ export function HalaqatPage() {
       if (!isAdminOrLeader && student && !student.isActive) {
         return null;
       }
-      return student?.name || 'Unknown';
+      return student?.full_name || 'Unknown';
     }).filter(name => name !== null) as string[];
   };
 
@@ -312,18 +314,13 @@ export function HalaqatPage() {
   };
 
   const openStudentDetailModal = (studentId: string) => {
-    const student = app.users().find(u => u.id === studentId);
-    if (student) {
-      setSelectedStudentId(studentId);
-      setEditingStudentData({ ...student });
-      setShowStudentDetailModal(true);
-    }
+    setSelectedUserId(studentId);
+    setShowUserDetail(true);
   };
 
   const closeStudentDetailModal = () => {
-    setShowStudentDetailModal(false);
-    setSelectedStudentId(null);
-    setEditingStudentData(null);
+    setShowUserDetail(false);
+    setSelectedUserId(null);
   };
 
   const getAvailableStudents = () => {
@@ -363,13 +360,7 @@ export function HalaqatPage() {
     app.removeStudentFromHalaqa(halaqaId, studentId);
   };
 
-  const saveStudentData = () => {
-    const studentData = editingStudentData();
-    if (studentData) {
-      app.updateUser(studentData);
-      closeStudentDetailModal();
-    }
-  };
+
 
   // Add Halaqa helper functions
   const openAddHalaqaModal = () => {
@@ -490,6 +481,16 @@ export function HalaqatPage() {
     }
   };
   
+  // Show UserDetailPage if a user is selected
+  if (showUserDetail() && selectedUserId()) {
+    return (
+      <UserDetailPage 
+        userId={selectedUserId()!} 
+        onBack={closeStudentDetailModal} 
+      />
+    );
+  }
+
   return (
     <>
       <style>{halaqaCardHoverStyle}</style>
@@ -1520,229 +1521,6 @@ export function HalaqatPage() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </Show>
-
-      {/* Student Detail Modal */}
-      <Show when={showStudentDetailModal()}>
-        <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          width: '100%',
-          height: '100%',
-          'background-color': 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          'justify-content': 'center',
-          'align-items': 'center',
-          'z-index': '1000'
-        }}>
-          <div style={{
-            'background-color': 'var(--color-surface)',
-            'border-radius': '12px',
-            padding: '24px',
-            'max-width': '600px',
-            width: '90%',
-            'max-height': '80vh',
-            'overflow-y': 'auto',
-            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)'
-          }}>
-            <div style={{
-              display: 'flex',
-              'justify-content': 'space-between',
-              'align-items': 'center',
-              'margin-bottom': '20px'
-            }}>
-              <h3 style={{
-                margin: '0',
-                color: 'var(--color-text)',
-                'font-size': '18px'
-              }}>
-                {app.translate('studentDetails')}
-              </h3>
-              <button
-                onClick={closeStudentDetailModal}
-                style={{
-                  'background-color': 'transparent',
-                  border: 'none',
-                  'font-size': '20px',
-                  cursor: 'pointer',
-                  color: 'var(--color-text-secondary)'
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            <Show when={editingStudentData()}>
-              {(student) => (
-                <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px' }}>
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '8px',
-                      'font-weight': 'bold',
-                      color: 'var(--color-text)'
-                    }}>
-                      {app.translate('fullName')}
-                    </label>
-                    <input
-                      type="text"
-                      value={student().full_name}
-                      onInput={(e) => setEditingStudentData(prev => ({
-                        ...prev,
-                        full_name: e.currentTarget.value
-                      }))}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '8px',
-                        'font-size': '14px',
-                        'background-color': 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        'box-sizing': 'border-box'
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '8px',
-                      'font-weight': 'bold',
-                      color: 'var(--color-text)'
-                    }}>
-                      {app.translate('userName')}
-                    </label>
-                    <input
-                      type="text"
-                      value={student().username}
-                      onInput={(e) => setEditingStudentData(prev => ({
-                        ...prev,
-                        username: e.currentTarget.value
-                      }))}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '8px',
-                        'font-size': '14px',
-                        'background-color': 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        'box-sizing': 'border-box'
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '8px',
-                      'font-weight': 'bold',
-                      color: 'var(--color-text)'
-                    }}>
-                      {app.translate('role')}
-                    </label>
-                    <select
-                      value={student().role}
-                      onChange={(e) => setEditingStudentData(prev => ({
-                        ...prev,
-                        role: e.currentTarget.value as 'student' | 'lehrer' | 'admin'
-                      }))}
-                      disabled={app.currentUser()?.role !== 'admin'}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '8px',
-                        'font-size': '14px',
-                        'background-color': 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        'box-sizing': 'border-box',
-                        cursor: app.currentUser()?.role === 'admin' ? 'pointer' : 'not-allowed'
-                      }}
-                    >
-                      <option value="student">{app.translate('student')}</option>
-                      <option value="lehrer">{app.translate('teacher')}</option>
-                      <option value="admin">{app.translate('admin')}</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      'margin-bottom': '8px',
-                      'font-weight': 'bold',
-                      color: 'var(--color-text)'
-                    }}>
-                      {app.translate('isActive')}
-                    </label>
-                    <select
-                      value={student().isActive ? 'true' : 'false'}
-                      onChange={(e) => setEditingStudentData(prev => ({
-                        ...prev,
-                        isActive: e.currentTarget.value === 'true'
-                      }))}
-                      disabled={app.currentUser()?.role !== 'admin'}
-                      style={{
-                        width: '100%',
-                        padding: '12px',
-                        border: '1px solid var(--color-border)',
-                        'border-radius': '8px',
-                        'font-size': '14px',
-                        'background-color': 'var(--color-background)',
-                        color: 'var(--color-text)',
-                        'box-sizing': 'border-box',
-                        cursor: app.currentUser()?.role === 'admin' ? 'pointer' : 'not-allowed'
-                      }}
-                    >
-                      <option value="true">{app.translate('active')}</option>
-                      <option value="false">{app.translate('inactive')}</option>
-                    </select>
-                  </div>
-
-                  <div style={{
-                    display: 'flex',
-                    'justify-content': 'space-between',
-                    'margin-top': '20px',
-                    gap: '12px'
-                  }}>
-                    <button
-                      onClick={closeStudentDetailModal}
-                      style={{
-                        padding: '12px 20px',
-                        'background-color': 'var(--color-text-secondary)',
-                        color: 'white',
-                        border: 'none',
-                        'border-radius': '8px',
-                        cursor: 'pointer',
-                        flex: '1'
-                      }}
-                    >
-                      {app.translate('cancel')}
-                    </button>
-                    <Show when={app.currentUser()?.role === 'admin' || app.currentUser()?.role === 'lehrer'}>
-                      <button
-                        onClick={saveStudentData}
-                        style={{
-                          padding: '12px 20px',
-                          'background-color': 'var(--color-primary)',
-                          color: 'white',
-                          border: 'none',
-                          'border-radius': '8px',
-                          cursor: 'pointer',
-                          flex: '1'
-                        }}
-                      >
-                        {app.translate('saveChanges')}
-                      </button>
-                    </Show>
-                  </div>
-                </div>
-              )}
-            </Show>
           </div>
         </div>
       </Show>

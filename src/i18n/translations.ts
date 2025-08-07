@@ -215,6 +215,15 @@ export const translations = {
     halaqaNameRequired: 'اسم الحلقة مطلوب',
     teacherRequired: 'المعلم مطلوب',
     
+    // User Detail Page
+    userProfile: 'الملف الشخصي',
+    assignedHalaqat: 'الحلقات المعينة',
+    noHalaqatAssigned: 'لا توجد حلقات معينة',
+    availableHalaqat: 'الحلقات المتاحة',
+    assignHalaqa: 'تعيين حلقة',
+    unassignHalaqa: 'إلغاء تعيين حلقة',
+    backToHalaqat: 'العودة للحلقات',
+    
     // Exchange Center
     makeOffer: 'تقديم عرض',
     makeRequest: 'طلب مساعدة',
@@ -479,6 +488,15 @@ export const translations = {
     halaqaCreated: 'Halaqa created successfully',
     halaqaNameRequired: 'Halaqa name is required',
     teacherRequired: 'Teacher is required',
+    
+    // User Detail Page
+    userProfile: 'User Profile',
+    assignedHalaqat: 'Assigned Halaqat',
+    noHalaqatAssigned: 'No halaqat assigned',
+    availableHalaqat: 'Available Halaqat',
+    assignHalaqa: 'Assign Halaqa',
+    unassignHalaqa: 'Unassign Halaqa',
+    backToHalaqat: 'Back to Halaqat',
     
     // Exchange Center
     makeOffer: 'Make Offer',
