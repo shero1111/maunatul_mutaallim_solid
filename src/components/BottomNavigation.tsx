@@ -13,7 +13,7 @@ export function BottomNavigation() {
     { page: 'home' as Page, icon: '🏠', label: app.translate('home') },
     { page: 'mutuun' as Page, icon: '📚', label: app.translate('mutuun') },
     { page: 'reciting' as Page, icon: '🎙️', label: app.translate('reciting') },
-    { page: 'halaqat' as Page, icon: '👨‍👩‍👧‍👦', label: app.translate('halaqat') },
+    { page: 'halaqat' as Page, icon: '⭕', label: app.translate('halaqat') },
     { page: 'users' as Page, icon: '👤', label: app.translate('users') },
     { page: 'news' as Page, icon: '📰', label: app.translate('news') },
     { page: 'more' as Page, icon: '⚙️', label: app.translate('more') }

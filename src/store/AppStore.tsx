@@ -193,9 +193,38 @@ export function AppProvider(props: { children: JSX.Element }) {
     if (savedUsersData) {
       try {
         const usersData = JSON.parse(savedUsersData);
-        setUsers(usersData);
-        loadedUsers = usersData;
-        console.log('📋 Users loaded from localStorage:', usersData.length, 'users');
+        
+        // MIGRATION: Convert old 'name' to 'full_name' and fix roles
+        const migratedUsers = usersData.map((user: any) => {
+          let migratedUser = { ...user };
+          
+          // Convert name to full_name if needed
+          if (user.name && !user.full_name) {
+            migratedUser.full_name = user.name;
+            delete migratedUser.name;
+            console.log('🔄 Migrated user name:', user.name, '→', migratedUser.full_name);
+          }
+          
+          // Fix role migration
+          if (user.role === 'superuser') {
+            migratedUser.role = 'admin';
+            console.log('🔄 Migrated role: superuser → admin');
+          }
+          if (user.role === 'leitung') {
+            migratedUser.role = 'lehrer';
+            console.log('🔄 Migrated role: leitung → lehrer');
+          }
+          
+          return migratedUser;
+        });
+        
+        setUsers(migratedUsers);
+        loadedUsers = migratedUsers;
+        
+        // Save migrated data back to localStorage
+        localStorage.setItem('usersData', JSON.stringify(migratedUsers));
+        
+        console.log('📋 Users loaded and migrated from localStorage:', migratedUsers.length, 'users');
       } catch (e) {
         console.error('Error parsing saved users:', e);
       }
@@ -214,7 +243,17 @@ export function AppProvider(props: { children: JSX.Element }) {
     if (savedCurrentUser) {
       try {
         const user = JSON.parse(savedCurrentUser);
-        console.log('🔄 Auto-login attempt for user:', user.name, 'role:', user.role);
+        
+        // MIGRATION: Fix current user data structure
+        if (user.name && !user.full_name) {
+          user.full_name = user.name;
+          delete user.name;
+          // Save the migrated current user back
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          console.log('🔄 Migrated current user name to full_name');
+        }
+        
+        console.log('🔄 Auto-login attempt for user:', user.full_name || user.name, 'role:', user.role);
         
         // Verify user exists in either loaded users data OR demo data
         const userExistsInLoaded = loadedUsers.find(u => u.id === user.id && u.username === user.username);
