@@ -204,6 +204,17 @@ export const translations = {
     editStudent: 'تحرير بيانات الطالب',
     saveChanges: 'حفظ التغييرات',
     
+    // Halaqa Management
+    addHalaqa: 'إضافة حلقة',
+    createNewHalaqa: 'إنشاء حلقة جديدة',
+    halaqaName: 'اسم الحلقة',
+    halaqaNumber: 'رقم الحلقة',
+    halaqaType: 'نوع الحلقة',
+    selectTeacher: 'اختر المعلم',
+    halaqaCreated: 'تم إنشاء الحلقة بنجاح',
+    halaqaNameRequired: 'اسم الحلقة مطلوب',
+    teacherRequired: 'المعلم مطلوب',
+    
     // Exchange Center
     makeOffer: 'تقديم عرض',
     makeRequest: 'طلب مساعدة',
@@ -457,6 +468,17 @@ export const translations = {
     studentUpdated: 'Student data updated',
     editStudent: 'Edit Student Data',
     saveChanges: 'Save Changes',
+    
+    // Halaqa Management
+    addHalaqa: 'Add Halaqa',
+    createNewHalaqa: 'Create New Halaqa',
+    halaqaName: 'Halaqa Name',
+    halaqaNumber: 'Halaqa Number',
+    halaqaType: 'Halaqa Type',
+    selectTeacher: 'Select Teacher',
+    halaqaCreated: 'Halaqa created successfully',
+    halaqaNameRequired: 'Halaqa name is required',
+    teacherRequired: 'Teacher is required',
     
     // Exchange Center
     makeOffer: 'Make Offer',

@@ -80,6 +80,7 @@ export interface AppState {
   addStudentToHalaqa: (halaqaId: string, studentId: string) => void;
   removeStudentFromHalaqa: (halaqaId: string, studentId: string) => void;
   updateHalaqa: (halaqa: Halaqa) => void;
+  createHalaqa: (halaqaData: Omit<Halaqa, 'id' | 'student_ids'>) => void;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -625,6 +626,21 @@ export function AppProvider(props: { children: JSX.Element }) {
     console.log('✅ Halaqa updated and saved');
   };
 
+  const createHalaqa = (halaqaData: Omit<Halaqa, 'id' | 'student_ids'>) => {
+    console.log('➕ AppStore.createHalaqa called with:', halaqaData);
+    const newHalaqa: Halaqa = {
+      id: Date.now().toString(),
+      student_ids: [],
+      ...halaqaData
+    };
+    
+    const currentHalaqat = halaqat();
+    const newHalaqatData = [...currentHalaqat, newHalaqa];
+    setHalaqat(newHalaqatData);
+    localStorage.setItem('halaqatData', JSON.stringify(newHalaqatData));
+    console.log('✅ New halaqa created and saved:', newHalaqa);
+  };
+
   // News CRUD operations
   const createNews = (newsData: Omit<NewsItem, 'id'>) => {
     console.log('📰 AppStore.createNews called with:', newsData);
@@ -1124,6 +1140,7 @@ export function AppProvider(props: { children: JSX.Element }) {
     addStudentToHalaqa,
     removeStudentFromHalaqa,
     updateHalaqa,
+    createHalaqa,
     playAudio,
     pauseAudio,
     stopAudio,

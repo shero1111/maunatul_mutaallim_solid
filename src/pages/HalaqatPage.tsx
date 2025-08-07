@@ -25,6 +25,14 @@ export function HalaqatPage() {
   const [studentSearchTerm, setStudentSearchTerm] = createSignal('');
   const [editingStudentData, setEditingStudentData] = createSignal<any>(null);
   
+  // Add Halaqa modal state
+  const [showAddHalaqaModal, setShowAddHalaqaModal] = createSignal(false);
+  const [newHalaqaName, setNewHalaqaName] = createSignal('');
+  const [newHalaqaNumber, setNewHalaqaNumber] = createSignal('');
+  const [newHalaqaType, setNewHalaqaType] = createSignal('memorizing');
+  const [newHalaqaTeacher, setNewHalaqaTeacher] = createSignal('');
+  const [newHalaqaActive, setNewHalaqaActive] = createSignal(true);
+  
   const toggleStudentList = (halaqaId: string) => {
     setExpandedHalaqat(prev => ({
       ...prev,
@@ -361,6 +369,58 @@ export function HalaqatPage() {
       app.updateUser(studentData);
       closeStudentDetailModal();
     }
+  };
+
+  // Add Halaqa helper functions
+  const openAddHalaqaModal = () => {
+    setNewHalaqaName('');
+    setNewHalaqaNumber('');
+    setNewHalaqaType('memorizing');
+    setNewHalaqaTeacher('');
+    setNewHalaqaActive(true);
+    setShowAddHalaqaModal(true);
+  };
+
+  const closeAddHalaqaModal = () => {
+    setShowAddHalaqaModal(false);
+    setNewHalaqaName('');
+    setNewHalaqaNumber('');
+    setNewHalaqaType('memorizing');
+    setNewHalaqaTeacher('');
+    setNewHalaqaActive(true);
+  };
+
+  const getAvailableTeachers = () => {
+    return app.users().filter(user => user.role === 'lehrer' && user.isActive);
+  };
+
+  const getNextHalaqaNumber = () => {
+    const existingNumbers = app.halaqat().map(h => parseInt(h.internal_number) || 0);
+    const maxNumber = Math.max(0, ...existingNumbers);
+    return (maxNumber + 1).toString();
+  };
+
+  const saveNewHalaqa = () => {
+    if (!newHalaqaName().trim()) {
+      alert(app.translate('halaqaNameRequired'));
+      return;
+    }
+    
+    if (!newHalaqaTeacher()) {
+      alert(app.translate('teacherRequired'));
+      return;
+    }
+
+    const halaqaData = {
+      name: newHalaqaName().trim(),
+      internal_number: newHalaqaNumber() || getNextHalaqaNumber(),
+      type: newHalaqaType() as 'memorizing' | 'explanation' | 'memorizing_intensive' | 'explanation_intensive',
+      teacher_id: newHalaqaTeacher(),
+      isActive: newHalaqaActive()
+    };
+
+    app.createHalaqa(halaqaData);
+    closeAddHalaqaModal();
   };
 
   const handleEditHalaqa = (halaqaId: string) => {
@@ -1019,6 +1079,47 @@ export function HalaqatPage() {
         </div>
       </Show>
 
+      {/* Floating Add Halaqa Button */}
+      <Show when={app.currentUser()?.role === 'admin'}>
+        <button
+          onClick={openAddHalaqaModal}
+          style={{
+            position: 'fixed',
+            bottom: '90px',
+            right: '20px',
+            width: '60px',
+            height: '60px',
+            'border-radius': '50%',
+            'background-color': 'var(--color-primary)',
+            color: 'white',
+            border: 'none',
+            'box-shadow': '0 4px 12px rgba(0, 0, 0, 0.15)',
+            cursor: 'pointer',
+            'font-size': '24px',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            transition: 'all 0.3s ease',
+            'z-index': '100',
+            'user-select': 'none',
+            '-webkit-user-select': 'none',
+            '-moz-user-select': 'none',
+            '-ms-user-select': 'none'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+          }}
+          title={app.translate('addHalaqa')}
+        >
+          ➕
+        </button>
+      </Show>
+
       {/* Add Student Modal */}
       <Show when={showAddStudentModal()}>
         <div style={{
@@ -1169,6 +1270,255 @@ export function HalaqatPage() {
               >
                 {app.translate('cancel')}
               </button>
+            </div>
+          </div>
+        </div>
+      </Show>
+
+      {/* Add Halaqa Modal */}
+      <Show when={showAddHalaqaModal()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          'justify-content': 'center',
+          'align-items': 'center',
+          'z-index': '1000'
+        }}>
+          <div style={{
+            'background-color': 'var(--color-surface)',
+            'border-radius': '12px',
+            padding: '24px',
+            'max-width': '600px',
+            width: '90%',
+            'max-height': '80vh',
+            'overflow-y': 'auto',
+            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'margin-bottom': '20px'
+            }}>
+              <h3 style={{
+                margin: '0',
+                color: 'var(--color-text)',
+                'font-size': '18px'
+              }}>
+                {app.translate('createNewHalaqa')}
+              </h3>
+              <button
+                onClick={closeAddHalaqaModal}
+                style={{
+                  'background-color': 'transparent',
+                  border: 'none',
+                  'font-size': '20px',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-secondary)'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px' }}>
+              {/* Halaqa Name */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('halaqaName')} *
+                </label>
+                <input
+                  type="text"
+                  value={newHalaqaName()}
+                  onInput={(e) => setNewHalaqaName(e.currentTarget.value)}
+                  placeholder={app.language() === 'ar' ? 'أدخل اسم الحلقة' : 'Enter halaqa name'}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Halaqa Number */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('halaqaNumber')} ({app.language() === 'ar' ? 'اختياري' : 'optional'})
+                </label>
+                <input
+                  type="number"
+                  value={newHalaqaNumber()}
+                  onInput={(e) => setNewHalaqaNumber(e.currentTarget.value)}
+                  placeholder={getNextHalaqaNumber()}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box'
+                  }}
+                />
+              </div>
+
+              {/* Teacher Selection */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('selectTeacher')} *
+                </label>
+                <select
+                  value={newHalaqaTeacher()}
+                  onChange={(e) => setNewHalaqaTeacher(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">{app.translate('selectTeacher')}</option>
+                  <For each={getAvailableTeachers()}>
+                    {(teacher) => (
+                      <option value={teacher.id}>{teacher.full_name}</option>
+                    )}
+                  </For>
+                </select>
+              </div>
+
+              {/* Halaqa Type */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('halaqaType')}
+                </label>
+                <select
+                  value={newHalaqaType()}
+                  onChange={(e) => setNewHalaqaType(e.currentTarget.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="memorizing">{app.language() === 'ar' ? 'تحفيظ' : 'Memorizing'}</option>
+                  <option value="explanation">{app.language() === 'ar' ? 'شرح' : 'Explanation'}</option>
+                  <option value="memorizing_intensive">{app.language() === 'ar' ? 'تحفيظ مكثف' : 'Intensive Memorizing'}</option>
+                  <option value="explanation_intensive">{app.language() === 'ar' ? 'شرح مكثف' : 'Intensive Explanation'}</option>
+                </select>
+              </div>
+
+              {/* Active Status */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  'margin-bottom': '8px',
+                  'font-weight': 'bold',
+                  color: 'var(--color-text)'
+                }}>
+                  {app.translate('isActive')}
+                </label>
+                <select
+                  value={newHalaqaActive() ? 'true' : 'false'}
+                  onChange={(e) => setNewHalaqaActive(e.currentTarget.value === 'true')}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    border: '1px solid var(--color-border)',
+                    'border-radius': '8px',
+                    'font-size': '14px',
+                    'background-color': 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    'box-sizing': 'border-box',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="true">{app.translate('active')}</option>
+                  <option value="false">{app.translate('inactive')}</option>
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                'justify-content': 'space-between',
+                'margin-top': '20px',
+                gap: '12px'
+              }}>
+                <button
+                  onClick={closeAddHalaqaModal}
+                  style={{
+                    padding: '12px 20px',
+                    'background-color': 'var(--color-text-secondary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    cursor: 'pointer',
+                    flex: '1'
+                  }}
+                >
+                  {app.translate('cancel')}
+                </button>
+                <button
+                  onClick={saveNewHalaqa}
+                  disabled={!newHalaqaName().trim() || !newHalaqaTeacher()}
+                  style={{
+                    padding: '12px 20px',
+                    'background-color': (!newHalaqaName().trim() || !newHalaqaTeacher()) 
+                      ? 'var(--color-text-secondary)' 
+                      : 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    'border-radius': '8px',
+                    cursor: (!newHalaqaName().trim() || !newHalaqaTeacher()) ? 'not-allowed' : 'pointer',
+                    opacity: (!newHalaqaName().trim() || !newHalaqaTeacher()) ? '0.5' : '1',
+                    flex: '1'
+                  }}
+                >
+                  ➕ {app.translate('addHalaqa')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
