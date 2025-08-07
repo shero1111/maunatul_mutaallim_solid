@@ -377,7 +377,7 @@ export function AppProvider(props: { children: JSX.Element }) {
       // EXACT STRING MATCH
       if (u.username === username && u.password === password) {
         foundUser = u;
-        console.log('✅ EXACT MATCH FOUND:', u.name, '(role:', u.role, ')');
+        console.log('✅ EXACT MATCH FOUND:', u.full_name, '(role:', u.role, ')');
         break;
       }
     }
@@ -397,7 +397,7 @@ export function AppProvider(props: { children: JSX.Element }) {
         
         if (userTrimmed === trimmedUsername && passTrimmed === trimmedPassword) {
           foundUser = u;
-          console.log('✅ TRIMMED MATCH FOUND:', u.name, '(role:', u.role, ')');
+          console.log('✅ TRIMMED MATCH FOUND:', u.full_name, '(role:', u.role, ')');
           break;
         }
       }
