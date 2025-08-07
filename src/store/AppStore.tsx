@@ -75,6 +75,11 @@ export interface AppState {
   // User management functions
   updateUser: (user: User) => void;
   deleteUser: (userId: string) => void;
+  
+  // Halaqa management functions
+  addStudentToHalaqa: (halaqaId: string, studentId: string) => void;
+  removeStudentFromHalaqa: (halaqaId: string, studentId: string) => void;
+  updateHalaqa: (halaqa: Halaqa) => void;
   playAudio: (matnId: string, title: string, audioUrl: string, audioType: 'memorization' | 'explanation') => void;
   pauseAudio: () => void;
   stopAudio: () => void;
@@ -582,6 +587,44 @@ export function AppProvider(props: { children: JSX.Element }) {
     console.log('✅ User deleted, remaining users:', newUsersData.length);
   };
 
+  // Halaqa management functions
+  const addStudentToHalaqa = (halaqaId: string, studentId: string) => {
+    console.log('➕ AppStore.addStudentToHalaqa called with:', { halaqaId, studentId });
+    const currentHalaqat = halaqat();
+    const newHalaqatData = currentHalaqat.map(h => {
+      if (h.id === halaqaId && !h.student_ids.includes(studentId)) {
+        return { ...h, student_ids: [...h.student_ids, studentId] };
+      }
+      return h;
+    });
+    setHalaqat(newHalaqatData);
+    localStorage.setItem('halaqatData', JSON.stringify(newHalaqatData));
+    console.log('✅ Student added to halaqa and saved');
+  };
+
+  const removeStudentFromHalaqa = (halaqaId: string, studentId: string) => {
+    console.log('➖ AppStore.removeStudentFromHalaqa called with:', { halaqaId, studentId });
+    const currentHalaqat = halaqat();
+    const newHalaqatData = currentHalaqat.map(h => {
+      if (h.id === halaqaId) {
+        return { ...h, student_ids: h.student_ids.filter(id => id !== studentId) };
+      }
+      return h;
+    });
+    setHalaqat(newHalaqatData);
+    localStorage.setItem('halaqatData', JSON.stringify(newHalaqatData));
+    console.log('✅ Student removed from halaqa and saved');
+  };
+
+  const updateHalaqa = (updatedHalaqa: Halaqa) => {
+    console.log('📝 AppStore.updateHalaqa called with:', updatedHalaqa);
+    const currentHalaqat = halaqat();
+    const newHalaqatData = currentHalaqat.map(h => h.id === updatedHalaqa.id ? updatedHalaqa : h);
+    setHalaqat(newHalaqatData);
+    localStorage.setItem('halaqatData', JSON.stringify(newHalaqatData));
+    console.log('✅ Halaqa updated and saved');
+  };
+
   // News CRUD operations
   const createNews = (newsData: Omit<NewsItem, 'id'>) => {
     console.log('📰 AppStore.createNews called with:', newsData);
@@ -1077,8 +1120,10 @@ export function AppProvider(props: { children: JSX.Element }) {
     sendMessage,
     markMessagesAsRead,
     getConversationWith,
-    updateUser,
     deleteUser,
+    addStudentToHalaqa,
+    removeStudentFromHalaqa,
+    updateHalaqa,
     playAudio,
     pauseAudio,
     stopAudio,

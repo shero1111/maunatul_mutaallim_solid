@@ -17,6 +17,14 @@ export function HalaqatPage() {
   const [editType, setEditType] = createSignal('');
   const [editIsActive, setEditIsActive] = createSignal(true);
   
+  // Student management modal state
+  const [showAddStudentModal, setShowAddStudentModal] = createSignal(false);
+  const [showStudentDetailModal, setShowStudentDetailModal] = createSignal(false);
+  const [selectedHalaqaForStudent, setSelectedHalaqaForStudent] = createSignal<string | null>(null);
+  const [selectedStudentId, setSelectedStudentId] = createSignal<string | null>(null);
+  const [studentSearchTerm, setStudentSearchTerm] = createSignal('');
+  const [editingStudentData, setEditingStudentData] = createSignal<any>(null);
+  
   const toggleStudentList = (halaqaId: string) => {
     setExpandedHalaqat(prev => ({
       ...prev,
@@ -270,6 +278,79 @@ export function HalaqatPage() {
     );
   };
 
+  // Student management helper functions
+  const openAddStudentModal = (halaqaId: string) => {
+    setSelectedHalaqaForStudent(halaqaId);
+    setStudentSearchTerm('');
+    setShowAddStudentModal(true);
+  };
+
+  const closeAddStudentModal = () => {
+    setShowAddStudentModal(false);
+    setSelectedHalaqaForStudent(null);
+    setStudentSearchTerm('');
+  };
+
+  const openStudentDetailModal = (studentId: string) => {
+    const student = app.users().find(u => u.id === studentId);
+    if (student) {
+      setSelectedStudentId(studentId);
+      setEditingStudentData({ ...student });
+      setShowStudentDetailModal(true);
+    }
+  };
+
+  const closeStudentDetailModal = () => {
+    setShowStudentDetailModal(false);
+    setSelectedStudentId(null);
+    setEditingStudentData(null);
+  };
+
+  const getAvailableStudents = () => {
+    const currentHalaqa = selectedHalaqaForStudent();
+    if (!currentHalaqa) return [];
+    
+    const halaqa = app.halaqat().find(h => h.id === currentHalaqa);
+    if (!halaqa) return [];
+    
+    return app.users().filter(user => 
+      user.role === 'student' && 
+      !halaqa.student_ids.includes(user.id)
+    );
+  };
+
+  const getFilteredAvailableStudents = () => {
+    const searchTerm = studentSearchTerm().toLowerCase();
+    const availableStudents = getAvailableStudents();
+    
+    if (!searchTerm) return availableStudents;
+    
+    return availableStudents.filter(student =>
+      student.full_name.toLowerCase().includes(searchTerm) ||
+      student.username.toLowerCase().includes(searchTerm)
+    );
+  };
+
+  const addStudentToHalaqa = (studentId: string) => {
+    const halaqaId = selectedHalaqaForStudent();
+    if (halaqaId) {
+      app.addStudentToHalaqa(halaqaId, studentId);
+      closeAddStudentModal();
+    }
+  };
+
+  const removeStudentFromHalaqa = (halaqaId: string, studentId: string) => {
+    app.removeStudentFromHalaqa(halaqaId, studentId);
+  };
+
+  const saveStudentData = () => {
+    const studentData = editingStudentData();
+    if (studentData) {
+      app.updateUser(studentData);
+      closeStudentDetailModal();
+    }
+  };
+
   const handleEditHalaqa = (halaqaId: string) => {
     const halaqa = userHalaqat().find(h => h.id === halaqaId);
     if (!halaqa) return;
@@ -485,10 +566,13 @@ export function HalaqatPage() {
                     background: 'var(--color-background)',
                     'animation': 'slideDown 0.3s ease'
                   }}>
-                    {/* Search Header */}
+                    {/* Search Header with Add Button */}
                     <div style={{
                       padding: '12px',
-                      'border-bottom': '1px solid var(--color-border)'
+                      'border-bottom': '1px solid var(--color-border)',
+                      display: 'flex',
+                      gap: '8px',
+                      'align-items': 'center'
                     }}>
                       <input
                         type="text"
@@ -501,7 +585,7 @@ export function HalaqatPage() {
                           }));
                         }}
                         style={{
-                          width: '100%',
+                          flex: '1',
                           padding: '8px 12px',
                           border: '1px solid var(--color-border)',
                           'border-radius': '6px',
@@ -511,6 +595,34 @@ export function HalaqatPage() {
                           'box-sizing': 'border-box'
                         }}
                       />
+                      <Show when={app.currentUser()?.role === 'admin' || app.currentUser()?.role === 'lehrer'}>
+                        <button
+                          onClick={() => openAddStudentModal(halaqa.id)}
+                          style={{
+                            padding: '8px 12px',
+                            'background-color': 'var(--color-primary)',
+                            color: 'white',
+                            border: 'none',
+                            'border-radius': '6px',
+                            cursor: 'pointer',
+                            'font-size': '0.85rem',
+                            'font-weight': 'bold',
+                            display: 'flex',
+                            'align-items': 'center',
+                            gap: '4px',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                          }}
+                          title={app.translate('addStudentToHalaqa')}
+                        >
+                          ➕ {app.translate('addStudent')}
+                        </button>
+                      </Show>
                     </div>
                     
                     {/* Student List - Row by Row */}
@@ -519,45 +631,96 @@ export function HalaqatPage() {
                       'overflow-y': 'auto',
                       padding: '8px 0'
                     }}>
-                      <For each={getFilteredStudentNames(halaqa.student_ids, halaqa.id)}>
-                        {(studentName, index) => (
-                          <div style={{
-                            display: 'flex',
-                            'align-items': 'center',
-                            padding: '8px 12px',
-                            'border-bottom': index() === getFilteredStudentNames(halaqa.student_ids, halaqa.id).length - 1 
-                              ? 'none' 
-                              : '1px solid var(--color-border)',
-                            'font-size': '0.85rem',
-                            transition: 'all 0.2s ease',
-                            cursor: 'default'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = 'var(--color-hover)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                          }}>
-                            <span style={{ 
-                              'margin-right': '12px', 
-                              color: 'var(--color-text-secondary)',
-                              'font-weight': '500',
-                              'min-width': '20px'
+                      <For each={halaqa.student_ids.filter(studentId => {
+                        const student = app.users().find(u => u.id === studentId);
+                        if (!student) return false;
+                        const searchTerm = searchTerms()[halaqa.id]?.toLowerCase() || '';
+                        if (!searchTerm) return true;
+                        return student.full_name.toLowerCase().includes(searchTerm) ||
+                               student.username.toLowerCase().includes(searchTerm);
+                      })}>
+                        {(studentId, index) => {
+                          const student = app.users().find(u => u.id === studentId);
+                          if (!student) return null;
+                          
+                          return (
+                            <div style={{
+                              display: 'flex',
+                              'align-items': 'center',
+                              'justify-content': 'space-between',
+                              padding: '8px 12px',
+                              'border-bottom': index() === halaqa.student_ids.filter(id => {
+                                const s = app.users().find(u => u.id === id);
+                                if (!s) return false;
+                                const searchTerm = searchTerms()[halaqa.id]?.toLowerCase() || '';
+                                if (!searchTerm) return true;
+                                return s.full_name.toLowerCase().includes(searchTerm) ||
+                                       s.username.toLowerCase().includes(searchTerm);
+                              }).length - 1 
+                                ? 'none' 
+                                : '1px solid var(--color-border)',
+                              'font-size': '0.85rem',
+                              transition: 'all 0.2s ease',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => openStudentDetailModal(studentId)}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = 'var(--color-hover)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = 'transparent';
                             }}>
-                              {index() + 1}.
-                            </span>
-                            <span style={{ 
-                              color: 'var(--color-text)',
-                              'font-weight': '500'
-                            }}>
-                              {studentName}
-                            </span>
-                          </div>
-                        )}
+                              <div style={{ display: 'flex', 'align-items': 'center' }}>
+                                <span style={{ 
+                                  'margin-right': '12px', 
+                                  color: 'var(--color-text-secondary)',
+                                  'font-weight': '500',
+                                  'min-width': '20px'
+                                }}>
+                                  {index() + 1}.
+                                </span>
+                                <span style={{ 
+                                  color: 'var(--color-text)',
+                                  'font-weight': '500'
+                                }}>
+                                  {student.full_name}
+                                </span>
+                              </div>
+                              <Show when={app.currentUser()?.role === 'admin'}>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeStudentFromHalaqa(halaqa.id, studentId);
+                                  }}
+                                  style={{
+                                    padding: '4px 8px',
+                                    'background-color': '#ff4444',
+                                    color: 'white',
+                                    border: 'none',
+                                    'border-radius': '4px',
+                                    cursor: 'pointer',
+                                    'font-size': '0.75rem',
+                                    transition: 'all 0.2s ease'
+                                  }}
+                                  title={app.translate('removeFromHalaqa')}
+                                >
+                                  ✕
+                                </button>
+                              </Show>
+                            </div>
+                          );
+                        }}
                       </For>
                       
                       {/* No results message */}
-                      <Show when={getFilteredStudentNames(halaqa.student_ids, halaqa.id).length === 0 && searchTerms()[halaqa.id]}>
+                      <Show when={halaqa.student_ids.filter(studentId => {
+                        const student = app.users().find(u => u.id === studentId);
+                        if (!student) return false;
+                        const searchTerm = searchTerms()[halaqa.id]?.toLowerCase() || '';
+                        if (!searchTerm) return true;
+                        return student.full_name.toLowerCase().includes(searchTerm) ||
+                               student.username.toLowerCase().includes(searchTerm);
+                      }).length === 0 && searchTerms()[halaqa.id]}>
                         <div style={{
                           padding: '16px 12px',
                           'text-align': 'center',
@@ -828,6 +991,384 @@ export function HalaqatPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </Show>
+
+      {/* Add Student Modal */}
+      <Show when={showAddStudentModal()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          'justify-content': 'center',
+          'align-items': 'center',
+          'z-index': '1000'
+        }}>
+          <div style={{
+            'background-color': 'var(--color-surface)',
+            'border-radius': '12px',
+            padding: '24px',
+            'max-width': '500px',
+            width: '90%',
+            'max-height': '80vh',
+            'overflow-y': 'auto',
+            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'margin-bottom': '20px'
+            }}>
+              <h3 style={{
+                margin: '0',
+                color: 'var(--color-text)',
+                'font-size': '18px'
+              }}>
+                {app.translate('addStudentToHalaqa')}
+              </h3>
+              <button
+                onClick={closeAddStudentModal}
+                style={{
+                  'background-color': 'transparent',
+                  border: 'none',
+                  'font-size': '20px',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-secondary)'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ 'margin-bottom': '16px' }}>
+              <input
+                type="text"
+                placeholder={app.translate('searchStudents')}
+                value={studentSearchTerm()}
+                onInput={(e) => setStudentSearchTerm(e.currentTarget.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid var(--color-border)',
+                  'border-radius': '8px',
+                  'font-size': '14px',
+                  'background-color': 'var(--color-background)',
+                  color: 'var(--color-text)',
+                  'box-sizing': 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{
+              'max-height': '300px',
+              'overflow-y': 'auto',
+              border: '1px solid var(--color-border)',
+              'border-radius': '8px'
+            }}>
+              <For each={getFilteredAvailableStudents()}>
+                {(student) => (
+                  <div
+                    onClick={() => addStudentToHalaqa(student.id)}
+                    style={{
+                      padding: '12px 16px',
+                      'border-bottom': '1px solid var(--color-border)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      'justify-content': 'space-between',
+                      'align-items': 'center'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <div>
+                      <div style={{
+                        'font-weight': 'bold',
+                        color: 'var(--color-text)',
+                        'margin-bottom': '4px'
+                      }}>
+                        {student.full_name}
+                      </div>
+                      <div style={{
+                        'font-size': '0.85rem',
+                        color: 'var(--color-text-secondary)'
+                      }}>
+                        @{student.username}
+                      </div>
+                    </div>
+                    <span style={{
+                      color: 'var(--color-primary)',
+                      'font-size': '18px'
+                    }}>
+                      ➕
+                    </span>
+                  </div>
+                )}
+              </For>
+              
+              <Show when={getFilteredAvailableStudents().length === 0}>
+                <div style={{
+                  padding: '20px',
+                  'text-align': 'center',
+                  color: 'var(--color-text-secondary)'
+                }}>
+                  {app.translate('noStudentsFound')}
+                </div>
+              </Show>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              'justify-content': 'flex-end',
+              'margin-top': '20px'
+            }}>
+              <button
+                onClick={closeAddStudentModal}
+                style={{
+                  padding: '10px 20px',
+                  'background-color': 'var(--color-text-secondary)',
+                  color: 'white',
+                  border: 'none',
+                  'border-radius': '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                {app.translate('cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Show>
+
+      {/* Student Detail Modal */}
+      <Show when={showStudentDetailModal()}>
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          'justify-content': 'center',
+          'align-items': 'center',
+          'z-index': '1000'
+        }}>
+          <div style={{
+            'background-color': 'var(--color-surface)',
+            'border-radius': '12px',
+            padding: '24px',
+            'max-width': '600px',
+            width: '90%',
+            'max-height': '80vh',
+            'overflow-y': 'auto',
+            'box-shadow': '0 8px 32px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{
+              display: 'flex',
+              'justify-content': 'space-between',
+              'align-items': 'center',
+              'margin-bottom': '20px'
+            }}>
+              <h3 style={{
+                margin: '0',
+                color: 'var(--color-text)',
+                'font-size': '18px'
+              }}>
+                {app.translate('studentDetails')}
+              </h3>
+              <button
+                onClick={closeStudentDetailModal}
+                style={{
+                  'background-color': 'transparent',
+                  border: 'none',
+                  'font-size': '20px',
+                  cursor: 'pointer',
+                  color: 'var(--color-text-secondary)'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <Show when={editingStudentData()}>
+              {(student) => (
+                <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      'margin-bottom': '8px',
+                      'font-weight': 'bold',
+                      color: 'var(--color-text)'
+                    }}>
+                      {app.translate('fullName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={student().full_name}
+                      onInput={(e) => setEditingStudentData(prev => ({
+                        ...prev,
+                        full_name: e.currentTarget.value
+                      }))}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--color-border)',
+                        'border-radius': '8px',
+                        'font-size': '14px',
+                        'background-color': 'var(--color-background)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      'margin-bottom': '8px',
+                      'font-weight': 'bold',
+                      color: 'var(--color-text)'
+                    }}>
+                      {app.translate('userName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={student().username}
+                      onInput={(e) => setEditingStudentData(prev => ({
+                        ...prev,
+                        username: e.currentTarget.value
+                      }))}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--color-border)',
+                        'border-radius': '8px',
+                        'font-size': '14px',
+                        'background-color': 'var(--color-background)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      'margin-bottom': '8px',
+                      'font-weight': 'bold',
+                      color: 'var(--color-text)'
+                    }}>
+                      {app.translate('role')}
+                    </label>
+                    <select
+                      value={student().role}
+                      onChange={(e) => setEditingStudentData(prev => ({
+                        ...prev,
+                        role: e.currentTarget.value as 'student' | 'lehrer' | 'admin'
+                      }))}
+                      disabled={app.currentUser()?.role !== 'admin'}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--color-border)',
+                        'border-radius': '8px',
+                        'font-size': '14px',
+                        'background-color': 'var(--color-background)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box',
+                        cursor: app.currentUser()?.role === 'admin' ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="student">{app.translate('student')}</option>
+                      <option value="lehrer">{app.translate('teacher')}</option>
+                      <option value="admin">{app.translate('admin')}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      'margin-bottom': '8px',
+                      'font-weight': 'bold',
+                      color: 'var(--color-text)'
+                    }}>
+                      {app.translate('isActive')}
+                    </label>
+                    <select
+                      value={student().isActive ? 'true' : 'false'}
+                      onChange={(e) => setEditingStudentData(prev => ({
+                        ...prev,
+                        isActive: e.currentTarget.value === 'true'
+                      }))}
+                      disabled={app.currentUser()?.role !== 'admin'}
+                      style={{
+                        width: '100%',
+                        padding: '12px',
+                        border: '1px solid var(--color-border)',
+                        'border-radius': '8px',
+                        'font-size': '14px',
+                        'background-color': 'var(--color-background)',
+                        color: 'var(--color-text)',
+                        'box-sizing': 'border-box',
+                        cursor: app.currentUser()?.role === 'admin' ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      <option value="true">{app.translate('active')}</option>
+                      <option value="false">{app.translate('inactive')}</option>
+                    </select>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    'justify-content': 'space-between',
+                    'margin-top': '20px',
+                    gap: '12px'
+                  }}>
+                    <button
+                      onClick={closeStudentDetailModal}
+                      style={{
+                        padding: '12px 20px',
+                        'background-color': 'var(--color-text-secondary)',
+                        color: 'white',
+                        border: 'none',
+                        'border-radius': '8px',
+                        cursor: 'pointer',
+                        flex: '1'
+                      }}
+                    >
+                      {app.translate('cancel')}
+                    </button>
+                    <Show when={app.currentUser()?.role === 'admin' || app.currentUser()?.role === 'lehrer'}>
+                      <button
+                        onClick={saveStudentData}
+                        style={{
+                          padding: '12px 20px',
+                          'background-color': 'var(--color-primary)',
+                          color: 'white',
+                          border: 'none',
+                          'border-radius': '8px',
+                          cursor: 'pointer',
+                          flex: '1'
+                        }}
+                      >
+                        {app.translate('saveChanges')}
+                      </button>
+                    </Show>
+                  </div>
+                </div>
+              )}
+            </Show>
           </div>
         </div>
       </Show>

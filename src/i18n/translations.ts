@@ -189,6 +189,21 @@ export const translations = {
     newRecording: 'تسجيل جديد',
     myRecordings: 'تسجيلاتي',
     
+    // Student Management
+    addStudent: 'إضافة طالب',
+    addStudentToHalaqa: 'إضافة طالب للحلقة',
+    searchStudents: 'البحث عن الطلاب',
+    selectStudent: 'اختر طالب',
+    studentDetails: 'تفاصيل الطالب',
+    assignToHalaqa: 'تعيين للحلقة',
+    removeFromHalaqa: 'إزالة من الحلقة',
+    noStudentsFound: 'لا توجد طلاب',
+    studentAdded: 'تم إضافة الطالب بنجاح',
+    studentRemoved: 'تم إزالة الطالب بنجاح',
+    studentUpdated: 'تم تحديث بيانات الطالب',
+    editStudent: 'تحرير بيانات الطالب',
+    saveChanges: 'حفظ التغييرات',
+    
     // Exchange Center
     makeOffer: 'تقديم عرض',
     makeRequest: 'طلب مساعدة',
@@ -427,6 +442,21 @@ export const translations = {
     microphoneAccess: 'Allow microphone access',
     newRecording: 'New Recording',
     myRecordings: 'My Recordings',
+    
+    // Student Management
+    addStudent: 'Add Student',
+    addStudentToHalaqa: 'Add Student to Halaqa',
+    searchStudents: 'Search Students',
+    selectStudent: 'Select Student',
+    studentDetails: 'Student Details',
+    assignToHalaqa: 'Assign to Halaqa',
+    removeFromHalaqa: 'Remove from Halaqa',
+    noStudentsFound: 'No students found',
+    studentAdded: 'Student added successfully',
+    studentRemoved: 'Student removed successfully',
+    studentUpdated: 'Student data updated',
+    editStudent: 'Edit Student Data',
+    saveChanges: 'Save Changes',
     
     // Exchange Center
     makeOffer: 'Make Offer',
