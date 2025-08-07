@@ -1810,7 +1810,7 @@ export function RecitingPage() {
                     'font-size': '18px'
                   }}
                 >
-                  ←
+                  {app.language() === 'ar' ? '→' : '←'}
                 </button>
                 <div style={{
                   'font-weight': 'bold',

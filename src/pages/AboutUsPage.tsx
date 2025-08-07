@@ -84,7 +84,7 @@ export function AboutUsPage() {
         style={backButtonStyle}
         onClick={() => app.setCurrentPage('more')}
       >
-        ←
+        {app.language() === 'ar' ? '→' : '←'}
       </button>
 
       {/* Header with Logo */}
