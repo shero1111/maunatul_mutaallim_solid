@@ -39,7 +39,7 @@ export function UsersPage() {
     const term = searchTerm().toLowerCase().trim();
     if (term) {
       users = users.filter(u => 
-        u.full_name.toLowerCase().includes(term) ||
+        ((u.full_name || u.name || '').toLowerCase().includes(term)) ||
         u.username.toLowerCase().includes(term) ||
         u.role.toLowerCase().includes(term)
       );
@@ -371,16 +371,16 @@ export function UsersPage() {
               
               {/* User Name */}
               <div style={{ flex: '1', 'min-width': '0' }}>
-                <div style={{
-                  'font-size': '16px',
-                  'font-weight': '600',
-                  color: 'var(--color-text)',
-                  'white-space': 'nowrap',
-                  overflow: 'hidden',
-                  'text-overflow': 'ellipsis'
-                }}>
-                  {user.name}
-                </div>
+                                 <div style={{
+                   'font-size': '16px',
+                   'font-weight': '600',
+                   color: 'var(--color-text)',
+                   'white-space': 'nowrap',
+                   overflow: 'hidden',
+                   'text-overflow': 'ellipsis'
+                 }}>
+                   {user.full_name || user.name || user.username}
+                 </div>
               </div>
               
               {/* Activity Indicator on the right */}

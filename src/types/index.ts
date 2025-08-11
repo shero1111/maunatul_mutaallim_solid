@@ -4,6 +4,7 @@ export interface User {
   id: string;
   username: string;
   name: string;
+  full_name?: string;
   password: string;
   role: 'superuser' | 'leitung' | 'lehrer' | 'student';
   isActive: boolean;
