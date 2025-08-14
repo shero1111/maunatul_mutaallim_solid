@@ -279,7 +279,7 @@ export function UserModal(props: UserModalProps) {
                   disabled={!canEdit()}
                 >
                   <option value="student">{app.translate('student')}</option>
-                  <option value="lehrer">{app.translate('lehrer')}</option>
+                  <option value="lehrer">{app.translate('teacher')}</option>
                   <option value="leitung">{app.translate('leitung')}</option>
                   <Show when={app.currentUser()?.role === 'superuser'}>
                     <option value="superuser">{app.translate('superuser')}</option>
